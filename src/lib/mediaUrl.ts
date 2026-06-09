@@ -1,4 +1,4 @@
-const DEFAULT_UPLOADS_BASE = 'https://ahwuae.com/investoredu/investoredu/uploads';
+const DEFAULT_UPLOADS_BASE = 'https://ahwuae.com/investorupload/uploads';
 
 function getUploadsBase(): string {
   const configured = import.meta.env.VITE_UPLOADS_BASE_URL;
@@ -9,6 +9,7 @@ function getUploadsBase(): string {
 }
 
 const REWRITE_RULES: RegExp[] = [
+  /^https?:\/\/ahwuae\.com\/investoredu\/investoredu\/uploads\/(.+)$/i,
   /^https?:\/\/ahwuae\.com\/investoredu\/uploads\/(.+)$/i,
   /^https?:\/\/investoreducation\.uasa\.ae\/uploads\/(.+)$/i,
   /^https?:\/\/uasa\.ae\/en\/galorg\/(.+)$/i,
