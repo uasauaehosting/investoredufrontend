@@ -1,9 +1,9 @@
-const DEFAULT_UPLOADS_BASE = 'https://apiinvestoredu.ahwuae.com/uploads';
+const DEFAULT_UPLOADS_BASE = 'https://ahwuae.com/investoredu/uploads';
 
 function getUploadsBase(): string {
-  const apiUrl = import.meta.env.VITE_API_URL || '';
-  if (apiUrl) {
-    return apiUrl.replace(/\/api\/?$/, '') + '/uploads';
+  const configured = import.meta.env.VITE_UPLOADS_BASE_URL;
+  if (configured) {
+    return String(configured).replace(/\/$/, '');
   }
   return DEFAULT_UPLOADS_BASE;
 }
@@ -19,7 +19,7 @@ function extractFilename(urlPath: string): string {
   return decodeURIComponent(urlPath.split('?')[0].split('/').pop() || urlPath);
 }
 
-/** Map legacy/broken upload URLs to the API uploads base for previews and display. */
+/** Map legacy upload URLs to the Hostinger uploads base for previews and display. */
 export function normalizeMediaUrl(url: string | null | undefined): string {
   if (!url) return '';
 

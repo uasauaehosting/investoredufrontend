@@ -1,0 +1,146 @@
+import { Plus, Trash2, GripVertical } from 'lucide-react';
+import ImageUpload from '../../../lib/ImageUpload';
+
+const inputClass =
+  'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]';
+const labelClass = 'block text-xs font-medium text-gray-500 mb-1';
+
+export function TextField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = 'text',
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  type?: string;
+  hint?: string;
+}) {
+  return (
+    <div>
+      <label className={labelClass}>{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={inputClass}
+      />
+      {hint && <p className="text-[10px] text-gray-400 mt-1">{hint}</p>}
+    </div>
+  );
+}
+
+export function TextAreaField({
+  label,
+  value,
+  onChange,
+  rows = 4,
+  placeholder,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  rows?: number;
+  placeholder?: string;
+  hint?: string;
+}) {
+  return (
+    <div>
+      <label className={labelClass}>{label}</label>
+      <textarea
+        rows={rows}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={`${inputClass} resize-y`}
+      />
+      {hint && <p className="text-[10px] text-gray-400 mt-1">{hint}</p>}
+    </div>
+  );
+}
+
+export function StringListEditor({
+  label,
+  items,
+  onChange,
+  placeholder = 'Enter text...',
+  addLabel = 'Add item',
+}: {
+  label: string;
+  items: string[];
+  onChange: (items: string[]) => void;
+  placeholder?: string;
+  addLabel?: string;
+}) {
+  const update = (index: number, value: string) => {
+    const next = [...items];
+    next[index] = value;
+    onChange(next);
+  };
+
+  const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
+
+  const add = () => onChange([...items, '']);
+
+  return (
+    <div>
+      <label className={labelClass}>{label}</label>
+      <div className="space-y-2">
+        {items.map((item, index) => (
+          <div key={index} className="flex items-start gap-2">
+            <GripVertical size={14} className="text-gray-300 mt-2.5 flex-shrink-0" />
+            <textarea
+              rows={2}
+              value={item}
+              onChange={(e) => update(index, e.target.value)}
+              placeholder={placeholder}
+              className={`${inputClass} flex-1 resize-y`}
+            />
+            <button
+              type="button"
+              onClick={() => remove(index)}
+              className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+              title="Remove"
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={add}
+          className="flex items-center gap-1.5 text-xs font-medium text-[#009900] hover:text-[#006600] transition-colors"
+        >
+          <Plus size={14} /> {addLabel}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function ImageField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return <ImageUpload label={label} value={value} onChange={onChange} />;
+}
+
+export function SectionHeading({ title, description }: { title: string; description?: string }) {
+  return (
+    <div className="pb-2 border-b border-gray-100">
+      <h3 className="text-sm font-semibold text-gray-700">{title}</h3>
+      {description && <p className="text-xs text-gray-400 mt-0.5">{description}</p>}
+    </div>
+  );
+}

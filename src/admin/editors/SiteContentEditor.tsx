@@ -1,61 +1,105 @@
-import { useState, useEffect } from 'react';
+import { useState, useLayoutEffect, useCallback } from 'react';
 import { Save } from 'lucide-react';
 import { api } from '../../lib/api';
-
-const PAGE_KEYS = [
-  { key: 'home.welcome', label: 'Home — Welcome Section' },
-  { key: 'home.portal_section', label: 'Home — Portal Cards' },
-  { key: 'about.hero', label: 'About — Hero' },
-  { key: 'principles', label: 'Principles Page' },
-  { key: 'framework', label: 'Framework Page' },
-  { key: 'the_index', label: 'The Index Page' },
-  { key: 'feedback', label: 'Feedback Page' },
-  { key: 'footer', label: 'Footer Links & Contact' },
-  { key: 'glossary_meta', label: 'Glossary Page Meta' },
-];
+import { PAGE_KEYS, mergeWithDefaults, type PageKey } from './siteContent/defaults';
+import {
+  HomeWelcomeForm,
+  HomePortalForm,
+  AboutHeroForm,
+  PrinciplesPageForm,
+  FrameworkPageForm,
+  TheIndexForm,
+  FeedbackForm,
+  FooterForm,
+  GlossaryMetaForm,
+} from './siteContent/PageForms';
 
 export default function SiteContentEditor() {
-  const [activeKey, setActiveKey] = useState(PAGE_KEYS[0].key);
-  const [jsonText, setJsonText] = useState('{}');
+  const [activeKey, setActiveKey] = useState<PageKey>(PAGE_KEYS[0].key);
+  const [content, setContent] = useState<Record<string, unknown>>(() => mergeWithDefaults(PAGE_KEYS[0].key, {}));
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const load = async (key: string) => {
+  const selectKey = useCallback((key: PageKey) => {
+    setActiveKey(key);
     setLoading(true);
     setError(null);
-    try {
-      const data = await api.get(`/site-content/${key}`);
-      setJsonText(JSON.stringify(data, null, 2));
-    } catch {
-      setJsonText('{}');
-    } finally {
-      setLoading(false);
-    }
-  };
+    setSuccess(false);
+    setContent(mergeWithDefaults(key, {}));
+  }, []);
 
-  useEffect(() => { load(activeKey); }, [activeKey]);
+  const handleChange = useCallback(
+    (next: Record<string, unknown>) => {
+      setContent(mergeWithDefaults(activeKey, next));
+    },
+    [activeKey],
+  );
+
+  useLayoutEffect(() => {
+    let cancelled = false;
+    const key = activeKey;
+
+    (async () => {
+      try {
+        const data = await api.get(`/site-content/${key}`);
+        if (!cancelled) {
+          setContent(mergeWithDefaults(key, (data ?? {}) as Record<string, unknown>));
+        }
+      } catch {
+        if (!cancelled) {
+          setContent(mergeWithDefaults(key, {}));
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeKey]);
 
   const save = async () => {
     setError(null);
     setSuccess(false);
-    let content: Record<string, unknown>;
-    try {
-      content = JSON.parse(jsonText);
-    } catch {
-      setError('Invalid JSON. Please fix syntax errors.');
-      return;
-    }
     setSaving(true);
     try {
       await api.put(`/site-content/${activeKey}`, { content });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    } catch (err: any) {
-      setError(String(err));
+    } catch (err: unknown) {
+      setError(typeof err === 'string' ? err : 'Failed to save content.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const renderForm = () => {
+    switch (activeKey) {
+      case 'home.welcome':
+        return <HomeWelcomeForm data={content as never} onChange={setContent} />;
+      case 'home.portal_section':
+        return <HomePortalForm data={content as never} onChange={setContent} />;
+      case 'about.hero':
+        return <AboutHeroForm data={content as never} onChange={setContent} />;
+      case 'principles':
+        return <PrinciplesPageForm data={content as never} onChange={setContent} />;
+      case 'framework':
+        return <FrameworkPageForm data={content as never} onChange={setContent} />;
+      case 'the_index':
+        return <TheIndexForm data={content as never} onChange={setContent} />;
+      case 'feedback':
+        return <FeedbackForm data={content as never} onChange={setContent} />;
+      case 'footer':
+        return <FooterForm data={content as never} onChange={setContent} />;
+      case 'glossary_meta':
+        return <GlossaryMetaForm data={content as never} onChange={setContent} />;
+      default:
+        return null;
     }
   };
 
@@ -63,7 +107,7 @@ export default function SiteContentEditor() {
     <div>
       <div className="mb-5">
         <h2 className="text-lg font-bold text-gray-800">Page Content</h2>
-        <p className="text-xs text-gray-400">Edit JSON content for each page section</p>
+        <p className="text-xs text-gray-400">Edit text, images, and links for each page section</p>
       </div>
 
       <div className="flex flex-wrap gap-2 mb-4">
@@ -83,15 +127,11 @@ export default function SiteContentEditor() {
       {loading ? (
         <div className="text-gray-400 text-sm animate-pulse">Loading...</div>
       ) : (
-        <div className="bg-white rounded-2xl border border-gray-200 p-4">
-          <textarea
-            className="w-full font-mono text-xs border rounded-lg p-3 min-h-[400px] focus:outline-none focus:ring-2 focus:ring-green-100"
-            value={jsonText}
-            onChange={(e) => setJsonText(e.target.value)}
-          />
-          {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
-          {success && <p className="text-green-600 text-xs mt-2">Saved successfully!</p>}
-          <button onClick={save} disabled={saving} className="btn-primary mt-3 flex items-center gap-1.5">
+        <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6">
+          {renderForm()}
+          {error && <p className="text-red-500 text-xs mt-4">{error}</p>}
+          {success && <p className="text-green-600 text-xs mt-4">Saved successfully!</p>}
+          <button onClick={save} disabled={saving} className="btn-primary mt-6 flex items-center gap-1.5">
             <Save size={14} /> {saving ? 'Saving...' : 'Save Content'}
           </button>
         </div>
