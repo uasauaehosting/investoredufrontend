@@ -30,6 +30,7 @@ import Publications from './pages/Publications';
 import Programs from './pages/Programs';
 import AlertsBulletins from './pages/AlertsBulletins';
 import GlobalPolicyAreas from './pages/GlobalPolicyAreas';
+import AdditionalResources from './pages/AdditionalResources';
 
 function Home() {
   return (
@@ -96,6 +97,7 @@ export default function App() {
                   <Route path="/inclusion/policies" element={<GlobalPolicyAreas />} />
                   <Route path="/inclusion/index/the-index" element={<TheIndex />} />
                   <Route path="/inclusion/index/benchmarking" element={<MembersBenchmarking />} />
+                  <Route path="/inclusion/index/resources" element={<AdditionalResources />} />
                   <Route path="/glossary" element={<Glossary />} />
                   <Route path="/feedback" element={<Feedback />} />
                   {/* Redirect old # links if necessary or handle 404 */}

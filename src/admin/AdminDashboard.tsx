@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import {
-  LayoutDashboard, Image, Newspaper, Users, Layers,
+  LayoutDashboard, Image, Newspaper, Users, Globe2,
   LogOut, ChevronRight, Menu, X, ExternalLink, BookOpen,
-  FileText, Globe, Info, Settings, ClipboardList
+  FileText, Globe, Info, Settings, ClipboardList, BarChart3, Inbox
 } from 'lucide-react';
 import { useAuth } from '../lib/useAuth';
 import SlidesEditor from './editors/SlidesEditor';
@@ -20,29 +20,34 @@ import InvestmentProductsEditor from './editors/InvestmentProductsEditor';
 import AlertsBulletinsEditor from './editors/AlertsBulletinsEditor';
 import MemberStrategiesProjectsEditor from './editors/MemberStrategiesProjectsEditor';
 import GlobalPolicyAreasEditor from './editors/GlobalPolicyAreasEditor';
+import BenchmarkingEditor from './editors/BenchmarkingEditor';
+import FeedbackInboxEditor from './editors/FeedbackInboxEditor';
 
 type Section =
-  | 'overview' | 'slides' | 'news' | 'members' | 'portal' | 'education' | 'principles'
+  | 'overview' | 'slides' | 'news' | 'members' | 'member-portals' | 'education' | 'principles'
   | 'investment-products' | 'about' | 'pages' | 'glossary' | 'publications' | 'programs'
-  | 'alerts-bulletins' | 'member-strategies-projects' | 'global-policy-areas';
+  | 'alerts-bulletins' | 'member-strategies-projects' | 'global-policy-areas'
+  | 'benchmarking' | 'feedback-inbox';
 
 const navItems: { id: Section; label: string; icon: React.ElementType; desc: string }[] = [
-  { id: 'overview',      label: 'Overview',           icon: LayoutDashboard, desc: 'Dashboard summary' },
-  { id: 'slides',        label: 'Hero Slides',          icon: Image,           desc: 'Homepage carousel' },
-  { id: 'news',          label: 'News Items',           icon: Newspaper,       desc: 'News articles' },
-  { id: 'members',       label: 'Members',              icon: Users,           desc: 'Authority logos' },
-  { id: 'portal',        label: 'Portal Categories',    icon: Layers,          desc: 'Homepage feature cards' },
-  { id: 'education',     label: 'Education Content',    icon: BookOpen,        desc: 'Section list pages' },
-  { id: 'principles',    label: 'Principles',           icon: BookOpen,        desc: 'Principle pages & images' },
-  { id: 'investment-products', label: 'Investment Products', icon: BookOpen,  desc: 'Product literature pages' },
-  { id: 'about',         label: 'About Page',           icon: Info,            desc: 'About paragraphs' },
-  { id: 'pages',         label: 'Page Content',         icon: Settings,        desc: 'Welcome, footer, principles...' },
-  { id: 'glossary',      label: 'Glossary',             icon: Globe,           desc: 'Glossary terms' },
-  { id: 'publications',  label: 'Publications',         icon: FileText,        desc: 'Member publications' },
-  { id: 'programs',      label: 'Programs',             icon: ClipboardList,   desc: 'Member education programs' },
-  { id: 'alerts-bulletins', label: 'Alerts & Bulletins', icon: FileText,        desc: 'Market alerts and bulletins' },
-  { id: 'member-strategies-projects', label: 'Strategies & Projects', icon: ClipboardList, desc: 'Member financial inclusion resources' },
-  { id: 'global-policy-areas', label: 'Global Policy Areas', icon: Globe, desc: 'OECD, AFI & global policy resources' },
+  { id: 'overview',      label: 'Overview',              icon: LayoutDashboard, desc: 'Dashboard summary' },
+  { id: 'slides',        label: 'Home — Hero Slides',    icon: Image,           desc: 'Homepage carousel (/)' },
+  { id: 'news',          label: 'Home — News',           icon: Newspaper,       desc: 'News articles (/news/:id)' },
+  { id: 'members',       label: 'Home — Members',        icon: Users,           desc: 'Authority logos on homepage' },
+  { id: 'pages',         label: 'Page Content',          icon: Settings,        desc: 'Welcome, footer, framework, index pages...' },
+  { id: 'about',         label: 'About',                 icon: Info,            desc: 'About page (/about)' },
+  { id: 'education',     label: 'Education Sections',    icon: BookOpen,        desc: 'Section landing pages (/education/:section)' },
+  { id: 'principles',    label: 'Principles',            icon: BookOpen,        desc: 'Principles pages (/education/reading-materials/principles)' },
+  { id: 'investment-products', label: 'Investment Products', icon: BookOpen, desc: 'Product literature (/education/reading-materials/products)' },
+  { id: 'publications',  label: 'Publications',          icon: FileText,        desc: 'Member publications (/education/members-activities/publications)' },
+  { id: 'programs',      label: 'Programs',              icon: ClipboardList,   desc: 'Education programs (/education/members-activities/programs)' },
+  { id: 'member-portals', label: 'Member Portals',       icon: Globe2,          desc: 'Authority portals (/education/members-activities/portals)' },
+  { id: 'alerts-bulletins', label: 'Alerts & Bulletins', icon: FileText,      desc: 'Alerts page (/education/alerts)' },
+  { id: 'member-strategies-projects', label: 'Strategies & Projects', icon: ClipboardList, desc: 'Financial inclusion (/inclusion/projects)' },
+  { id: 'global-policy-areas', label: 'Global Policy Areas', icon: Globe,     desc: 'Policy resources (/inclusion/policies)' },
+  { id: 'benchmarking',  label: "Members' Benchmarking", icon: BarChart3,     desc: 'Benchmarking table (/inclusion/index/benchmarking)' },
+  { id: 'glossary',      label: 'Glossary',              icon: Globe,           desc: 'Glossary terms (/glossary)' },
+  { id: 'feedback-inbox', label: 'Feedback Inbox',       icon: Inbox,           desc: 'User submissions (/feedback)' },
 ];
 
 export default function AdminDashboard() {
@@ -133,7 +138,7 @@ export default function AdminDashboard() {
           {section === 'slides' && <SlidesEditor />}
           {section === 'news' && <NewsEditor />}
           {section === 'members' && <MembersEditor />}
-          {section === 'portal' && <PortalCategoriesEditor />}
+          {section === 'member-portals' && <PortalCategoriesEditor />}
           {section === 'education' && <EducationContentEditor />}
           {section === 'principles' && <PrinciplesEditor />}
           {section === 'investment-products' && <InvestmentProductsEditor />}
@@ -145,6 +150,8 @@ export default function AdminDashboard() {
           {section === 'alerts-bulletins' && <AlertsBulletinsEditor />}
           {section === 'member-strategies-projects' && <MemberStrategiesProjectsEditor />}
           {section === 'global-policy-areas' && <GlobalPolicyAreasEditor />}
+          {section === 'benchmarking' && <BenchmarkingEditor />}
+          {section === 'feedback-inbox' && <FeedbackInboxEditor />}
         </main>
       </div>
     </div>

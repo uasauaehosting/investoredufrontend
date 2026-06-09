@@ -42,6 +42,41 @@ export interface BenchmarkingRecord {
 
 export const BENCHMARKING_RECORDS: BenchmarkingRecord[] = [];
 
+interface ApiBenchmarkingRow {
+  id?: number;
+  authorityName: string;
+  year: string;
+  indicator?: string | null;
+  value?: string | null;
+  data?: Record<string, unknown> | null;
+}
+
+export function fromApiBenchmarkingRecord(row: ApiBenchmarkingRow): BenchmarkingRecord {
+  const data = row.data ?? {};
+  return {
+    authority: row.authorityName,
+    year: row.year,
+    title: String(data.title ?? row.indicator ?? ''),
+    description: data.description != null ? String(data.description) : row.value ?? undefined,
+    fileUrl: data.fileUrl != null ? String(data.fileUrl) : undefined,
+  };
+}
+
+export function toApiBenchmarkingPayload(record: BenchmarkingRecord) {
+  return {
+    authorityName: record.authority,
+    year: record.year,
+    indicator: null,
+    value: null,
+    data: {
+      title: record.title,
+      description: record.description ?? '',
+      fileUrl: record.fileUrl ?? '',
+    },
+    isActive: true,
+  };
+}
+
 function normalizeText(value: string): string {
   return value
     .toLowerCase()

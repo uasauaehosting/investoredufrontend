@@ -5,6 +5,8 @@ import type {
   PrinciplesPageContent,
   FrameworkPageContent,
   TheIndexContent,
+  BenchmarkingPageContent,
+  AdditionalResourcesContent,
   FeedbackContent,
   FooterContent,
   GlossaryMetaContent,
@@ -17,6 +19,8 @@ export const PAGE_KEYS = [
   { key: 'principles', label: 'Principles Page' },
   { key: 'framework', label: 'Framework Page' },
   { key: 'the_index', label: 'The Index Page' },
+  { key: 'benchmarking', label: 'Benchmarking Page' },
+  { key: 'additional_resources', label: 'Additional Resources' },
   { key: 'feedback', label: 'Feedback Page' },
   { key: 'footer', label: 'Footer Links & Contact' },
   { key: 'glossary_meta', label: 'Glossary Page Meta' },
@@ -55,6 +59,15 @@ export const DEFAULTS: Record<PageKey, Record<string, unknown>> = {
   the_index: {
     content: '',
   } satisfies TheIndexContent,
+  benchmarking: {
+    intro:
+      'A review of available data and measurement exercises with which UASA Members can design and evaluate Corporate Governance application in their countries (Based on the UASA Guide)',
+  } satisfies BenchmarkingPageContent,
+  additional_resources: {
+    intro:
+      'Explore supplementary reports, guidelines, and reference materials related to the UASA Financial Inclusion Index and regional benchmarking efforts.',
+    resources: [{ title: '', url: '', description: '' }],
+  } satisfies AdditionalResourcesContent,
   feedback: {
     title: 'Feedback & Inquiries',
     subtitle: '',

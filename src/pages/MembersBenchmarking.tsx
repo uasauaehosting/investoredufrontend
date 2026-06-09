@@ -1,24 +1,47 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { api } from '../lib/api';
 import {
   BENCHMARKING_AUTHORITIES,
-  BENCHMARKING_RECORDS,
   BENCHMARKING_YEARS,
   BenchmarkingAuthority,
   BenchmarkingYear,
+  BenchmarkingRecord,
   filterBenchmarkingRecords,
+  fromApiBenchmarkingRecord,
 } from '../lib/benchmarking';
+import { useSiteContent } from '../lib/useSiteContent';
 
-const intro =
+const INTRO_FALLBACK =
   'A review of available data and measurement exercises with which UASA Members can design and evaluate Corporate Governance application in their countries (Based on the UASA Guide)';
 
 export default function MembersBenchmarking() {
+  const { data: pageContent } = useSiteContent('benchmarking', { intro: INTRO_FALLBACK });
+  const [records, setRecords] = useState<BenchmarkingRecord[]>([]);
+  const [years, setYears] = useState<BenchmarkingYear[]>([...BENCHMARKING_YEARS]);
+  const [loading, setLoading] = useState(true);
   const [selectedYears, setSelectedYears] = useState<BenchmarkingYear[]>(['All Years']);
   const [selectedAuthority, setSelectedAuthority] =
     useState<BenchmarkingAuthority>('All Authorities');
 
+  useEffect(() => {
+    Promise.all([
+      api.get('/benchmarking').catch(() => []),
+      api.get('/benchmarking/filters').catch(() => null),
+    ])
+      .then(([rows, filters]) => {
+        if (Array.isArray(rows)) {
+          setRecords(rows.map((row) => fromApiBenchmarkingRecord(row)));
+        }
+        if (filters?.years?.length) {
+          setYears(['All Years', ...filters.years]);
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   const filteredRecords = useMemo(
-    () => filterBenchmarkingRecords(BENCHMARKING_RECORDS, selectedYears, selectedAuthority),
-    [selectedYears, selectedAuthority],
+    () => filterBenchmarkingRecords(records, selectedYears, selectedAuthority),
+    [records, selectedYears, selectedAuthority],
   );
 
   return (
@@ -38,7 +61,7 @@ export default function MembersBenchmarking() {
       <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-10">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-12">
           <div className="max-w-4xl mx-auto text-center mb-10">
-            <p className="text-gray-600 text-base sm:text-lg leading-relaxed">{intro}</p>
+            <p className="text-gray-600 text-base sm:text-lg leading-relaxed">{pageContent.intro}</p>
           </div>
 
           <div className="w-full mb-8">
@@ -62,7 +85,7 @@ export default function MembersBenchmarking() {
               }}
               className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
             >
-              {BENCHMARKING_YEARS.map((year) => (
+              {years.map((year) => (
                 <option key={year} value={year}>
                   {year}
                 </option>
@@ -106,7 +129,13 @@ export default function MembersBenchmarking() {
                 )}
               </thead>
               <tbody>
-                {filteredRecords.length === 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-16 text-center text-gray-500">
+                      Loading benchmarking data...
+                    </td>
+                  </tr>
+                ) : filteredRecords.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="px-4 py-16 text-center text-gray-500">
                       No Content Found!

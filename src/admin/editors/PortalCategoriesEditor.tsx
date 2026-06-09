@@ -8,6 +8,7 @@ import { MediaPreview } from './siteContent/FormFields';
 export interface PortalCategory {
   id: number;
   title: string;
+  short_title: string;
   description: string | null;
   image_url: string | null;
   link: string;
@@ -17,6 +18,7 @@ export interface PortalCategory {
 
 const empty: Omit<PortalCategory, 'id'> = {
   title: '',
+  short_title: '',
   description: '',
   image_url: '',
   link: '#',
@@ -49,7 +51,9 @@ export default function PortalCategoriesEditor() {
 
   const save = async () => {
     if (!editing) return;
-    if (!editing.title?.trim()) { setError('Title is required.'); return; }
+    if (!editing.title?.trim()) { setError('Panel title is required.'); return; }
+    if (!editing.short_title?.trim()) { setError('Display title is required.'); return; }
+    if (!editing.authority_name?.trim()) { setError('Authority name is required.'); return; }
     setSaving(true); setError(null);
     try {
       if (editing.id) {
@@ -82,21 +86,28 @@ export default function PortalCategoriesEditor() {
     <div>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-lg font-bold text-gray-800">Portal Categories</h2>
-          <p className="text-xs text-gray-400 mt-0.5">Manage the three feature cards (Investor Education, Financial Inclusion, Glossary)</p>
+          <h2 className="text-lg font-bold text-gray-800">Member Portals</h2>
+          <p className="text-xs text-gray-400 mt-0.5">Manage authority portals shown on /education/members-activities/portals</p>
         </div>
         <button onClick={openNew} className="btn-primary flex items-center gap-1.5">
-          <Plus size={15} /> Add Category
+          <Plus size={15} /> Add Portal
         </button>
       </div>
 
       {editing && (
         <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
-          <h3 className="font-semibold text-[#009900] text-sm">{editing.id ? 'Edit Category' : 'New Category'}</h3>
+          <h3 className="font-semibold text-[#009900] text-sm">{editing.id ? 'Edit Portal' : 'New Portal'}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Title *</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Panel Title *</label>
               <input type="text" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                placeholder="Full authority name shown in the accordion header"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-gray-500 mb-1">Display Title *</label>
+              <input type="text" value={editing.short_title ?? ''} onChange={(e) => setEditing({ ...editing, short_title: e.target.value })}
+                placeholder="Short title shown when the panel is expanded"
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
             </div>
             <div className="sm:col-span-2">
@@ -143,6 +154,7 @@ export default function PortalCategoriesEditor() {
             {c.image_url && <MediaPreview url={c.image_url} />}
             <div className="flex-1 min-w-0">
               <h4 className="text-sm font-bold text-gray-800 truncate">{c.title}</h4>
+              <p className="text-xs text-gray-500 line-clamp-1">{c.short_title || c.authority_name}</p>
               <p className="text-xs text-gray-400 line-clamp-1">{c.description}</p>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 font-medium">{c.country}</span>
@@ -158,7 +170,7 @@ export default function PortalCategoriesEditor() {
             </div>
           </div>
         ))}
-        {cats.length === 0 && <p className="text-sm text-gray-400 py-4 text-center">No categories yet.</p>}
+        {cats.length === 0 && <p className="text-sm text-gray-400 py-4 text-center">No member portals yet.</p>}
       </div>
     </div>
   );

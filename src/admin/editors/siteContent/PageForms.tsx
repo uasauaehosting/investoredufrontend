@@ -252,6 +252,100 @@ export function TheIndexForm({ data, onChange }: FormProps<TheIndexContent>) {
   );
 }
 
+// ─── Benchmarking Page ──────────────────────────────────────────────────────
+
+export interface BenchmarkingPageContent {
+  intro: string;
+}
+
+export function BenchmarkingPageForm({ data, onChange }: FormProps<BenchmarkingPageContent>) {
+  return (
+    <div className="space-y-6">
+      <SectionHeading
+        title="Benchmarking Page"
+        description="Intro text shown on /inclusion/index/benchmarking. Table records are managed under Members' Benchmarking in the admin sidebar."
+      />
+      <TextAreaField
+        label="Introduction"
+        value={data.intro}
+        onChange={(v) => onChange({ intro: v })}
+        rows={4}
+        placeholder="Describe the benchmarking exercise..."
+      />
+    </div>
+  );
+}
+
+// ─── Additional Resources Page ──────────────────────────────────────────────
+
+export interface AdditionalResourcesContent {
+  intro: string;
+  resources: { title: string; url: string; description?: string }[];
+}
+
+export function AdditionalResourcesForm({ data, onChange }: FormProps<AdditionalResourcesContent>) {
+  const resources = asArray(data.resources, [{ title: '', url: '', description: '' }]);
+
+  const updateResource = (index: number, field: 'title' | 'url' | 'description', value: string) => {
+    const next = [...resources];
+    next[index] = { ...next[index], [field]: value };
+    onChange({ ...data, resources: next });
+  };
+
+  return (
+    <div className="space-y-6">
+      <SectionHeading
+        title="Additional Resources Page"
+        description="Content for /inclusion/index/resources"
+      />
+      <TextAreaField
+        label="Introduction"
+        value={data.intro}
+        onChange={(v) => onChange({ ...data, intro: v })}
+        rows={4}
+      />
+      <div className="space-y-3">
+        <p className="text-sm font-semibold text-gray-700">Resource Links</p>
+        {resources.map((resource, index) => (
+          <div key={index} className={cardClass}>
+            <TextField
+              label="Title"
+              value={resource.title}
+              onChange={(v) => updateResource(index, 'title', v)}
+            />
+            <TextField
+              label="URL"
+              value={resource.url}
+              onChange={(v) => updateResource(index, 'url', v)}
+              placeholder="https://..."
+            />
+            <TextAreaField
+              label="Description"
+              value={resource.description ?? ''}
+              onChange={(v) => updateResource(index, 'description', v)}
+              rows={2}
+            />
+            <button
+              type="button"
+              onClick={() => onChange({ ...data, resources: resources.filter((_, i) => i !== index) })}
+              className="text-xs text-red-600 hover:text-red-700 flex items-center gap-1"
+            >
+              <Trash2 size={12} /> Remove
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => onChange({ ...data, resources: [...resources, { title: '', url: '', description: '' }] })}
+          className="text-xs text-[#009900] hover:text-green-700 flex items-center gap-1"
+        >
+          <Plus size={12} /> Add resource
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ─── Feedback Page ──────────────────────────────────────────────────────────
 
 export interface FeedbackContent {

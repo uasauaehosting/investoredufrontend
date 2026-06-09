@@ -10,6 +10,8 @@ import {
   PrinciplesPageForm,
   FrameworkPageForm,
   TheIndexForm,
+  BenchmarkingPageForm,
+  AdditionalResourcesForm,
   FeedbackForm,
   FooterForm,
   GlossaryMetaForm,
@@ -99,6 +101,10 @@ export default function SiteContentEditor() {
         return <FrameworkPageForm data={formData as never} onChange={handleChange} />;
       case 'the_index':
         return <TheIndexForm data={formData as never} onChange={handleChange} />;
+      case 'benchmarking':
+        return <BenchmarkingPageForm data={formData as never} onChange={handleChange} />;
+      case 'additional_resources':
+        return <AdditionalResourcesForm data={formData as never} onChange={handleChange} />;
       case 'feedback':
         return <FeedbackForm data={formData as never} onChange={handleChange} />;
       case 'footer':
