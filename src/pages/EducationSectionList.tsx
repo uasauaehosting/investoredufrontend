@@ -24,11 +24,11 @@ function ItemCard({ item, basePath }: { item: EducationItem; basePath: string })
         />
       </div>
       <div className="p-6 flex flex-col flex-1">
-        <h3 className="text-lg font-bold text-[#00285e] mb-3 group-hover:text-blue-700 transition-colors">
+        <h3 className="text-lg font-bold text-[#009900] mb-3 group-hover:text-green-700 transition-colors">
           {item.title}
         </h3>
         <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3">{item.description}</p>
-        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00285e] mt-5 group-hover:text-amber-600 transition-colors">
+        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#009900] mt-5 group-hover:text-amber-600 transition-colors">
           Read More <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
         </span>
       </div>
@@ -61,10 +61,10 @@ export default function EducationSectionList() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="bg-gradient-to-br from-[#00285e] to-[#003580] text-white py-16 px-4">
+      <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">{meta.title}</h1>
-          <p className="text-blue-100 max-w-2xl leading-relaxed">{meta.description}</p>
+          <p className="text-green-100 max-w-2xl leading-relaxed">{meta.description}</p>
         </div>
       </div>
 

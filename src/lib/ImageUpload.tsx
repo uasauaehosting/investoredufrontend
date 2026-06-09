@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Upload, X, ImageIcon, Loader2 } from 'lucide-react';
-import { api } from './api';
+import { normalizeMediaUrl } from './mediaUrl';
 
 interface ImageUploadProps {
   value: string;
@@ -52,7 +52,7 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
       }
 
       const data = await response.json();
-      onChange(data.url);
+      onChange(normalizeMediaUrl(data.url));
     } catch (err) {
       console.error('Upload error:', err);
       setError('Failed to upload image. Please try again.');
@@ -68,14 +68,16 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
     }
   };
 
+  const previewUrl = normalizeMediaUrl(value);
+
   return (
     <div className="space-y-2">
       <label className="block text-xs font-medium text-gray-500 mb-1">{label}</label>
       
       <div className="relative group">
-        {value ? (
+        {previewUrl ? (
           <div className="relative rounded-xl overflow-hidden border border-gray-200 aspect-video bg-gray-50">
-            <img src={value} alt="Uploaded" className="w-full h-full object-cover" />
+            <img src={previewUrl} alt="Uploaded" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
               <button
                 type="button"
@@ -100,10 +102,10 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className={`w-full aspect-video border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center gap-2 transition-all hover:border-[#00285e]/40 hover:bg-blue-50/30 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`w-full aspect-video border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center gap-2 transition-all hover:border-[#009900]/40 hover:bg-green-50/30 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {uploading ? (
-              <Loader2 size={24} className="text-[#00285e] animate-spin" />
+              <Loader2 size={24} className="text-[#009900] animate-spin" />
             ) : (
               <ImageIcon size={24} className="text-gray-300" />
             )}

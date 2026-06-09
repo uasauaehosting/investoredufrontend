@@ -23,10 +23,10 @@ export default function Feedback() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="bg-[#00285e] text-white py-20 px-4">
+      <div className="bg-[#009900] text-white py-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl sm:text-6xl font-bold mb-6">Feedback & Inquiries</h1>
-          <p className="text-blue-200 text-lg max-w-2xl mx-auto">
+          <p className="text-green-200 text-lg max-w-2xl mx-auto">
             Your voice matters. Help us improve the portal or reach out with your questions.
           </p>
         </div>
@@ -36,7 +36,7 @@ export default function Feedback() {
         <div className="grid lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2">
             <div className="bg-white rounded-3xl shadow-xl p-8 sm:p-12 border border-gray-100">
-              <h2 className="text-2xl font-bold text-[#00285e] mb-8 flex items-center gap-3">
+              <h2 className="text-2xl font-bold text-[#009900] mb-8 flex items-center gap-3">
                 <MessageSquare className="text-amber-500" />
                 Send us a Message
               </h2>
@@ -50,7 +50,7 @@ export default function Feedback() {
                       <input 
                         required
                         type="text" 
-                        className="w-full ps-12 pe-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#00285e]/20"
+                        className="w-full ps-12 pe-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                         placeholder="John Doe"
                         value={form.name}
                         onChange={e => setForm({...form, name: e.target.value})}
@@ -64,7 +64,7 @@ export default function Feedback() {
                       <input 
                         required
                         type="email" 
-                        className="w-full ps-12 pe-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#00285e]/20"
+                        className="w-full ps-12 pe-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                         placeholder="john@example.com"
                         value={form.email}
                         onChange={e => setForm({...form, email: e.target.value})}
@@ -78,7 +78,7 @@ export default function Feedback() {
                   <input 
                     required
                     type="text" 
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#00285e]/20"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                     placeholder="General Inquiry"
                     value={form.subject}
                     onChange={e => setForm({...form, subject: e.target.value})}
@@ -90,7 +90,7 @@ export default function Feedback() {
                   <textarea 
                     required
                     rows={6}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#00285e]/20 resize-none"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#009900]/20 resize-none"
                     placeholder="How can we help you today?"
                     value={form.message}
                     onChange={e => setForm({...form, message: e.target.value})}
@@ -99,7 +99,7 @@ export default function Feedback() {
 
                 <button 
                   disabled={sending}
-                  className="w-full bg-[#00285e] hover:bg-[#001a45] text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                  className="w-full bg-[#009900] hover:bg-[#006600] text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
                   {sending ? 'Sending...' : (
                     <>
@@ -125,10 +125,10 @@ export default function Feedback() {
 
           <div className="space-y-8">
             <div className="bg-white rounded-3xl shadow-lg p-8 border border-gray-100">
-              <h3 className="text-xl font-bold text-[#00285e] mb-6">Contact Info</h3>
+              <h3 className="text-xl font-bold text-[#009900] mb-6">Contact Info</h3>
               <div className="space-y-6">
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 shrink-0">
                     <Mail size={20} />
                   </div>
                   <div>

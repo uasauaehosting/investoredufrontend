@@ -75,11 +75,11 @@ export default function Glossary() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="bg-gradient-to-br from-[#00285e] to-[#003580] text-white py-16 px-4">
+      <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <BookOpen className="mx-auto mb-4 text-amber-400" size={40} />
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">UASA Glossary</h1>
-          <p className="text-blue-200 max-w-2xl mx-auto">
+          <p className="text-green-200 max-w-2xl mx-auto">
             Multilingual financial terms in English, French, and Arabic
           </p>
         </div>
@@ -95,7 +95,7 @@ export default function Glossary() {
                 placeholder="Search terms..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full ps-11 pe-10 py-3 rounded-xl border border-gray-200 focus:border-[#00285e] focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+                className="w-full ps-11 pe-10 py-3 rounded-xl border border-gray-200 focus:border-[#009900] focus:ring-2 focus:ring-green-100 outline-none text-sm"
               />
               {search && (
                 <button onClick={() => setSearch('')} className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -118,7 +118,7 @@ export default function Glossary() {
               <p className="text-xs text-gray-500 mb-2">Copy this code to embed the glossary:</p>
               <div className="flex gap-2">
                 <code className="flex-1 text-xs bg-white p-3 rounded-lg border overflow-x-auto">{embedCode}</code>
-                <button onClick={copyEmbed} className="px-3 py-2 bg-[#00285e] text-white text-xs rounded-lg">{copied ? 'Copied!' : 'Copy'}</button>
+                <button onClick={copyEmbed} className="px-3 py-2 bg-[#009900] text-white text-xs rounded-lg">{copied ? 'Copied!' : 'Copy'}</button>
               </div>
             </div>
           )}
@@ -129,7 +129,7 @@ export default function Glossary() {
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
                 className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
-                  activeFilter === filter ? 'bg-[#00285e] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  activeFilter === filter ? 'bg-[#009900] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
                 {filter}
@@ -143,7 +143,7 @@ export default function Glossary() {
         <div className="grid gap-4">
           {filteredTerms.map((term, index) => (
             <div key={`${term.english}-${index}`} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow">
-              <h3 className="text-lg font-bold text-[#00285e] mb-2">{term.english}</h3>
+              <h3 className="text-lg font-bold text-[#009900] mb-2">{term.english}</h3>
               <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-3">
                 {term.french && <span><strong>FR:</strong> {term.french}</span>}
                 {term.arabic && <span><strong>AR:</strong> {term.arabic}</span>}

@@ -22,7 +22,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#00285e] via-[#003580] to-[#001a45] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#009900] via-[#00b300] to-[#006600] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -30,7 +30,7 @@ export default function AdminLogin() {
             <Lock size={28} className="text-amber-400" />
           </div>
           <h1 className="text-white text-2xl font-bold">Admin Dashboard</h1>
-          <p className="text-blue-200 text-sm mt-1">UASA Investor Education Portal</p>
+          <p className="text-green-200 text-sm mt-1">UASA Investor Education Portal</p>
         </div>
 
         <form
@@ -49,7 +49,7 @@ export default function AdminLogin() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="admin"
-                className="w-full ps-9 pe-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00285e]/30 focus:border-[#00285e] transition"
+                className="w-full ps-9 pe-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/30 focus:border-[#009900] transition"
               />
             </div>
           </div>
@@ -66,7 +66,7 @@ export default function AdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full ps-9 pe-10 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00285e]/30 focus:border-[#00285e] transition"
+                className="w-full ps-9 pe-10 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/30 focus:border-[#009900] transition"
               />
               <button
                 type="button"
@@ -88,7 +88,7 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#00285e] hover:bg-[#001a45] text-white font-semibold py-2.5 rounded-lg transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-[#009900] hover:bg-[#006600] text-white font-semibold py-2.5 rounded-lg transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
               <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Signing in...</>
@@ -96,7 +96,7 @@ export default function AdminLogin() {
           </button>
         </form>
 
-        <p className="text-center text-blue-200/60 text-xs mt-6">
+        <p className="text-center text-green-200/60 text-xs mt-6">
           &copy; {new Date().getFullYear()} UASA — Restricted Access
         </p>
       </div>

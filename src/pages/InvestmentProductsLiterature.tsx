@@ -38,12 +38,12 @@ export default function InvestmentProductsLiterature() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="bg-gradient-to-br from-[#00285e] to-[#003580] text-white py-16 px-4">
+      <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <Link to="/education/reading-materials" className="inline-flex items-center gap-2 text-blue-200 hover:text-white text-sm mb-6 transition-colors">
+          <Link to="/education/reading-materials" className="inline-flex items-center gap-2 text-green-200 hover:text-white text-sm mb-6 transition-colors">
             <ArrowLeft size={16} /> Back to Reading Materials
           </Link>
-          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#00285e] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">Reading Materials</span>
+          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">Reading Materials</span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">Investment Products/ Literature</h1>
           <div className="h-1.5 w-24 bg-amber-400 mt-8 rounded-full" />
         </div>
@@ -61,9 +61,9 @@ export default function InvestmentProductsLiterature() {
                 <img src={product.imageUrl} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
               <div className="p-6 flex flex-col flex-1">
-                <h3 className="text-lg font-bold text-[#00285e] mb-3 group-hover:text-blue-700 transition-colors">{product.title}</h3>
+                <h3 className="text-lg font-bold text-[#009900] mb-3 group-hover:text-green-700 transition-colors">{product.title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3">{product.excerpt}</p>
-                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00285e] mt-5 group-hover:text-amber-600 transition-colors">
+                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#009900] mt-5 group-hover:text-amber-600 transition-colors">
                   Read More <ArrowRight size={14} />
                 </span>
               </div>

@@ -30,9 +30,9 @@ function PortalAccordionItem({ portal, isOpen, onToggle }: { portal: MemberPorta
 
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-      <button type="button" onClick={onToggle} aria-expanded={isOpen} className="w-full flex items-center justify-between gap-4 px-5 py-4 text-start bg-gray-50 hover:bg-blue-50 transition-colors">
-        <span className="font-semibold text-[#00285e] text-sm sm:text-base leading-snug pe-2">{portal.panelTitle}</span>
-        <ChevronDown size={20} className={`text-[#00285e] flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+      <button type="button" onClick={onToggle} aria-expanded={isOpen} className="w-full flex items-center justify-between gap-4 px-5 py-4 text-start bg-gray-50 hover:bg-green-50 transition-colors">
+        <span className="font-semibold text-[#009900] text-sm sm:text-base leading-snug pe-2">{portal.panelTitle}</span>
+        <ChevronDown size={20} className={`text-[#009900] flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
@@ -42,8 +42,8 @@ function PortalAccordionItem({ portal, isOpen, onToggle }: { portal: MemberPorta
               <img src={imgSrc} alt={portal.imageAlt} className="w-full h-auto object-contain" onError={() => setImgSrc(FALLBACK_IMAGE)} />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-[#00285e] mb-3">{portal.displayTitle}</h3>
-              <a href={portal.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-[#00285e] hover:bg-[#001a45] text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
+              <h3 className="text-lg font-bold text-[#009900] mb-3">{portal.displayTitle}</h3>
+              <a href={portal.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-[#009900] hover:bg-[#006600] text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
                 Visit Portal <ExternalLink size={14} />
               </a>
             </div>

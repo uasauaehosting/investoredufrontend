@@ -30,7 +30,7 @@ export default function NewsDetail() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <Link to="/" className="inline-flex items-center gap-2 text-[#00285e] hover:text-amber-600 mb-8 transition-colors">
+      <Link to="/" className="inline-flex items-center gap-2 text-[#009900] hover:text-amber-600 mb-8 transition-colors">
         <ArrowLeft size={16} />
         <span>Back to News</span>
       </Link>
@@ -41,7 +41,7 @@ export default function NewsDetail() {
         )}
         <div className="p-8 sm:p-12">
           <div className="flex flex-wrap gap-4 mb-6">
-            <span className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 bg-blue-50 text-blue-700 rounded-full">
+            <span className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 bg-green-50 text-green-700 rounded-full">
               <Tag size={12} />
               {item.category}
             </span>
@@ -51,7 +51,7 @@ export default function NewsDetail() {
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#00285e] mb-8 leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#009900] mb-8 leading-tight">
             {item.title}
           </h1>
 

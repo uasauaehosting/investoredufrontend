@@ -2,39 +2,35 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
-import {
-  EDUCATION_SECTIONS,
-  EducationItem,
-  EducationSectionSlug,
-} from '../../lib/educationSections';
+import { Principle } from '../../lib/principles';
 
-const sectionKeys = Object.keys(EDUCATION_SECTIONS) as EducationSectionSlug[];
+const today = () => new Date().toISOString().slice(0, 10);
 
-const empty = (section: EducationSectionSlug): Omit<EducationItem, 'id'> => ({
-  section,
+const empty = (): Omit<Principle, 'id'> => ({
   title: '',
   description: '',
+  author: '',
+  date: today(),
+  fileUrl: '',
   imageUrl: '',
   content: '',
-  displayOrder: 0,
   isActive: true,
 });
 
-export default function EducationContentEditor() {
-  const [activeSection, setActiveSection] = useState<EducationSectionSlug>('reading-materials');
-  const [items, setItems] = useState<EducationItem[]>([]);
+export default function PrinciplesEditor() {
+  const [items, setItems] = useState<Principle[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<Partial<EducationItem> | null>(null);
+  const [editing, setEditing] = useState<Partial<Principle> | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = async (section: EducationSectionSlug) => {
+  const load = async () => {
     setLoading(true);
     try {
-      const data = await api.get(`/investor-education/content/admin?section=${section}`);
+      const data = await api.get('/investor-education/principles/admin');
       setItems(data ?? []);
     } catch (err) {
-      console.error('Failed to load education content:', err);
+      console.error('Failed to load principles:', err);
       setItems([]);
     } finally {
       setLoading(false);
@@ -42,11 +38,14 @@ export default function EducationContentEditor() {
   };
 
   useEffect(() => {
-    load(activeSection);
-  }, [activeSection]);
+    load();
+  }, []);
 
-  const openNew = () => setEditing({ ...empty(activeSection) });
-  const openEdit = (item: EducationItem) => setEditing({ ...item });
+  const openNew = () => setEditing({ ...empty() });
+  const openEdit = (item: Principle) => setEditing({
+    ...item,
+    date: item.date ? String(item.date).slice(0, 10) : today(),
+  });
   const cancel = () => {
     setEditing(null);
     setError(null);
@@ -67,22 +66,23 @@ export default function EducationContentEditor() {
     setError(null);
     try {
       const payload = {
-        section: editing.section ?? activeSection,
-        title: editing.title,
-        description: editing.description,
-        imageUrl: editing.imageUrl || null,
-        content: editing.content || null,
-        displayOrder: editing.displayOrder ?? 0,
+        title: editing.title.trim(),
+        description: editing.description.trim(),
+        author: editing.author?.trim() || '',
+        date: editing.date || today(),
+        fileUrl: editing.fileUrl?.trim() || null,
+        imageUrl: editing.imageUrl?.trim() || null,
+        content: editing.content?.trim() || '',
         isActive: editing.isActive !== false,
       };
 
       if (editing.id) {
-        await api.put(`/investor-education/content/${editing.id}`, payload);
+        await api.put(`/investor-education/principles/${editing.id}`, payload);
       } else {
-        await api.post('/investor-education/content', payload);
+        await api.post('/investor-education/principles', payload);
       }
       setEditing(null);
-      load(activeSection);
+      load();
     } catch (err: unknown) {
       setError(typeof err === 'string' ? err : 'Failed to save.');
     } finally {
@@ -91,10 +91,10 @@ export default function EducationContentEditor() {
   };
 
   const remove = async (id: number) => {
-    if (!confirm('Delete this item?')) return;
+    if (!confirm('Delete this principle?')) return;
     try {
-      await api.delete(`/investor-education/content/${id}`);
-      load(activeSection);
+      await api.delete(`/investor-education/principles/${id}`);
+      load();
     } catch (err) {
       console.error('Failed to delete:', err);
     }
@@ -104,39 +104,20 @@ export default function EducationContentEditor() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
         <div>
-          <h2 className="text-lg font-bold text-gray-800">Investor Education Content</h2>
+          <h2 className="text-lg font-bold text-gray-800">Principles</h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Manage list items and detail pages for each education section
+            Add and manage individual principle pages with images and content
           </p>
         </div>
         <button onClick={openNew} className="btn-primary flex items-center gap-1.5 self-start">
-          <Plus size={15} /> Add Item
+          <Plus size={15} /> Add Principle
         </button>
-      </div>
-
-      <div className="flex flex-wrap gap-2 mb-6">
-        {sectionKeys.map((key) => (
-          <button
-            key={key}
-            onClick={() => {
-              setActiveSection(key);
-              setEditing(null);
-            }}
-            className={`px-4 py-2 rounded-full text-xs font-semibold transition-colors ${
-              activeSection === key
-                ? 'bg-[#009900] text-white'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-green-300'
-            }`}
-          >
-            {EDUCATION_SECTIONS[key].title}
-          </button>
-        ))}
       </div>
 
       {editing && (
         <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
           <h3 className="font-semibold text-[#009900] text-sm">
-            {editing.id ? 'Edit Item' : 'New Item'} — {EDUCATION_SECTIONS[activeSection].title}
+            {editing.id ? 'Edit Principle' : 'New Principle'}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
@@ -146,6 +127,7 @@ export default function EducationContentEditor() {
                 value={editing.title ?? ''}
                 onChange={(e) => setEditing({ ...editing, title: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
+                placeholder="Principle name"
               />
             </div>
             <div className="sm:col-span-2">
@@ -171,22 +153,19 @@ export default function EducationContentEditor() {
                 Full Content (detail page — HTML allowed)
               </label>
               <textarea
-                rows={6}
+                rows={8}
                 value={editing.content ?? ''}
                 onChange={(e) => setEditing({ ...editing, content: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-y"
-                placeholder="<p>Full article content here...</p>"
+                placeholder="<p>Detailed principle content here...</p>"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Display Order</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
               <input
-                type="number"
-                min={0}
-                value={editing.displayOrder ?? 0}
-                onChange={(e) =>
-                  setEditing({ ...editing, displayOrder: parseInt(e.target.value) || 0 })
-                }
+                type="date"
+                value={editing.date ?? today()}
+                onChange={(e) => setEditing({ ...editing, date: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
               />
             </div>
@@ -215,7 +194,7 @@ export default function EducationContentEditor() {
       )}
 
       {loading ? (
-        <div className="text-gray-400 text-sm animate-pulse py-8">Loading items...</div>
+        <div className="text-gray-400 text-sm animate-pulse py-8">Loading principles...</div>
       ) : (
         <div className="space-y-3">
           {items.map((item) => (
@@ -233,10 +212,9 @@ export default function EducationContentEditor() {
               <div className="flex-1 min-w-0">
                 <h4 className="text-sm font-bold text-gray-800 truncate">{item.title}</h4>
                 <p className="text-xs text-gray-400 line-clamp-2 mt-0.5">{item.description}</p>
-                <span className="text-[10px] text-gray-400 mt-1 inline-block">
-                  Order: {item.displayOrder}
-                  {!item.isActive && ' · Hidden'}
-                </span>
+                {!item.isActive && (
+                  <span className="text-[10px] text-amber-600 mt-1 inline-block">Hidden</span>
+                )}
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
@@ -255,9 +233,7 @@ export default function EducationContentEditor() {
             </div>
           ))}
           {items.length === 0 && (
-            <p className="text-sm text-gray-400 py-8 text-center">
-              No items in {EDUCATION_SECTIONS[activeSection].title} yet.
-            </p>
+            <p className="text-sm text-gray-400 py-8 text-center">No principles yet. Add your first one above.</p>
           )}
         </div>
       )}

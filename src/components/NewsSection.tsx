@@ -12,7 +12,7 @@ export interface NewsItem {
 }
 
 const categoryColors: Record<string, string> = {
-  Publication: 'bg-blue-100 text-blue-700',
+  Publication: 'bg-green-100 text-green-700',
   News: 'bg-green-100 text-green-700',
   Event: 'bg-amber-100 text-amber-700',
 };
@@ -52,12 +52,12 @@ function NewsCard({ item }: { item: NewsItem }) {
       </div>
       <div className="p-4">
         <p className="text-xs text-gray-400 mb-1.5">{formatDate(item.date)}</p>
-        <h3 className="text-sm font-semibold text-gray-800 leading-snug group-hover:text-[#00285e] transition-colors line-clamp-3">
+        <h3 className="text-sm font-semibold text-gray-800 leading-snug group-hover:text-[#009900] transition-colors line-clamp-3">
           {item.title}
         </h3>
         <Link
           to={`/news/${item.id}`}
-          className="inline-flex items-center gap-1 text-xs text-[#00285e] font-medium mt-3 hover:text-amber-600 transition-colors"
+          className="inline-flex items-center gap-1 text-xs text-[#009900] font-medium mt-3 hover:text-amber-600 transition-colors"
         >
           Read More <span aria-hidden className="inline-block rtl:rotate-180">→</span>
         </Link>
@@ -91,7 +91,7 @@ export default function NewsSection() {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <div className="w-1 h-7 bg-amber-500 rounded-full" />
-              <h2 className="text-2xl font-bold text-[#00285e]">Latest News</h2>
+              <h2 className="text-2xl font-bold text-[#009900]">Latest News</h2>
             </div>
             <p className="text-gray-500 text-sm ms-4 ps-3">
               Stay updated with the latest investor education news from Arab markets
@@ -99,7 +99,7 @@ export default function NewsSection() {
           </div>
           <a
             href="#"
-            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-[#00285e] hover:text-amber-600 transition-colors border border-[#00285e]/30 hover:border-amber-500 rounded-full px-4 py-1.5"
+            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-[#009900] hover:text-amber-600 transition-colors border border-[#009900]/30 hover:border-amber-500 rounded-full px-4 py-1.5"
           >
             View All News
           </a>
@@ -135,7 +135,7 @@ export default function NewsSection() {
         <div className="mt-6 sm:hidden text-center">
           <a
             href="#"
-            className="inline-block text-sm font-medium text-[#00285e] hover:text-amber-600 transition-colors border border-[#00285e]/30 rounded-full px-6 py-2"
+            className="inline-block text-sm font-medium text-[#009900] hover:text-amber-600 transition-colors border border-[#009900]/30 rounded-full px-6 py-2"
           >
             View All News
           </a>

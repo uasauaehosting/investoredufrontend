@@ -81,7 +81,7 @@ export default function PublicationsEditor() {
       </div>
 
       {editing && (
-        <div className="bg-white rounded-2xl border border-blue-200 p-5 mb-5 grid sm:grid-cols-2 gap-3">
+        <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 grid sm:grid-cols-2 gap-3">
           <input className="border rounded-lg px-3 py-2 text-sm sm:col-span-2" placeholder="Title" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
           <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Authority" value={editing.authority_name ?? ''} onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })} />
           <select className="border rounded-lg px-3 py-2 text-sm" value={editing.category ?? 'General'} onChange={(e) => setEditing({ ...editing, category: e.target.value })}>
@@ -104,7 +104,7 @@ export default function PublicationsEditor() {
               <p className="text-xs text-gray-400">{item.authority_name} · {item.category}</p>
             </div>
             <div className="flex gap-1 shrink-0">
-              <button onClick={() => setEditing(item)} className="p-1.5 text-gray-400 hover:text-blue-600"><Pencil size={14} /></button>
+              <button onClick={() => setEditing(item)} className="p-1.5 text-gray-400 hover:text-[#009900]"><Pencil size={14} /></button>
               <button onClick={() => remove(item.id)} className="p-1.5 text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
             </div>
           </div>

@@ -5,7 +5,7 @@ export default function FinancialInclusion() {
   return (
     <div className="bg-white min-h-screen pb-20">
       <div className="bg-slate-900 text-white py-24 px-4 overflow-hidden relative">
-        <div className="absolute top-0 end-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl -me-64 -mt-64" />
+        <div className="absolute top-0 end-0 w-[500px] h-[500px] bg-[#009900]/10 rounded-full blur-3xl -me-64 -mt-64" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="max-w-3xl">
             <h1 className="text-4xl sm:text-6xl font-bold mb-8 leading-tight">
@@ -41,12 +41,12 @@ export default function FinancialInclusion() {
             }
           ].map((item, i) => (
             <div key={i} className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 group">
-              <div className="w-14 h-14 bg-blue-50 text-[#00285e] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#00285e] group-hover:text-white transition-all duration-300">
+              <div className="w-14 h-14 bg-green-50 text-[#009900] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#009900] group-hover:text-white transition-all duration-300">
                 <item.icon size={28} />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-4">{item.title}</h3>
               <p className="text-slate-500 text-sm leading-relaxed mb-8">{item.desc}</p>
-              <Link to={item.link} className="flex items-center gap-2 text-sm font-bold text-[#00285e] hover:text-amber-600 transition-colors">
+              <Link to={item.link} className="flex items-center gap-2 text-sm font-bold text-[#009900] hover:text-amber-600 transition-colors">
                 View Details <ArrowRight size={16} />
               </Link>
             </div>
@@ -74,14 +74,14 @@ export default function FinancialInclusion() {
                 "Regional benchmarking and data-driven policy making"
               ].map((text, i) => (
                 <div key={i} className="flex gap-4">
-                  <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center text-green-600 shrink-0">
                     <CheckCircle2 size={16} />
                   </div>
                   <p className="text-slate-600 font-medium">{text}</p>
                 </div>
               ))}
             </div>
-            <button className="mt-10 bg-[#00285e] text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-[#001a45] transition-all">
+            <button className="mt-10 bg-[#009900] text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-[#006600] transition-all">
               Download Regional Report
             </button>
           </div>

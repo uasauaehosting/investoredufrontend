@@ -9,9 +9,9 @@ export default function TheIndex() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="bg-gradient-to-br from-[#00285e] to-[#003580] text-white py-16 px-4">
+      <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#00285e] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">Financial Inclusion Index</span>
+          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">Financial Inclusion Index</span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">The Index</h1>
           <div className="h-1.5 w-24 bg-amber-400 mt-8 rounded-full" />
         </div>

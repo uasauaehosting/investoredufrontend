@@ -23,7 +23,7 @@ function PortalCardItem({ card }: { card: PortalCard }) {
   return (
     <Link
       to={card.href}
-      className="group flex flex-col bg-white border border-[#e0e0e0] hover:border-[#008000]/40 transition-colors"
+      className="group flex flex-col bg-white border border-[#e0e0e0] hover:border-[#009900]/40 transition-colors"
     >
       <div className="aspect-[4/3] overflow-hidden bg-gray-100">
         <img
@@ -35,7 +35,7 @@ function PortalCardItem({ card }: { card: PortalCard }) {
           }
         />
       </div>
-      <p className="py-4 px-3 text-center text-sm font-bold uppercase tracking-wide text-[#008000]">
+      <p className="py-4 px-3 text-center text-sm font-bold uppercase tracking-wide text-[#009900]">
         {card.title}
       </p>
     </Link>

@@ -88,7 +88,7 @@ export default function GlossaryEditor() {
       </div>
 
       {editing && (
-        <div className="bg-white rounded-2xl border border-blue-200 p-5 mb-5 space-y-3">
+        <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 space-y-3">
           <input className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="English term" value={editing.term ?? ''} onChange={(e) => setEditing({ ...editing, term: e.target.value })} />
           <input className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="French term" value={editing.frenchTerm ?? ''} onChange={(e) => setEditing({ ...editing, frenchTerm: e.target.value })} />
           <input className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Arabic term" value={editing.arabicTerm ?? ''} onChange={(e) => setEditing({ ...editing, arabicTerm: e.target.value })} />
@@ -108,7 +108,7 @@ export default function GlossaryEditor() {
               <p className="text-xs text-gray-500 line-clamp-1">{t.definition}</p>
             </div>
             <div className="flex gap-1 shrink-0">
-              <button onClick={() => setEditing(t)} className="p-1.5 text-gray-400 hover:text-blue-600"><Pencil size={14} /></button>
+              <button onClick={() => setEditing(t)} className="p-1.5 text-gray-400 hover:text-[#009900]"><Pencil size={14} /></button>
               <button onClick={() => remove(t.id)} className="p-1.5 text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
             </div>
           </div>

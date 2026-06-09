@@ -7,7 +7,7 @@ import { getInvestmentProduct, InvestmentProductBlock } from '../lib/investmentP
 function ContentBlock({ block }: { block: InvestmentProductBlock }) {
   return (
     <div className="space-y-4">
-      {block.heading && <h3 className="text-xl sm:text-2xl font-bold text-[#00285e]">{block.heading}</h3>}
+      {block.heading && <h3 className="text-xl sm:text-2xl font-bold text-[#009900]">{block.heading}</h3>}
       {block.paragraphs?.map((paragraph, index) => (
         <p key={index} className="text-gray-600 leading-relaxed">{paragraph}</p>
       ))}
@@ -15,7 +15,7 @@ function ContentBlock({ block }: { block: InvestmentProductBlock }) {
         <div className="space-y-4">
           {block.subItems.map((item, index) => (
             <div key={index} className="p-5 rounded-2xl bg-gray-50 border border-gray-100">
-              <h4 className="font-bold text-[#00285e] mb-2">{item.title}</h4>
+              <h4 className="font-bold text-[#009900] mb-2">{item.title}</h4>
               <p className="text-gray-600 leading-relaxed">{item.text}</p>
             </div>
           ))}
@@ -28,7 +28,7 @@ function ContentBlock({ block }: { block: InvestmentProductBlock }) {
       )}
       {block.source && <p className="text-sm text-gray-500 italic pt-2">{block.source}</p>}
       {block.externalLink && (
-        <a href={block.externalLink.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[#00285e] font-semibold hover:text-amber-600 transition-colors">
+        <a href={block.externalLink.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[#009900] font-semibold hover:text-amber-600 transition-colors">
           Read more: {block.externalLink.label} <ExternalLink size={16} />
         </a>
       )}
@@ -88,12 +88,12 @@ export default function InvestmentProductDetail() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="bg-gradient-to-br from-[#00285e] to-[#003580] text-white py-16 px-4">
+      <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <Link to="/education/reading-materials/products" className="inline-flex items-center gap-2 text-blue-200 hover:text-white text-sm mb-6 transition-colors">
+          <Link to="/education/reading-materials/products" className="inline-flex items-center gap-2 text-green-200 hover:text-white text-sm mb-6 transition-colors">
             <ArrowLeft size={16} /> Back to Investment Products/ Literature
           </Link>
-          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#00285e] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">Investment Products/ Literature</span>
+          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">Investment Products/ Literature</span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">{product.title}</h1>
           <div className="h-1.5 w-24 bg-amber-400 mt-8 rounded-full" />
         </div>

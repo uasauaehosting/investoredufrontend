@@ -68,7 +68,7 @@ export default function AboutEditor() {
       </div>
 
       {editing && (
-        <div className="bg-white rounded-2xl border border-blue-200 p-5 mb-5 space-y-4">
+        <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 space-y-4">
           <input className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Title" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
           <textarea className="w-full border rounded-lg px-3 py-2 text-sm min-h-[120px]" placeholder="Content paragraph" value={editing.content ?? ''} onChange={(e) => setEditing({ ...editing, content: e.target.value })} />
           <div className="flex gap-2">
@@ -86,7 +86,7 @@ export default function AboutEditor() {
               <p className="text-xs text-gray-500 mt-1 line-clamp-2">{s.content}</p>
             </div>
             <div className="flex gap-1 shrink-0">
-              <button onClick={() => setEditing(s)} className="p-2 text-gray-400 hover:text-blue-600"><Pencil size={15} /></button>
+              <button onClick={() => setEditing(s)} className="p-2 text-gray-400 hover:text-[#009900]"><Pencil size={15} /></button>
               <button onClick={() => remove(s.id)} className="p-2 text-gray-400 hover:text-red-500"><Trash2 size={15} /></button>
             </div>
           </div>

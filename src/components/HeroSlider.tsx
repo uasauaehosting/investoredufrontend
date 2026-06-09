@@ -56,7 +56,7 @@ export default function HeroSlider() {
   if (loading) {
     return (
       <div
-        className="w-full bg-[#00285e] animate-pulse flex items-center justify-center"
+        className="w-full bg-[#009900] animate-pulse flex items-center justify-center"
         style={{ height: 'clamp(280px, 50vw, 520px)' }}
       >
         <div className="w-12 h-12 border-4 border-white/20 border-t-amber-400 rounded-full animate-spin" />
@@ -80,7 +80,7 @@ export default function HeroSlider() {
             alt={slide.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r rtl:bg-gradient-to-l from-[#00285e]/85 via-[#00285e]/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r rtl:bg-gradient-to-l from-[#009900]/85 via-[#009900]/40 to-transparent" />
 
           <div className="absolute inset-0 flex items-center">
             <div className="max-w-7xl mx-auto px-6 sm:px-10 w-full">
@@ -94,7 +94,7 @@ export default function HeroSlider() {
                   {slide.title}
                 </h2>
                 {slide.subtitle && (
-                  <p className="text-blue-100 text-sm sm:text-base mb-6 leading-relaxed drop-shadow">
+                  <p className="text-green-100 text-sm sm:text-base mb-6 leading-relaxed drop-shadow">
                     {slide.subtitle}
                   </p>
                 )}

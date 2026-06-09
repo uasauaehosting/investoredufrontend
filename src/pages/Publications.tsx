@@ -89,7 +89,7 @@ export default function Publications() {
           <form onSubmit={handleSubmit}>
             <div className="space-y-6">
               <div>
-                <label htmlFor="authority" className="block text-sm font-bold text-[#00285e] mb-2">
+                <label htmlFor="authority" className="block text-sm font-bold text-[#009900] mb-2">
                   Authority
                 </label>
                 <select
@@ -97,7 +97,7 @@ export default function Publications() {
                   name="authority"
                   multiple
                   size={4}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#00285e] focus:outline-none focus:ring-2 focus:ring-[#00285e]/20"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                   style={{ height: '90px' }}
                 >
                   <option value="All">All</option>
@@ -113,7 +113,7 @@ export default function Publications() {
               </div>
 
               <div>
-                <label htmlFor="category" className="block text-sm font-bold text-[#00285e] mb-2">
+                <label htmlFor="category" className="block text-sm font-bold text-[#009900] mb-2">
                   Category
                 </label>
                 <select
@@ -121,7 +121,7 @@ export default function Publications() {
                   name="category"
                   multiple
                   size={4}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#00285e] focus:outline-none focus:ring-2 focus:ring-[#00285e]/20"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                   style={{ height: '100px' }}
                 >
                   <option value="All">All</option>
@@ -141,7 +141,7 @@ export default function Publications() {
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex items-center justify-center rounded-lg bg-[#00285e] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#003580] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center rounded-lg bg-[#009900] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#006600] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? 'Loading...' : 'Submit'}
               </button>
@@ -152,7 +152,7 @@ export default function Publications() {
           {submitted && !loading && !error && (
             <div className="mt-10 border-t border-gray-100 pt-8">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-                <h3 className="text-lg font-bold text-[#00285e]">Results</h3>
+                <h3 className="text-lg font-bold text-[#009900]">Results</h3>
                 <p className="text-sm text-gray-500">
                   {publications.length} publication{publications.length === 1 ? '' : 's'} found
                   {(selectedAuthorities.length > 0 || selectedCategories.length > 0) && (
@@ -171,14 +171,14 @@ export default function Publications() {
                   {publications.map((publication) => (
                     <article
                       key={publication.id}
-                      className="rounded-xl border border-gray-100 bg-gray-50 p-5 hover:border-[#00285e]/20 transition-colors"
+                      className="rounded-xl border border-gray-100 bg-gray-50 p-5 hover:border-[#009900]/20 transition-colors"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                         <div className="min-w-0 flex-1">
                           <div className="flex items-start gap-3">
-                            <FileText size={18} className="text-[#00285e] mt-1 flex-shrink-0" />
+                            <FileText size={18} className="text-[#009900] mt-1 flex-shrink-0" />
                             <div>
-                              <h4 className="font-semibold text-[#00285e] leading-snug">
+                              <h4 className="font-semibold text-[#009900] leading-snug">
                                 {publication.title}
                               </h4>
                               {publication.description && (
@@ -187,7 +187,7 @@ export default function Publications() {
                                 </p>
                               )}
                               <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                                <span className="rounded-full bg-blue-100 px-2.5 py-1 font-medium text-blue-700">
+                                <span className="rounded-full bg-green-100 px-2.5 py-1 font-medium text-green-700">
                                   {publication.category}
                                 </span>
                                 <span className="rounded-full bg-gray-200 px-2.5 py-1 font-medium text-gray-700">
@@ -207,7 +207,7 @@ export default function Publications() {
                             href={publication.file_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 self-start rounded-lg border border-[#00285e]/20 px-4 py-2 text-sm font-semibold text-[#00285e] hover:bg-[#00285e] hover:text-white transition-colors"
+                            className="inline-flex items-center gap-2 self-start rounded-lg border border-[#009900]/20 px-4 py-2 text-sm font-semibold text-[#009900] hover:bg-[#009900] hover:text-white transition-colors"
                           >
                             View
                             <ExternalLink size={14} />

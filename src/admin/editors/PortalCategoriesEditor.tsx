@@ -88,38 +88,38 @@ export default function PortalCategoriesEditor() {
       </div>
 
       {editing && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6 space-y-4">
-          <h3 className="font-semibold text-[#00285e] text-sm">{editing.id ? 'Edit Category' : 'New Category'}</h3>
+        <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
+          <h3 className="font-semibold text-[#009900] text-sm">{editing.id ? 'Edit Category' : 'New Category'}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-gray-500 mb-1">Title *</label>
               <input type="text" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00285e]/20 focus:border-[#00285e]" />
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
             </div>
             <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
               <textarea rows={3} value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00285e]/20 focus:border-[#00285e] resize-none" />
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Authority Name</label>
               <input type="text" value={editing.authority_name ?? ''} onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00285e]/20 focus:border-[#00285e]" />
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Country</label>
               <input type="text" value={editing.country ?? ''} onChange={(e) => setEditing({ ...editing, country: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00285e]/20 focus:border-[#00285e]" />
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Image URL</label>
               <input type="text" value={editing.image_url ?? ''} onChange={(e) => setEditing({ ...editing, image_url: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00285e]/20 focus:border-[#00285e]" />
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Link URL</label>
               <input type="text" value={editing.link ?? ''} onChange={(e) => setEditing({ ...editing, link: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00285e]/20 focus:border-[#00285e]" />
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
             </div>
           </div>
           {error && <p className="text-red-600 text-xs">{error}</p>}
@@ -134,7 +134,7 @@ export default function PortalCategoriesEditor() {
 
       <div className="space-y-3">
         {cats.map((c) => (
-          <div key={c.id} className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-blue-300 transition-colors">
+          <div key={c.id} className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-green-300 transition-colors">
             {c.image_url && (
               <img src={c.image_url} alt="" className="w-20 h-14 object-cover rounded-lg flex-shrink-0" />
             )}
@@ -146,7 +146,7 @@ export default function PortalCategoriesEditor() {
               </div>
             </div>
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button onClick={() => openEdit(c)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+              <button onClick={() => openEdit(c)} className="p-1.5 text-gray-400 hover:text-[#009900] hover:bg-green-50 rounded-lg transition-colors">
                 <Pencil size={14} />
               </button>
               <button onClick={() => remove(c.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">

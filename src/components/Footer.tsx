@@ -28,13 +28,13 @@ export default function Footer() {
   const { data: footer } = useSiteContent('footer', FALLBACK_FOOTER);
 
   return (
-    <footer className="bg-[#00285e] text-white">
-      <div className="bg-[#001a45] py-6 px-4">
+    <footer className="bg-[#009900] text-white">
+      <div className="bg-[#006600] py-6 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {stats.map((stat) => (
             <div key={stat.label}>
               <div className="text-2xl font-bold text-amber-400">{stat.value}</div>
-              <div className="text-xs text-blue-200 mt-0.5">{stat.label}</div>
+              <div className="text-xs text-green-200 mt-0.5">{stat.label}</div>
             </div>
           ))}
         </div>
@@ -47,7 +47,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {footer.educationLinks.map((link: string) => (
                 <li key={link}>
-                  <a href="#" className="text-blue-200 text-sm hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                  <a href="#" className="text-green-200 text-sm hover:text-amber-400 transition-colors flex items-center gap-1.5">
                     <span className="w-1 h-1 bg-amber-400/60 rounded-full" />{link}
                   </a>
                 </li>
@@ -60,7 +60,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {footer.inclusionLinks.map((link: string) => (
                 <li key={link}>
-                  <a href="#" className="text-blue-200 text-sm hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                  <a href="#" className="text-green-200 text-sm hover:text-amber-400 transition-colors flex items-center gap-1.5">
                     <span className="w-1 h-1 bg-amber-400/60 rounded-full" />{link}
                   </a>
                 </li>
@@ -73,7 +73,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {footer.usefulLinks.map((link: { label: string; href: string }) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-blue-200 text-sm hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
+                  <a href={link.href} className="text-green-200 text-sm hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
                     <ExternalLink size={10} className="text-amber-400/60 flex-shrink-0" />{link.label}
                   </a>
                 </li>
@@ -84,15 +84,15 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-amber-400 uppercase tracking-wider text-xs mb-4 pb-2 border-b border-white/10">Address</h4>
             <ul className="space-y-3 mb-6">
-              <li className="flex items-start gap-2.5 text-sm text-blue-200">
+              <li className="flex items-start gap-2.5 text-sm text-green-200">
                 <MapPin size={14} className="text-amber-400 mt-0.5 flex-shrink-0" />
                 <span>{footer.address}</span>
               </li>
-              <li className="flex items-center gap-2.5 text-sm text-blue-200">
+              <li className="flex items-center gap-2.5 text-sm text-green-200">
                 <Phone size={14} className="text-amber-400 flex-shrink-0" />
                 <span>{footer.phone}</span>
               </li>
-              <li className="flex items-center gap-2.5 text-sm text-blue-200">
+              <li className="flex items-center gap-2.5 text-sm text-green-200">
                 <Mail size={14} className="text-amber-400 flex-shrink-0" />
                 <span>{footer.email}</span>
               </li>
@@ -116,7 +116,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-white/10 py-4 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-blue-300">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-green-300">
           <p>&copy; {new Date().getFullYear()} Union of Arab Securities Authorities. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <a href="#" className="hover:text-amber-400 transition-colors">Privacy Policy</a>

@@ -44,7 +44,7 @@ export default function EducationItemDetail() {
     return (
       <div className="py-24 text-center">
         <p className="text-gray-500 mb-4">Content not found.</p>
-        <Link to={meta.listPath} className="text-[#00285e] hover:text-amber-600 font-medium">
+        <Link to={meta.listPath} className="text-[#009900] hover:text-amber-600 font-medium">
           Back to {meta.title}
         </Link>
       </div>
@@ -56,7 +56,7 @@ export default function EducationItemDetail() {
       <div className="max-w-4xl mx-auto px-4">
         <Link
           to={meta.listPath}
-          className="inline-flex items-center gap-2 text-[#00285e] hover:text-amber-600 mb-8 transition-colors"
+          className="inline-flex items-center gap-2 text-[#009900] hover:text-amber-600 mb-8 transition-colors"
         >
           <ArrowLeft size={16} />
           Back to {meta.title}
@@ -70,7 +70,7 @@ export default function EducationItemDetail() {
             onError={() => setImgSrc(FALLBACK_IMAGE)}
           />
           <div className="p-8 sm:p-12">
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#00285e] mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#009900] mb-6 leading-tight">
               {item.title}
             </h1>
             <p className="text-gray-600 text-lg leading-relaxed mb-8 border-b border-gray-100 pb-8">

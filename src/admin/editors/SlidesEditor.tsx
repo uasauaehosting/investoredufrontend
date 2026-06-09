@@ -100,8 +100,8 @@ export default function SlidesEditor() {
       </div>
 
       {editing && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6 space-y-4">
-          <h3 className="font-semibold text-[#00285e] text-sm">{editing.id ? 'Edit Slide' : 'New Slide'}</h3>
+        <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
+          <h3 className="font-semibold text-[#009900] text-sm">{editing.id ? 'Edit Slide' : 'New Slide'}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
               <ImageUpload 
@@ -132,7 +132,7 @@ export default function SlidesEditor() {
 
       <div className="space-y-2">
         {slides.map((s) => (
-          <div key={s.id} className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 group hover:border-blue-300 transition-colors">
+          <div key={s.id} className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 group hover:border-green-300 transition-colors">
             <GripVertical size={16} className="text-gray-300 flex-shrink-0" />
             {s.image_url && (
               <img src={s.image_url} alt="" className="w-14 h-10 object-cover rounded-lg flex-shrink-0" onError={(e) => (e.currentTarget.style.display = 'none')} />
@@ -164,7 +164,7 @@ function Field({ label, value, onChange, type = 'text' }: { label: string; value
     <div>
       <label className="block text-xs font-medium text-gray-500 mb-1">{label}</label>
       <input type={type} value={value} onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00285e]/20 focus:border-[#00285e]" />
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
     </div>
   );
 }

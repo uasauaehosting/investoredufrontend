@@ -31,13 +31,13 @@ export default function WelcomeSection() {
               <div className="w-8 h-0.5 bg-amber-500 rounded" />
               <span className="text-amber-600 text-sm font-semibold uppercase tracking-wider">{data.badge}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#00285e] leading-tight mb-5">{data.title}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#009900] leading-tight mb-5">{data.title}</h1>
             {data.paragraphs.map((p, i) => (
               <p key={i} className="text-gray-600 leading-relaxed mb-4 text-sm sm:text-base">{p}</p>
             ))}
             <a
               href={data.ctaHref}
-              className="inline-block bg-[#00285e] hover:bg-[#001a45] text-white text-sm font-semibold px-6 py-3 rounded-lg transition-colors shadow-md hover:shadow-lg"
+              className="inline-block bg-[#009900] hover:bg-[#006600] text-white text-sm font-semibold px-6 py-3 rounded-lg transition-colors shadow-md hover:shadow-lg"
             >
               {data.ctaText}
             </a>
@@ -49,13 +49,13 @@ export default function WelcomeSection() {
               return (
                 <div
                   key={item.title}
-                  className="flex items-start gap-4 p-4 rounded-xl bg-[#f4f7fb] hover:bg-blue-50 transition-colors group border border-transparent hover:border-blue-200"
+                  className="flex items-start gap-4 p-4 rounded-xl bg-green-50 hover:bg-green-50 transition-colors group border border-transparent hover:border-green-200"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-[#00285e] text-white flex items-center justify-center flex-shrink-0 group-hover:bg-amber-500 transition-colors shadow-sm">
+                  <div className="w-10 h-10 rounded-lg bg-[#009900] text-white flex items-center justify-center flex-shrink-0 group-hover:bg-amber-500 transition-colors shadow-sm">
                     <Icon size={18} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[#00285e] text-sm mb-1">{item.title}</h3>
+                    <h3 className="font-semibold text-[#009900] text-sm mb-1">{item.title}</h3>
                     <p className="text-gray-500 text-sm leading-relaxed">{item.description}</p>
                   </div>
                 </div>

@@ -58,7 +58,7 @@ function ProgramResultSection({ title, items }: { title: string; items: string[]
 
   return (
     <div>
-      <h5 className="text-sm font-bold text-[#00285e] mb-2">{title}</h5>
+      <h5 className="text-sm font-bold text-[#009900] mb-2">{title}</h5>
       <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
         {items.map((item) => (
           <li key={item}>{item}</li>
@@ -148,7 +148,7 @@ export default function Programs() {
                   id="member"
                   name="member"
                   defaultValue="Select Member"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-700 focus:border-[#00285e] focus:outline-none focus:ring-2 focus:ring-[#00285e]/20"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                 >
                   <option value="Select Member">Select Member</option>
                   {PROGRAM_MEMBERS.map((member) => (
@@ -161,7 +161,7 @@ export default function Programs() {
 
               {PROGRAM_FILTER_GROUPS.map((group) => (
                 <div key={group.name}>
-                  <label htmlFor={group.name} className="block text-sm font-bold text-[#00285e] mb-2">
+                  <label htmlFor={group.name} className="block text-sm font-bold text-[#009900] mb-2">
                     {group.title}
                   </label>
                   <select
@@ -170,7 +170,7 @@ export default function Programs() {
                     multiple
                     size={4}
                     title={group.title}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#00285e] focus:outline-none focus:ring-2 focus:ring-[#00285e]/20"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                     style={{ height: group.options.length > 4 ? '120px' : '100px' }}
                   >
                     {group.options.map((option) => (
@@ -187,7 +187,7 @@ export default function Programs() {
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex items-center justify-center rounded-lg bg-[#00285e] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#003580] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center rounded-lg bg-[#009900] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#006600] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? 'Loading...' : 'Submit'}
               </button>
@@ -199,7 +199,7 @@ export default function Programs() {
           {submitted && !loading && !error && (
             <div className="mt-10 border-t border-gray-100 pt-8">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-                <h3 className="text-lg font-bold text-[#00285e]">Results</h3>
+                <h3 className="text-lg font-bold text-[#009900]">Results</h3>
                 <p className="text-sm text-gray-500">
                   {results.length} program{results.length === 1 ? '' : 's'} found
                   {selectedMember && selectedMember !== 'Select Member' && (
@@ -217,7 +217,7 @@ export default function Programs() {
                       key={program.id}
                       className="rounded-xl border border-gray-100 bg-gray-50 p-5 sm:p-6"
                     >
-                      <h4 className="text-lg font-bold text-[#00285e] mb-4">{program.member_name}</h4>
+                      <h4 className="text-lg font-bold text-[#009900] mb-4">{program.member_name}</h4>
                       <div className="grid gap-5 sm:grid-cols-2">
                         <ProgramResultSection title="General Information" items={program.general_info} />
                         <ProgramResultSection

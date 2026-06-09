@@ -23,9 +23,9 @@ export default function MembersBenchmarking() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="bg-gradient-to-br from-[#00285e] to-[#003580] text-white py-16 px-4">
+      <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#00285e] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">
+          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">
             Financial Inclusion Index
           </span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
@@ -42,7 +42,7 @@ export default function MembersBenchmarking() {
           </div>
 
           <div className="w-full mb-8">
-            <label htmlFor="benchmarking-years" className="block text-sm font-semibold text-[#00285e] mb-2">
+            <label htmlFor="benchmarking-years" className="block text-sm font-semibold text-[#009900] mb-2">
               Year
             </label>
             <select
@@ -60,7 +60,7 @@ export default function MembersBenchmarking() {
                 }
                 setSelectedYears(options);
               }}
-              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#00285e]/20"
+              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
             >
               {BENCHMARKING_YEARS.map((year) => (
                 <option key={year} value={year}>
@@ -76,7 +76,7 @@ export default function MembersBenchmarking() {
           <div className="overflow-x-auto rounded-2xl border border-gray-100">
             <table className="w-full min-w-[700px] text-sm">
               <thead>
-                <tr className="bg-[#00285e] text-white">
+                <tr className="bg-[#009900] text-white">
                   <th colSpan={2} className="px-4 py-3 text-start font-semibold align-middle">
                     Authority
                   </th>
@@ -86,7 +86,7 @@ export default function MembersBenchmarking() {
                       onChange={(e) =>
                         setSelectedAuthority(e.target.value as BenchmarkingAuthority)
                       }
-                      className="w-full max-w-md rounded-lg border border-white/20 bg-white text-[#00285e] px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+                      className="w-full max-w-md rounded-lg border border-white/20 bg-white text-[#009900] px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-400/50"
                     >
                       {BENCHMARKING_AUTHORITIES.map((authority) => (
                         <option key={authority} value={authority}>
@@ -97,7 +97,7 @@ export default function MembersBenchmarking() {
                   </th>
                 </tr>
                 {filteredRecords.length > 0 && (
-                  <tr className="bg-blue-50 text-[#00285e]">
+                  <tr className="bg-green-50 text-[#009900]">
                     <th className="px-4 py-3 text-start font-semibold">Authority</th>
                     <th className="px-4 py-3 text-start font-semibold">Year</th>
                     <th className="px-4 py-3 text-start font-semibold">Title</th>
@@ -127,7 +127,7 @@ export default function MembersBenchmarking() {
                             href={record.fileUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[#00285e] font-semibold hover:text-amber-600 transition-colors"
+                            className="text-[#009900] font-semibold hover:text-amber-600 transition-colors"
                           >
                             View
                           </a>

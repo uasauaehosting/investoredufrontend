@@ -31,10 +31,10 @@ export default function About() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="bg-gradient-to-br from-[#00285e] to-[#003580] text-white py-24 px-4">
+      <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-4xl">
-            <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#00285e] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">
+            <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">
               {hero.badge}
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">{hero.title}</h1>

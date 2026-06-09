@@ -89,9 +89,9 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 shadow-lg">
       {/* Top utility bar */}
-      <div className="bg-[#00285e] text-white py-2 px-4">
+      <div className="bg-[#009900] text-white py-2 px-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center text-xs">
-          <span className="hidden sm:block font-light tracking-wide text-blue-200">
+          <span className="hidden sm:block font-light tracking-wide text-green-200">
             Union of Arab Securities Authorities — Investor Education Portal
           </span>
           <div className="flex items-center gap-4 ms-auto">
@@ -103,16 +103,16 @@ export default function Header() {
               <span>{lang === 'en' ? 'العربية' : 'English'}</span>
             </button>
             <div className="flex items-center gap-2.5">
-              <a href="#" aria-label="Facebook" className="text-blue-200 hover:text-amber-400 transition-colors">
+              <a href="#" aria-label="Facebook" className="text-green-200 hover:text-amber-400 transition-colors">
                 <Facebook size={13} />
               </a>
-              <a href="#" aria-label="Twitter" className="text-blue-200 hover:text-amber-400 transition-colors">
+              <a href="#" aria-label="Twitter" className="text-green-200 hover:text-amber-400 transition-colors">
                 <Twitter size={13} />
               </a>
-              <a href="#" aria-label="LinkedIn" className="text-blue-200 hover:text-amber-400 transition-colors">
+              <a href="#" aria-label="LinkedIn" className="text-green-200 hover:text-amber-400 transition-colors">
                 <Linkedin size={13} />
               </a>
-              <a href="#" aria-label="YouTube" className="text-blue-200 hover:text-amber-400 transition-colors">
+              <a href="#" aria-label="YouTube" className="text-green-200 hover:text-amber-400 transition-colors">
                 <Youtube size={13} />
               </a>
             </div>
@@ -123,27 +123,24 @@ export default function Header() {
       {/* Logo & search bar */}
       <div className="bg-white py-3 px-4 border-b border-gray-200">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-4">
+          <Link to="/" className="flex items-center gap-4">
             <img
-              src="https://investoreducation.uasa.ae/img/logo.png"
+              src="/img/logo.png"
               alt="UASA Investor Education Portal"
               className="h-14 sm:h-16 object-contain"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none';
-              }}
             />
             <div className="hidden lg:block h-12 w-px bg-gray-200" />
             <div className="hidden lg:block">
-              <p className="text-[#00285e] font-bold text-sm leading-tight">UASA</p>
+              <p className="text-[#009900] font-bold text-sm leading-tight">UASA</p>
               <p className="text-gray-500 text-xs leading-tight">Investor Education Portal</p>
             </div>
-          </div>
+          </Link>
           <div className="flex items-center gap-3">
             <div className="relative hidden sm:block">
               <input
                 type="text"
                 placeholder="Search..."
-                className="border border-gray-300 rounded-full px-4 py-2 text-sm pe-9 focus:outline-none focus:ring-2 focus:ring-[#00285e]/30 focus:border-[#00285e] w-48 lg:w-64"
+                className="border border-gray-300 rounded-full px-4 py-2 text-sm pe-9 focus:outline-none focus:ring-2 focus:ring-[#009900]/30 focus:border-[#009900] w-48 lg:w-64"
               />
               <Search size={14} className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400" />
             </div>
@@ -152,7 +149,7 @@ export default function Header() {
       </div>
 
       {/* Desktop navigation */}
-      <nav className="bg-[#00285e] text-white relative">
+      <nav className="bg-[#009900] text-white relative">
         <div className="max-w-7xl mx-auto px-4">
           <div className="hidden md:flex items-center">
             {navItems.map((item) => (
@@ -165,10 +162,10 @@ export default function Header() {
                 {item.children ? (
                   <button
                     type="button"
-                    className={`flex items-center gap-1 px-3.5 py-3.5 text-sm font-medium hover:bg-[#001a45] transition-colors whitespace-nowrap border-b-2 ${
-                      isActive(getActivePath(item)) ? 'border-amber-400 bg-[#001a45]' : 'border-transparent'
+                    className={`flex items-center gap-1 px-3.5 py-3.5 text-sm font-medium hover:bg-[#006600] transition-colors whitespace-nowrap border-b-2 ${
+                      isActive(getActivePath(item)) ? 'border-amber-400 bg-[#006600]' : 'border-transparent'
                     } ${
-                      openDropdown === item.label ? 'bg-[#001a45] border-amber-400' : ''
+                      openDropdown === item.label ? 'bg-[#006600] border-amber-400' : ''
                     }`}
                   >
                     {item.label}
@@ -177,8 +174,8 @@ export default function Header() {
                 ) : (
                   <Link
                     to={item.href!}
-                    className={`flex items-center gap-1 px-3.5 py-3.5 text-sm font-medium hover:bg-[#001a45] transition-colors whitespace-nowrap border-b-2 ${
-                      isActive(getActivePath(item)) ? 'border-amber-400 bg-[#001a45]' : 'border-transparent'
+                    className={`flex items-center gap-1 px-3.5 py-3.5 text-sm font-medium hover:bg-[#006600] transition-colors whitespace-nowrap border-b-2 ${
+                      isActive(getActivePath(item)) ? 'border-amber-400 bg-[#006600]' : 'border-transparent'
                     }`}
                   >
                     {item.label}
@@ -195,7 +192,7 @@ export default function Header() {
                           <div key={child.label} className="min-w-44 py-3">
                             <Link
                               to={child.href}
-                              className="block px-5 py-2 text-xs font-bold text-[#00285e] uppercase tracking-wider hover:text-amber-600 transition-colors"
+                              className="block px-5 py-2 text-xs font-bold text-[#009900] uppercase tracking-wider hover:text-amber-600 transition-colors"
                             >
                               {child.label}
                             </Link>
@@ -205,7 +202,7 @@ export default function Header() {
                                   <li key={sub.label}>
                                     <Link
                                       to={sub.href}
-                                      className="flex items-center gap-2 px-5 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-[#00285e] transition-colors"
+                                      className="flex items-center gap-2 px-5 py-2 text-sm text-gray-600 hover:bg-green-50 hover:text-[#009900] transition-colors"
                                     >
                                       <span className="w-1 h-1 rounded-full bg-amber-400 flex-shrink-0" />
                                       {sub.label}
@@ -224,7 +221,7 @@ export default function Header() {
                           <li key={child.label}>
                             <Link
                               to={child.href}
-                              className={`block px-5 py-2.5 text-sm hover:bg-blue-50 hover:text-[#00285e] transition-colors ${
+                              className={`block px-5 py-2.5 text-sm hover:bg-green-50 hover:text-[#009900] transition-colors ${
                                 i < item.children!.length - 1 ? 'border-b border-gray-100' : ''
                               }`}
                             >
@@ -245,7 +242,7 @@ export default function Header() {
             <span className="text-sm font-semibold tracking-wide">Navigation</span>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-1 rounded hover:bg-[#001a45] transition-colors"
+              className="p-1 rounded hover:bg-[#006600] transition-colors"
             >
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -254,9 +251,9 @@ export default function Header() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div className="md:hidden bg-[#001a45] border-t border-blue-700/40">
+          <div className="md:hidden bg-[#006600] border-t border-green-700/40">
             {navItems.map((item) => (
-              <div key={item.label} className="border-b border-blue-800/30">
+              <div key={item.label} className="border-b border-green-800/30">
                 {item.children ? (
                   <>
                     <button
@@ -270,14 +267,14 @@ export default function Header() {
                       />
                     </button>
                     {mobileExpanded[item.label] && (
-                      <div className="bg-[#00285e]/60 pb-1">
+                      <div className="bg-[#009900]/60 pb-1">
                         {item.children.map((child) => (
                           <div key={child.label}>
                             {child.children ? (
                               <>
                                 <button
                                   onClick={() => toggleMobileExpand(`${item.label}:${child.label}`)}
-                                  className="w-full flex items-center justify-between ps-8 pe-4 py-2.5 text-sm text-blue-200 hover:text-amber-400 transition-colors"
+                                  className="w-full flex items-center justify-between ps-8 pe-4 py-2.5 text-sm text-green-200 hover:text-amber-400 transition-colors"
                                 >
                                   <span>{child.label}</span>
                                   <ChevronDown
@@ -293,7 +290,7 @@ export default function Header() {
                                       <a
                                         key={sub.label}
                                         href={sub.href}
-                                        className="flex items-center gap-2 ps-12 pe-4 py-2 text-xs text-blue-300 hover:text-amber-400 transition-colors"
+                                        className="flex items-center gap-2 ps-12 pe-4 py-2 text-xs text-green-300 hover:text-amber-400 transition-colors"
                                         onClick={() => setMobileOpen(false)}
                                       >
                                         <span className="w-1 h-1 rounded-full bg-amber-400/60 flex-shrink-0" />
@@ -306,7 +303,7 @@ export default function Header() {
                             ) : (
                               <a
                                 href={child.href}
-                                className="block ps-8 pe-4 py-2.5 text-sm text-blue-200 hover:text-amber-400 transition-colors"
+                                className="block ps-8 pe-4 py-2.5 text-sm text-green-200 hover:text-amber-400 transition-colors"
                                 onClick={() => setMobileOpen(false)}
                               >
                                 {child.label}

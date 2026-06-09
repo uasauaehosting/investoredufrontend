@@ -85,8 +85,8 @@ export default function MembersEditor() {
       </div>
 
       {editing && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6 space-y-4">
-          <h3 className="font-semibold text-[#00285e] text-sm">{editing.id ? 'Edit Member' : 'New Member'}</h3>
+        <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
+          <h3 className="font-semibold text-[#009900] text-sm">{editing.id ? 'Edit Member' : 'New Member'}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
               { label: 'Authority Name *', key: 'name' },
@@ -100,7 +100,7 @@ export default function MembersEditor() {
                   type="text"
                   value={String((editing as Record<string, unknown>)[key] ?? '')}
                   onChange={(e) => setEditing({ ...editing, [key]: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00285e]/20 focus:border-[#00285e]"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
                 />
               </div>
             ))}
@@ -117,7 +117,7 @@ export default function MembersEditor() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {members.map((m) => (
-          <div key={m.id} className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl p-3 group hover:border-blue-300 transition-colors">
+          <div key={m.id} className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl p-3 group hover:border-green-300 transition-colors">
             <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-100 flex-shrink-0">
               {m.logo ? (
                 <img src={m.logo} alt="" className="max-w-full max-h-full object-contain" />
@@ -130,7 +130,7 @@ export default function MembersEditor() {
               <p className="text-xs text-gray-400 truncate">{m.country}</p>
             </div>
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button onClick={() => openEdit(m)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+              <button onClick={() => openEdit(m)} className="p-1.5 text-gray-400 hover:text-[#009900] hover:bg-green-50 rounded-lg transition-colors">
                 <Pencil size={14} />
               </button>
               <button onClick={() => remove(m.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">

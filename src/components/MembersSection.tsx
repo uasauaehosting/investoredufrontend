@@ -15,7 +15,7 @@ function MemberCard({ member }: { member: Member }) {
   return (
     <a
       href={member.website ?? '#'}
-      className="group flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200 hover:border-[#00285e]/40 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 bg-white"
+      className="group flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200 hover:border-[#009900]/40 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 bg-white"
     >
       <div className="w-full h-14 flex items-center justify-center mb-3">
         {imgVisible && member.logo ? (
@@ -29,7 +29,7 @@ function MemberCard({ member }: { member: Member }) {
           <span className="text-3xl">🏛️</span>
         )}
       </div>
-      <span className="text-xs text-gray-500 font-medium text-center group-hover:text-[#00285e] transition-colors leading-tight">
+      <span className="text-xs text-gray-500 font-medium text-center group-hover:text-[#009900] transition-colors leading-tight">
         {member.country}
       </span>
     </a>

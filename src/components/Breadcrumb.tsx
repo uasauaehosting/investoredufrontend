@@ -42,8 +42,8 @@ export default function Breadcrumb({ items, variant = 'standalone' }: Breadcrumb
                   to={item.href!}
                   className={
                     isEmbedded
-                      ? 'inline-flex items-center gap-1 text-gray-500 hover:text-[#00285e] transition-colors'
-                      : 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm text-gray-500 hover:text-[#00285e] hover:bg-blue-50 transition-colors'
+                      ? 'inline-flex items-center gap-1 text-gray-500 hover:text-[#009900] transition-colors'
+                      : 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm text-gray-500 hover:text-[#009900] hover:bg-green-50 transition-colors'
                   }
                 >
                   {isFirst && <Home size={13} className="shrink-0" />}
@@ -53,10 +53,10 @@ export default function Breadcrumb({ items, variant = 'standalone' }: Breadcrumb
                 <span
                   className={
                     isEmbedded
-                      ? 'inline-flex items-center gap-1 text-[#00285e] font-medium'
+                      ? 'inline-flex items-center gap-1 text-[#009900] font-medium'
                       : `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm ${
                           isLast
-                            ? 'bg-[#00285e] text-white font-medium shadow-sm'
+                            ? 'bg-[#009900] text-white font-medium shadow-sm'
                             : 'text-gray-500'
                         }`
                   }

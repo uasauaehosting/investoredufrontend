@@ -19,6 +19,7 @@ import MembersStrategiesProjects from './pages/MembersStrategiesProjects';
 import EducationSectionList from './pages/EducationSectionList';
 import EducationItemDetail from './pages/EducationItemDetail';
 import Principles from './pages/Principles';
+import PrincipleDetail from './pages/PrincipleDetail';
 import Framework from './pages/Framework';
 import InvestmentProductsLiterature from './pages/InvestmentProductsLiterature';
 import InvestmentProductDetail from './pages/InvestmentProductDetail';
@@ -45,7 +46,7 @@ function AdminRouter() {
   const { session, loading } = useAuth();
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#00285e] flex items-center justify-center">
+      <div className="min-h-screen bg-[#009900] flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-white/20 border-t-amber-400 rounded-full animate-spin" />
       </div>
     );
@@ -73,6 +74,7 @@ export default function App() {
                   <Route path="/about" element={<About />} />
                   <Route path="/education" element={<Navigate to="/" replace />} />
                   <Route path="/education/reading-materials/principles" element={<Principles />} />
+                  <Route path="/education/reading-materials/principles/:id" element={<PrincipleDetail />} />
                   <Route path="/education/reading-materials/framework" element={<Framework />} />
                   <Route
                     path="/education/reading-materials/products"

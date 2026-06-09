@@ -26,12 +26,12 @@ export default function Framework() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="bg-gradient-to-br from-[#00285e] to-[#003580] text-white py-16 px-4">
+      <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <Link to="/education/reading-materials" className="inline-flex items-center gap-2 text-blue-200 hover:text-white text-sm mb-6 transition-colors">
+          <Link to="/education/reading-materials" className="inline-flex items-center gap-2 text-green-200 hover:text-white text-sm mb-6 transition-colors">
             <ArrowLeft size={16} /> Back to Reading Materials
           </Link>
-          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#00285e] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">Reading Materials</span>
+          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">Reading Materials</span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">Framework</h1>
           <div className="h-1.5 w-24 bg-amber-400 mt-8 rounded-full" />
         </div>
@@ -39,7 +39,7 @@ export default function Framework() {
 
       <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-10 space-y-8">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-12 lg:p-16">
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#00285e] mb-8">IOSCO Framework</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#009900] mb-8">IOSCO Framework</h2>
           <div className="grid lg:grid-cols-2 gap-10 items-start mb-10">
             <div className="space-y-6">
               {data.introParagraphs.map((text, index) => (
@@ -58,9 +58,9 @@ export default function Framework() {
           <div className="space-y-5">
             {data.practices.map((practice, index) => (
               <div key={index} className="flex gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100">
-                <div className="shrink-0 w-10 h-10 rounded-xl bg-[#00285e] text-white flex items-center justify-center font-bold text-sm">{index + 1}</div>
+                <div className="shrink-0 w-10 h-10 rounded-xl bg-[#009900] text-white flex items-center justify-center font-bold text-sm">{index + 1}</div>
                 <div>
-                  <h3 className="font-bold text-[#00285e] mb-2">Practice {index + 1}</h3>
+                  <h3 className="font-bold text-[#009900] mb-2">Practice {index + 1}</h3>
                   <p className="text-gray-600 leading-relaxed">{practice}</p>
                 </div>
               </div>
@@ -70,12 +70,12 @@ export default function Framework() {
 
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10">
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-blue-50 rounded-xl text-[#00285e] shrink-0"><Layers size={24} /></div>
+            <div className="p-3 bg-green-50 rounded-xl text-[#009900] shrink-0"><Layers size={24} /></div>
             <div>
               <p className="text-gray-600 leading-relaxed mb-4">
-                <span className="font-semibold text-[#00285e]">See more at:</span> IOSCO Strategic Framework for Investor Education and Financial Literacy.
+                <span className="font-semibold text-[#009900]">See more at:</span> IOSCO Strategic Framework for Investor Education and Financial Literacy.
               </p>
-              <a href={data.pdfUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[#00285e] font-semibold hover:text-amber-600 transition-colors">
+              <a href={data.pdfUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[#009900] font-semibold hover:text-amber-600 transition-colors">
                 Download the full IOSCO framework document <ExternalLink size={16} />
               </a>
             </div>

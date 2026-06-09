@@ -72,7 +72,7 @@ export default function SiteContentEditor() {
             key={key}
             onClick={() => setActiveKey(key)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              activeKey === key ? 'bg-[#00285e] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              activeKey === key ? 'bg-[#009900] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             {label}
@@ -85,7 +85,7 @@ export default function SiteContentEditor() {
       ) : (
         <div className="bg-white rounded-2xl border border-gray-200 p-4">
           <textarea
-            className="w-full font-mono text-xs border rounded-lg p-3 min-h-[400px] focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="w-full font-mono text-xs border rounded-lg p-3 min-h-[400px] focus:outline-none focus:ring-2 focus:ring-green-100"
             value={jsonText}
             onChange={(e) => setJsonText(e.target.value)}
           />

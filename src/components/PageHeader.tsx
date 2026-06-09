@@ -17,7 +17,7 @@ export default function PageHeader({ title, items, backLink }: PageHeaderProps) 
         {backLink && (
           <Link
             to={backLink.to}
-            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#00285e] mt-4 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#009900] mt-4 transition-colors"
           >
             <ArrowLeft size={15} className="rtl:rotate-180" />
             {backLink.label}
@@ -25,7 +25,7 @@ export default function PageHeader({ title, items, backLink }: PageHeaderProps) 
         )}
 
         <div className={backLink ? 'mt-3' : 'mt-5'}>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#00285e] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#009900] tracking-tight">
             {title}
           </h1>
           <div className="h-1 w-14 bg-amber-400 mt-3 rounded-full" aria-hidden="true" />

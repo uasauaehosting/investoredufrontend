@@ -5,6 +5,13 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-brand: #009900;
+    --color-brand-dark: #006600;
+    --color-brand-darker: #004d00;
+    --color-brand-light: #00b300;
+  }
+
   [dir='rtl'] body {
     font-family: 'Noto Sans Arabic', system-ui, sans-serif;
   }
@@ -17,7 +24,7 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-[#00285e] hover:bg-[#001a45] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed;
+    @apply bg-brand hover:bg-brand-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed;
   }
   .btn-ghost {
     @apply bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg border border-gray-200 transition-colors;

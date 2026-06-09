@@ -38,9 +38,9 @@ function FilterCheckbox({
         type="checkbox"
         checked={checked}
         onChange={onChange}
-        className="mt-1 w-4 h-4 rounded border-gray-300 text-[#00285e] focus:ring-[#00285e]/30"
+        className="mt-1 w-4 h-4 rounded border-gray-300 text-[#009900] focus:ring-[#009900]/30"
       />
-      <span className="text-sm text-gray-600 group-hover:text-[#00285e] leading-snug">{label}</span>
+      <span className="text-sm text-gray-600 group-hover:text-[#009900] leading-snug">{label}</span>
     </label>
   );
 }
@@ -95,15 +95,15 @@ export default function MembersStrategiesProjects() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="bg-gradient-to-br from-[#00285e] to-[#003580] text-white py-16 px-4">
+      <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#00285e] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">
+          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">
             Financial Inclusion
           </span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
             Members Strategies &amp; Projects
           </h1>
-          <p className="text-blue-100 max-w-4xl mt-6 text-base sm:text-lg leading-relaxed">
+          <p className="text-green-100 max-w-4xl mt-6 text-base sm:text-lg leading-relaxed">
             Browse strategies, reports, and financial inclusion initiatives published by UASA member
             authorities. Select one or more members and categories below to discover resources, best
             practices, and projects supporting financial inclusion, investor protection, and capital
@@ -118,8 +118,8 @@ export default function MembersStrategiesProjects() {
           <aside className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 lg:sticky lg:top-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <Filter size={18} className="text-[#00285e]" />
-                <h2 className="font-bold text-[#00285e]">Filters</h2>
+                <Filter size={18} className="text-[#009900]" />
+                <h2 className="font-bold text-[#009900]">Filters</h2>
               </div>
               {hasActiveFilters && (
                 <button
@@ -134,7 +134,7 @@ export default function MembersStrategiesProjects() {
 
             <div className="space-y-8">
               <div>
-                <h3 className="text-sm font-bold text-[#00285e] uppercase tracking-wide mb-4">
+                <h3 className="text-sm font-bold text-[#009900] uppercase tracking-wide mb-4">
                   Active Member Filter
                 </h3>
                 <div className="space-y-3 max-h-72 overflow-y-auto pe-1">
@@ -150,7 +150,7 @@ export default function MembersStrategiesProjects() {
               </div>
 
               <div className="border-t border-gray-100 pt-6">
-                <h3 className="text-sm font-bold text-[#00285e] uppercase tracking-wide mb-4">
+                <h3 className="text-sm font-bold text-[#009900] uppercase tracking-wide mb-4">
                   Category Filter
                 </h3>
                 <div className="space-y-3">
@@ -179,7 +179,7 @@ export default function MembersStrategiesProjects() {
                   {selectedMembers.map((member) => (
                     <span
                       key={member}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-[#00285e] text-xs font-medium"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-50 text-[#009900] text-xs font-medium"
                     >
                       {member.split(' ').slice(0, 2).join(' ')}
                       <button onClick={() => toggleMember(member)} aria-label={`Remove ${member}`}>
@@ -238,7 +238,7 @@ export default function MembersStrategiesProjects() {
                     >
                       <div className="flex flex-wrap items-center gap-2 mb-4">
                         {project.memberName && (
-                          <span className="px-3 py-1 rounded-full bg-blue-50 text-[#00285e] text-xs font-semibold">
+                          <span className="px-3 py-1 rounded-full bg-green-50 text-[#009900] text-xs font-semibold">
                             {project.memberName}
                           </span>
                         )}
@@ -257,14 +257,14 @@ export default function MembersStrategiesProjects() {
                           </span>
                         )}
                       </div>
-                      <h3 className="text-xl font-bold text-[#00285e] mb-3">{project.title}</h3>
+                      <h3 className="text-xl font-bold text-[#009900] mb-3">{project.title}</h3>
                       <p className="text-gray-600 leading-relaxed">{project.description}</p>
                       {project.fileUrl && (
                         <a
                           href={project.fileUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 mt-5 text-sm font-semibold text-[#00285e] hover:text-amber-600 transition-colors"
+                          className="inline-flex items-center gap-2 mt-5 text-sm font-semibold text-[#009900] hover:text-amber-600 transition-colors"
                         >
                           <FileText size={16} />
                           View Document
