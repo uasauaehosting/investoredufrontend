@@ -2,37 +2,74 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
+import FileUpload from '../../lib/FileUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
 import { MediaPreview } from './siteContent/FormFields';
-import { Principle } from '../../lib/principles';
+
+interface InvestmentProduct {
+  id: number;
+  title: string;
+  description: string;
+  author: string;
+  date: string;
+  fileUrl: string;
+  imageUrl: string;
+  content: string;
+  slug: string;
+  isActive: boolean;
+}
 
 const today = () => new Date().toISOString().slice(0, 10);
 
-const empty = (): Omit<Principle, 'id'> => ({
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const empty = (): Omit<InvestmentProduct, 'id'> => ({
   title: '',
   description: '',
   author: '',
   date: today(),
   fileUrl: '',
   imageUrl: '',
-  content: '',
+  content: JSON.stringify({ blocks: [] }, null, 2),
+  slug: '',
   isActive: true,
 });
 
-export default function PrinciplesEditor() {
-  const [items, setItems] = useState<Principle[]>([]);
+const formatContentForEdit = (content: string | undefined) => {
+  if (!content?.trim()) return JSON.stringify({ blocks: [] }, null, 2);
+  try {
+    const parsed = JSON.parse(content);
+    return JSON.stringify(parsed, null, 2);
+  } catch {
+    return content;
+  }
+};
+
+export default function InvestmentProductsEditor() {
+  const [items, setItems] = useState<InvestmentProduct[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<Partial<Principle> | null>(null);
+  const [editing, setEditing] = useState<Partial<InvestmentProduct> | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
     try {
-      const data = await api.get('/investor-education/principles/admin');
-      setItems(normalizeMediaFieldsDeep(data ?? []));
+      const data = await api.get('/investor-education/investment-products/admin');
+      setItems(
+        normalizeMediaFieldsDeep(data ?? []).map((item: InvestmentProduct) => ({
+          ...item,
+          date: item.date ? String(item.date).slice(0, 10) : today(),
+          slug: item.slug ?? '',
+        })),
+      );
     } catch (err) {
-      console.error('Failed to load principles:', err);
+      console.error('Failed to load investment products:', err);
       setItems([]);
     } finally {
       setLoading(false);
@@ -44,10 +81,15 @@ export default function PrinciplesEditor() {
   }, []);
 
   const openNew = () => setEditing({ ...empty() });
-  const openEdit = (item: Principle) => setEditing(normalizeMediaFieldsDeep({
-    ...item,
-    date: item.date ? String(item.date).slice(0, 10) : today(),
-  }));
+  const openEdit = (item: InvestmentProduct) =>
+    setEditing(
+      normalizeMediaFieldsDeep({
+        ...item,
+        date: item.date ? String(item.date).slice(0, 10) : today(),
+        content: formatContentForEdit(item.content),
+        slug: item.slug ?? '',
+      }),
+    );
   const cancel = () => {
     setEditing(null);
     setError(null);
@@ -60,8 +102,24 @@ export default function PrinciplesEditor() {
       return;
     }
     if (!editing.description?.trim()) {
-      setError('Description is required.');
+      setError('Short description is required.');
       return;
+    }
+
+    const slug = (editing.slug?.trim() || slugify(editing.title)).trim();
+    if (!slug) {
+      setError('URL slug is required.');
+      return;
+    }
+
+    let content = editing.content?.trim() || JSON.stringify({ blocks: [] });
+    if (content) {
+      try {
+        JSON.parse(content);
+      } catch {
+        setError('Detail content must be valid JSON (e.g. {"blocks":[...]}).');
+        return;
+      }
     }
 
     setSaving(true);
@@ -74,14 +132,15 @@ export default function PrinciplesEditor() {
         date: editing.date || today(),
         fileUrl: editing.fileUrl?.trim() || '',
         imageUrl: editing.imageUrl?.trim() || '',
-        content: editing.content?.trim() || '',
+        content,
+        slug,
         isActive: editing.isActive !== false,
       });
 
       if (editing.id) {
-        await api.put(`/investor-education/principles/${editing.id}`, payload);
+        await api.put(`/investor-education/investment-products/${editing.id}`, payload);
       } else {
-        await api.post('/investor-education/principles', payload);
+        await api.post('/investor-education/investment-products', payload);
       }
       setEditing(null);
       load();
@@ -93,9 +152,9 @@ export default function PrinciplesEditor() {
   };
 
   const remove = async (id: number) => {
-    if (!confirm('Delete this principle?')) return;
+    if (!confirm('Delete this investment product?')) return;
     try {
-      await api.delete(`/investor-education/principles/${id}`);
+      await api.delete(`/investor-education/investment-products/${id}`);
       load();
     } catch (err) {
       console.error('Failed to delete:', err);
@@ -106,20 +165,20 @@ export default function PrinciplesEditor() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
         <div>
-          <h2 className="text-lg font-bold text-gray-800">Principles</h2>
+          <h2 className="text-lg font-bold text-gray-800">Investment Products/ Literature</h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Add and manage individual principle pages with images and content
+            Manage product cards and detail pages shown under Reading Materials
           </p>
         </div>
         <button onClick={openNew} className="btn-primary flex items-center gap-1.5 self-start">
-          <Plus size={15} /> Add Principle
+          <Plus size={15} /> Add Product
         </button>
       </div>
 
       {editing && (
         <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
           <h3 className="font-semibold text-[#009900] text-sm">
-            {editing.id ? 'Edit Principle' : 'New Principle'}
+            {editing.id ? 'Edit Product' : 'New Product'}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
@@ -129,12 +188,34 @@ export default function PrinciplesEditor() {
                 value={editing.title ?? ''}
                 onChange={(e) => setEditing({ ...editing, title: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-                placeholder="Principle name"
+                placeholder="Introduction to Financial Markets"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">URL Slug *</label>
+              <input
+                type="text"
+                value={editing.slug ?? ''}
+                onChange={(e) => setEditing({ ...editing, slug: e.target.value })}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
+                placeholder="introduction-to-financial-markets"
+              />
+              <p className="text-[10px] text-gray-400 mt-1">
+                Used in /education/reading-materials/products/{'{slug}'}
+              </p>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
+              <input
+                type="date"
+                value={editing.date ?? today()}
+                onChange={(e) => setEditing({ ...editing, date: e.target.value })}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
               />
             </div>
             <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-gray-500 mb-1">
-                Short Description (shown on list) *
+                Short Description (shown on list card) *
               </label>
               <textarea
                 rows={3}
@@ -145,30 +226,29 @@ export default function PrinciplesEditor() {
             </div>
             <div className="sm:col-span-2">
               <ImageUpload
-                label="Image"
+                label="Card Image"
                 value={editing.imageUrl ?? ''}
                 onChange={(url) => setEditing({ ...editing, imageUrl: url })}
               />
             </div>
             <div className="sm:col-span-2">
+              <FileUpload
+                label="Downloadable File (optional)"
+                value={editing.fileUrl ?? ''}
+                onChange={(url) => setEditing({ ...editing, fileUrl: url })}
+                hint="Optional PDF or document attached to this product"
+              />
+            </div>
+            <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-gray-500 mb-1">
-                Full Content (detail page — HTML allowed)
+                Detail Page Content (JSON with blocks array)
               </label>
               <textarea
-                rows={8}
+                rows={12}
                 value={editing.content ?? ''}
                 onChange={(e) => setEditing({ ...editing, content: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-y"
-                placeholder="<p>Detailed principle content here...</p>"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
-              <input
-                type="date"
-                value={editing.date ?? today()}
-                onChange={(e) => setEditing({ ...editing, date: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
+                placeholder='{"blocks":[{"heading":"Section title","paragraphs":["..."]}]}'
               />
             </div>
             <div className="flex items-end">
@@ -196,7 +276,7 @@ export default function PrinciplesEditor() {
       )}
 
       {loading ? (
-        <div className="text-gray-400 text-sm animate-pulse py-8">Loading principles...</div>
+        <div className="text-gray-400 text-sm animate-pulse py-8">Loading products...</div>
       ) : (
         <div className="space-y-3">
           {items.map((item) => (
@@ -208,6 +288,9 @@ export default function PrinciplesEditor() {
               <div className="flex-1 min-w-0">
                 <h4 className="text-sm font-bold text-gray-800 truncate">{item.title}</h4>
                 <p className="text-xs text-gray-400 line-clamp-2 mt-0.5">{item.description}</p>
+                {item.slug && (
+                  <p className="text-[10px] text-gray-400 mt-1 font-mono truncate">/{item.slug}</p>
+                )}
                 {!item.isActive && (
                   <span className="text-[10px] text-amber-600 mt-1 inline-block">Hidden</span>
                 )}
@@ -229,7 +312,9 @@ export default function PrinciplesEditor() {
             </div>
           ))}
           {items.length === 0 && (
-            <p className="text-sm text-gray-400 py-8 text-center">No principles yet. Add your first one above.</p>
+            <p className="text-sm text-gray-400 py-8 text-center">
+              No investment products yet. Add your first one above.
+            </p>
           )}
         </div>
       )}

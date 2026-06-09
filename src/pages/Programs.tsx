@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import PageHeader from '../components/PageHeader';
+import ProgramsResultsTable from '../components/programs/ProgramsResultsTable';
 import { api } from '../lib/api';
 import { PROGRAM_FILTER_GROUPS, PROGRAM_MEMBERS, getLabelsFromSelect } from '../lib/programFilters';
 
@@ -51,21 +52,6 @@ function filterPrograms(
       matchesCategory(parseProgramArray(program.successful_programs), filters.successfulPrograms)
     );
   });
-}
-
-function ProgramResultSection({ title, items }: { title: string; items: string[] }) {
-  if (items.length === 0) return null;
-
-  return (
-    <div>
-      <h5 className="text-sm font-bold text-[#009900] mb-2">{title}</h5>
-      <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-        {items.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
-    </div>
-  );
 }
 
 export default function Programs() {
@@ -208,37 +194,7 @@ export default function Programs() {
                 </p>
               </div>
 
-              {results.length === 0 ? (
-                <p className="text-gray-500 text-sm">No programs match the selected filters.</p>
-              ) : (
-                <div className="space-y-6">
-                  {results.map((program) => (
-                    <article
-                      key={program.id}
-                      className="rounded-xl border border-gray-100 bg-gray-50 p-5 sm:p-6"
-                    >
-                      <h4 className="text-lg font-bold text-[#009900] mb-4">{program.member_name}</h4>
-                      <div className="grid gap-5 sm:grid-cols-2">
-                        <ProgramResultSection title="General Information" items={program.general_info} />
-                        <ProgramResultSection
-                          title="Investor Education Materials"
-                          items={program.education_materials}
-                        />
-                        <ProgramResultSection
-                          title="Specific Materials & Pedagogy"
-                          items={program.specific_materials}
-                        />
-                        <ProgramResultSection title="Assisting Certain Groups" items={program.assisting_groups} />
-                        <ProgramResultSection title="Evaluation and Research" items={program.evaluation} />
-                        <ProgramResultSection
-                          title="Successful Programs"
-                          items={program.successful_programs}
-                        />
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              )}
+              <ProgramsResultsTable programs={results} />
             </div>
           )}
         </section>

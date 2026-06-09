@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   LayoutDashboard, Image, Newspaper, Users, Layers,
   LogOut, ChevronRight, Menu, X, ExternalLink, BookOpen,
-  FileText, Globe, Info, Settings
+  FileText, Globe, Info, Settings, ClipboardList
 } from 'lucide-react';
 import { useAuth } from '../lib/useAuth';
 import SlidesEditor from './editors/SlidesEditor';
@@ -14,11 +14,15 @@ import AboutEditor from './editors/AboutEditor';
 import SiteContentEditor from './editors/SiteContentEditor';
 import GlossaryEditor from './editors/GlossaryEditor';
 import PublicationsEditor from './editors/PublicationsEditor';
+import ProgramsEditor from './editors/ProgramsEditor';
 import PrinciplesEditor from './editors/PrinciplesEditor';
+import InvestmentProductsEditor from './editors/InvestmentProductsEditor';
+import AlertsBulletinsEditor from './editors/AlertsBulletinsEditor';
 
 type Section =
   | 'overview' | 'slides' | 'news' | 'members' | 'portal' | 'education' | 'principles'
-  | 'about' | 'pages' | 'glossary' | 'publications';
+  | 'investment-products' | 'about' | 'pages' | 'glossary' | 'publications' | 'programs'
+  | 'alerts-bulletins';
 
 const navItems: { id: Section; label: string; icon: React.ElementType; desc: string }[] = [
   { id: 'overview',      label: 'Overview',           icon: LayoutDashboard, desc: 'Dashboard summary' },
@@ -28,10 +32,13 @@ const navItems: { id: Section; label: string; icon: React.ElementType; desc: str
   { id: 'portal',        label: 'Portal Categories',    icon: Layers,          desc: 'Homepage feature cards' },
   { id: 'education',     label: 'Education Content',    icon: BookOpen,        desc: 'Section list pages' },
   { id: 'principles',    label: 'Principles',           icon: BookOpen,        desc: 'Principle pages & images' },
+  { id: 'investment-products', label: 'Investment Products', icon: BookOpen,  desc: 'Product literature pages' },
   { id: 'about',         label: 'About Page',           icon: Info,            desc: 'About paragraphs' },
   { id: 'pages',         label: 'Page Content',         icon: Settings,        desc: 'Welcome, footer, principles...' },
   { id: 'glossary',      label: 'Glossary',             icon: Globe,           desc: 'Glossary terms' },
   { id: 'publications',  label: 'Publications',         icon: FileText,        desc: 'Member publications' },
+  { id: 'programs',      label: 'Programs',             icon: ClipboardList,   desc: 'Member education programs' },
+  { id: 'alerts-bulletins', label: 'Alerts & Bulletins', icon: FileText,        desc: 'Market alerts and bulletins' },
 ];
 
 export default function AdminDashboard() {
@@ -125,10 +132,13 @@ export default function AdminDashboard() {
           {section === 'portal' && <PortalCategoriesEditor />}
           {section === 'education' && <EducationContentEditor />}
           {section === 'principles' && <PrinciplesEditor />}
+          {section === 'investment-products' && <InvestmentProductsEditor />}
           {section === 'about' && <AboutEditor />}
           {section === 'pages' && <SiteContentEditor />}
           {section === 'glossary' && <GlossaryEditor />}
           {section === 'publications' && <PublicationsEditor />}
+          {section === 'programs' && <ProgramsEditor />}
+          {section === 'alerts-bulletins' && <AlertsBulletinsEditor />}
         </main>
       </div>
     </div>

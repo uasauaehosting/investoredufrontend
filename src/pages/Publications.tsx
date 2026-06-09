@@ -1,6 +1,6 @@
-import { FormEvent, useState } from 'react';
-import { ExternalLink, FileText } from 'lucide-react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import PageHeader from '../components/PageHeader';
+import PublicationsResultsTable from '../components/publications/PublicationsResultsTable';
 import { api } from '../lib/api';
 import {
   PUBLICATION_AUTHORITIES,
@@ -8,6 +8,7 @@ import {
   PublicationAuthority,
   PublicationCategory,
 } from '../lib/publicationFilters';
+import { groupPublicationsByAuthority } from '../lib/publicationGrouping';
 
 interface Publication {
   id: number;
@@ -45,17 +46,15 @@ export default function Publications() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const authoritySelect = form.elements.namedItem('authority') as HTMLSelectElement;
-    const categorySelect = form.elements.namedItem('category') as HTMLSelectElement;
+  const groupedPublications = useMemo(
+    () => groupPublicationsByAuthority(publications, selectedAuthorities),
+    [publications, selectedAuthorities],
+  );
 
-    const authorities = getMultiSelectValues(authoritySelect) as PublicationAuthority[];
-    const categories = getMultiSelectValues(categorySelect) as PublicationCategory[];
-
-    setSelectedAuthorities(authorities);
-    setSelectedCategories(categories);
+  const fetchPublications = async (
+    authorities: PublicationAuthority[],
+    categories: PublicationCategory[],
+  ) => {
     setLoading(true);
     setError(null);
     setSubmitted(true);
@@ -69,6 +68,24 @@ export default function Publications() {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchPublications([], []);
+  }, []);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const authoritySelect = form.elements.namedItem('authority') as HTMLSelectElement;
+    const categorySelect = form.elements.namedItem('category') as HTMLSelectElement;
+
+    const authorities = getMultiSelectValues(authoritySelect) as PublicationAuthority[];
+    const categories = getMultiSelectValues(categorySelect) as PublicationCategory[];
+
+    setSelectedAuthorities(authorities);
+    setSelectedCategories(categories);
+    await fetchPublications(authorities, categories);
   };
 
   return (
@@ -85,7 +102,6 @@ export default function Publications() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10 mb-10">
-
           <form onSubmit={handleSubmit}>
             <div className="space-y-6">
               <div>
@@ -149,74 +165,14 @@ export default function Publications() {
             </div>
           </form>
 
-          {submitted && !loading && !error && (
-            <div className="mt-10 border-t border-gray-100 pt-8">
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-                <h3 className="text-lg font-bold text-[#009900]">Results</h3>
-                <p className="text-sm text-gray-500">
-                  {publications.length} publication{publications.length === 1 ? '' : 's'} found
-                  {(selectedAuthorities.length > 0 || selectedCategories.length > 0) && (
-                    <>
-                      {' '}
-                      for selected filters
-                    </>
-                  )}
-                </p>
-              </div>
-
-              {publications.length === 0 ? (
-                <p className="text-gray-500 text-sm">No publications match the selected filters.</p>
+          {submitted && !error && (
+            <div className="mt-10 border-t border-gray-200 pt-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Publications</h2>
+              <hr className="border-gray-300 mb-8" />
+              {loading ? (
+                <p className="text-sm text-gray-500">Loading publications...</p>
               ) : (
-                <div className="space-y-4">
-                  {publications.map((publication) => (
-                    <article
-                      key={publication.id}
-                      className="rounded-xl border border-gray-100 bg-gray-50 p-5 hover:border-[#009900]/20 transition-colors"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-start gap-3">
-                            <FileText size={18} className="text-[#009900] mt-1 flex-shrink-0" />
-                            <div>
-                              <h4 className="font-semibold text-[#009900] leading-snug">
-                                {publication.title}
-                              </h4>
-                              {publication.description && (
-                                <p className="mt-2 text-sm text-gray-600 leading-relaxed">
-                                  {publication.description}
-                                </p>
-                              )}
-                              <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                                <span className="rounded-full bg-green-100 px-2.5 py-1 font-medium text-green-700">
-                                  {publication.category}
-                                </span>
-                                <span className="rounded-full bg-gray-200 px-2.5 py-1 font-medium text-gray-700">
-                                  {publication.authority_name}
-                                </span>
-                                {publication.date_published && (
-                                  <span className="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-800">
-                                    {publication.date_published}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        {publication.file_url && (
-                          <a
-                            href={publication.file_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 self-start rounded-lg border border-[#009900]/20 px-4 py-2 text-sm font-semibold text-[#009900] hover:bg-[#009900] hover:text-white transition-colors"
-                          >
-                            View
-                            <ExternalLink size={14} />
-                          </a>
-                        )}
-                      </div>
-                    </article>
-                  ))}
-                </div>
+                <PublicationsResultsTable groups={groupedPublications} />
               )}
             </div>
           )}

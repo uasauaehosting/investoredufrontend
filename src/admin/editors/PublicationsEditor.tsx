@@ -28,15 +28,10 @@ export default function PublicationsEditor() {
 
   const load = async () => {
     try {
-      const data = await api.get('/publications?is_active=false');
+      const data = await api.get('/publications?is_active=all');
       setItems(normalizeMediaFieldsDeep(data ?? []));
-    } catch {
-      try {
-        const data = await api.get('/publications');
-        setItems(normalizeMediaFieldsDeep(data ?? []));
-      } catch (err) {
-        console.error(err);
-      }
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }

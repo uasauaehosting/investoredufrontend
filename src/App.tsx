@@ -28,6 +28,7 @@ import MembersBenchmarking from './pages/MembersBenchmarking';
 import Portals from './pages/Portals';
 import Publications from './pages/Publications';
 import Programs from './pages/Programs';
+import AlertsBulletins from './pages/AlertsBulletins';
 import GlobalPolicyAreas from './pages/GlobalPolicyAreas';
 
 function Home() {
@@ -87,6 +88,7 @@ export default function App() {
                   <Route path="/education/members-activities/portals" element={<Portals />} />
                   <Route path="/education/members-activities/publications" element={<Publications />} />
                   <Route path="/education/members-activities/programs" element={<Programs />} />
+                  <Route path="/education/alerts" element={<AlertsBulletins />} />
                   <Route path="/education/:section" element={<EducationSectionList />} />
                   <Route path="/education/:section/:id" element={<EducationItemDetail />} />
                   <Route path="/inclusion" element={<Navigate to="/" replace />} />
