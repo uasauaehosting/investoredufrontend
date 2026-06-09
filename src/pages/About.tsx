@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
-import { useSiteContent } from '../lib/useSiteContent';
+import { useLocalizedSiteContent } from '../lib/useLocalizedSiteContent';
+import { useLanguage } from '../lib/LanguageContext';
+import { pickField } from '../lib/localizedText';
 
 const FALLBACK_PARAGRAPHS = [
   'Established in 2007, the Union of Arab Securities Authorities (UASA henceforth) is not a profit entity with an independent legal status. The United Arab Emirates is the headquarters of the Union. The Members of the Union are Arab Securities Authorities and markets Regulators.',
@@ -15,7 +17,8 @@ const HERO_FALLBACK = {
 };
 
 export default function About() {
-  const { data: hero } = useSiteContent('about.hero', HERO_FALLBACK);
+  const { lang } = useLanguage();
+  const { data: hero } = useLocalizedSiteContent('about.hero', HERO_FALLBACK, ['badge', 'title']);
   const [paragraphs, setParagraphs] = useState(FALLBACK_PARAGRAPHS);
 
   useEffect(() => {
@@ -23,11 +26,15 @@ export default function About() {
       .get('/about/sections')
       .then((sections) => {
         if (Array.isArray(sections) && sections.length > 0) {
-          setParagraphs(sections.map((s: { content: string }) => s.content));
+          setParagraphs(
+            sections.map((s: { content: string; contentAr?: string }) =>
+              pickField(lang, { content: s.content, contentAr: s.contentAr }, 'content'),
+            ),
+          );
         }
       })
       .catch(() => {});
-  }, []);
+  }, [lang]);
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">

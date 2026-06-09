@@ -3,19 +3,22 @@ import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
-import { MediaPreview } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
 import { Principle } from '../../lib/principles';
 
 const today = () => new Date().toISOString().slice(0, 10);
 
 const empty = (): Omit<Principle, 'id'> => ({
   title: '',
+  titleAr: '',
   description: '',
+  descriptionAr: '',
   author: '',
   date: today(),
   fileUrl: '',
   imageUrl: '',
   content: '',
+  contentAr: '',
   isActive: true,
 });
 
@@ -69,12 +72,15 @@ export default function PrinciplesEditor() {
     try {
       const payload = normalizeMediaFieldsDeep({
         title: editing.title.trim(),
+        titleAr: editing.titleAr?.trim() || null,
         description: editing.description.trim(),
+        descriptionAr: editing.descriptionAr?.trim() || null,
         author: editing.author?.trim() || '',
         date: editing.date || today(),
         fileUrl: editing.fileUrl?.trim() || '',
         imageUrl: editing.imageUrl?.trim() || '',
         content: editing.content?.trim() || '',
+        contentAr: editing.contentAr?.trim() || null,
         isActive: editing.isActive !== false,
       });
 
@@ -161,6 +167,16 @@ export default function PrinciplesEditor() {
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-y"
                 placeholder="<p>Detailed principle content here...</p>"
               />
+            </div>
+            <ArabicSectionDivider />
+            <div className="sm:col-span-2">
+              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
+            </div>
+            <div className="sm:col-span-2">
+              <ArabicTextAreaField label="الوصف المختصر (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} />
+            </div>
+            <div className="sm:col-span-2">
+              <ArabicTextAreaField label="المحتوى الكامل (عربي)" value={editing.contentAr ?? ''} onChange={(v) => setEditing({ ...editing, contentAr: v })} rows={8} />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>

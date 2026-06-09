@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
+import { useLanguage } from '../lib/LanguageContext';
+import { pickField } from '../lib/localizedText';
 
 export interface NewsItem {
   id: number;
   title: string;
+  titleAr?: string;
   image: string | null;
   category: string;
   date: string | null;
   excerpt: string | null;
+  excerptAr?: string | null;
 }
 
 const categoryColors: Record<string, string> = {
@@ -27,6 +31,8 @@ function formatDate(dateStr: string | null): string {
 }
 
 function NewsCard({ item }: { item: NewsItem }) {
+  const { lang } = useLanguage();
+  const title = pickField(lang, item, 'title');
   const [imgSrc, setImgSrc] = useState(item.image ?? 'https://images.unsplash.com/photo-1504711432869-efd597cdd042?auto=format&fit=crop&q=80&w=800');
 
   return (
@@ -34,7 +40,7 @@ function NewsCard({ item }: { item: NewsItem }) {
       <div className="relative h-44 overflow-hidden bg-gray-100">
         <img
           src={imgSrc}
-          alt={item.title}
+          alt={title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           onError={() => {
             setImgSrc('https://images.unsplash.com/photo-1504711432869-efd597cdd042?auto=format&fit=crop&q=80&w=800');
@@ -53,7 +59,7 @@ function NewsCard({ item }: { item: NewsItem }) {
       <div className="p-4">
         <p className="text-xs text-gray-400 mb-1.5">{formatDate(item.date)}</p>
         <h3 className="text-sm font-semibold text-gray-800 leading-snug group-hover:text-[#009900] transition-colors line-clamp-3">
-          {item.title}
+          {title}
         </h3>
         <Link
           to={`/news/${item.id}`}

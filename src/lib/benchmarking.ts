@@ -34,8 +34,10 @@ export type BenchmarkingAuthority = (typeof BENCHMARKING_AUTHORITIES)[number];
 
 export interface BenchmarkingRecord {
   authority: string;
+  authorityNameAr?: string;
   year: string;
   title: string;
+  indicatorAr?: string;
   description?: string;
   fileUrl?: string;
 }
@@ -45,8 +47,10 @@ export const BENCHMARKING_RECORDS: BenchmarkingRecord[] = [];
 interface ApiBenchmarkingRow {
   id?: number;
   authorityName: string;
+  authorityNameAr?: string | null;
   year: string;
   indicator?: string | null;
+  indicatorAr?: string | null;
   value?: string | null;
   data?: Record<string, unknown> | null;
 }
@@ -55,8 +59,10 @@ export function fromApiBenchmarkingRecord(row: ApiBenchmarkingRow): Benchmarking
   const data = row.data ?? {};
   return {
     authority: row.authorityName,
+    authorityNameAr: row.authorityNameAr ?? undefined,
     year: row.year,
     title: String(data.title ?? row.indicator ?? ''),
+    indicatorAr: row.indicatorAr ?? undefined,
     description: data.description != null ? String(data.description) : row.value ?? undefined,
     fileUrl: data.fileUrl != null ? String(data.fileUrl) : undefined,
   };
@@ -65,8 +71,10 @@ export function fromApiBenchmarkingRecord(row: ApiBenchmarkingRow): Benchmarking
 export function toApiBenchmarkingPayload(record: BenchmarkingRecord) {
   return {
     authorityName: record.authority,
+    authorityNameAr: record.authorityNameAr?.trim() || null,
     year: record.year,
     indicator: null,
+    indicatorAr: record.indicatorAr?.trim() || null,
     value: null,
     data: {
       title: record.title,

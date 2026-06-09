@@ -3,11 +3,14 @@ import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import FileUpload from '../../lib/FileUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
 
 interface Publication {
   id: number;
   title: string;
+  title_ar?: string | null;
   description: string | null;
+  description_ar?: string | null;
   authority_name: string;
   category: string;
   file_url: string | null;
@@ -17,7 +20,14 @@ interface Publication {
 const CATEGORIES = ['Brochure', 'Code', 'General', 'Guide', 'Others', 'Report', 'Study'];
 
 const empty = (): Omit<Publication, 'id'> => ({
-  title: '', description: '', authority_name: '', category: 'General', file_url: '', date_published: null,
+  title: '',
+  title_ar: '',
+  description: '',
+  description_ar: '',
+  authority_name: '',
+  category: 'General',
+  file_url: '',
+  date_published: null,
 });
 
 export default function PublicationsEditor() {
@@ -43,10 +53,15 @@ export default function PublicationsEditor() {
     if (!editing?.title?.trim()) return;
     setSaving(true);
     try {
+      const payload = normalizeMediaFieldsDeep({
+        ...editing,
+        title_ar: editing.title_ar?.trim() || null,
+        description_ar: editing.description_ar?.trim() || null,
+      });
       if (editing.id) {
-        await api.put(`/publications/${editing.id}`, normalizeMediaFieldsDeep(editing));
+        await api.put(`/publications/${editing.id}`, payload);
       } else {
-        await api.post('/publications', normalizeMediaFieldsDeep(editing));
+        await api.post('/publications', payload);
       }
       setEditing(null);
       load();
@@ -91,6 +106,13 @@ export default function PublicationsEditor() {
             hint="Upload a PDF or document for this publication"
           />
           <textarea className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[60px]" placeholder="Description" value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
+          <ArabicSectionDivider />
+          <div className="sm:col-span-2">
+            <ArabicTextField label="العنوان (عربي)" value={editing.title_ar ?? ''} onChange={(v) => setEditing({ ...editing, title_ar: v })} />
+          </div>
+          <div className="sm:col-span-2">
+            <ArabicTextAreaField label="الوصف (عربي)" value={editing.description_ar ?? ''} onChange={(v) => setEditing({ ...editing, description_ar: v })} rows={3} />
+          </div>
           <div className="sm:col-span-2 flex gap-2">
             <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5"><Save size={14} /> Save</button>
             <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-gray-500 flex items-center gap-1"><X size={14} /> Cancel</button>

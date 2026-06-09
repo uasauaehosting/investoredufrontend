@@ -3,27 +3,37 @@ import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
-import { MediaPreview } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
 
 export interface PortalCategory {
   id: number;
   title: string;
+  titleAr?: string | null;
   short_title: string;
+  short_titleAr?: string | null;
   description: string | null;
+  descriptionAr?: string | null;
   image_url: string | null;
   link: string;
   authority_name: string;
+  authority_nameAr?: string | null;
   country: string;
+  countryAr?: string | null;
 }
 
 const empty: Omit<PortalCategory, 'id'> = {
   title: '',
+  titleAr: '',
   short_title: '',
+  short_titleAr: '',
   description: '',
+  descriptionAr: '',
   image_url: '',
   link: '#',
   authority_name: '',
+  authority_nameAr: '',
   country: '',
+  countryAr: '',
 };
 
 export default function PortalCategoriesEditor() {
@@ -56,10 +66,18 @@ export default function PortalCategoriesEditor() {
     if (!editing.authority_name?.trim()) { setError('Authority name is required.'); return; }
     setSaving(true); setError(null);
     try {
+      const payload = normalizeMediaFieldsDeep({
+        ...editing,
+        titleAr: editing.titleAr?.trim() || null,
+        short_titleAr: editing.short_titleAr?.trim() || null,
+        descriptionAr: editing.descriptionAr?.trim() || null,
+        authority_nameAr: editing.authority_nameAr?.trim() || null,
+        countryAr: editing.countryAr?.trim() || null,
+      });
       if (editing.id) {
-        await api.put(`/portals/${editing.id}`, normalizeMediaFieldsDeep(editing));
+        await api.put(`/portals/${editing.id}`, payload);
       } else {
-        await api.post('/portals', normalizeMediaFieldsDeep(editing));
+        await api.post('/portals', payload);
       }
       setEditing(null);
       load();
@@ -137,6 +155,18 @@ export default function PortalCategoriesEditor() {
               <input type="text" value={editing.link ?? ''} onChange={(e) => setEditing({ ...editing, link: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
             </div>
+            <ArabicSectionDivider />
+            <div className="sm:col-span-2">
+              <ArabicTextField label="عنوان اللوحة (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
+            </div>
+            <div className="sm:col-span-2">
+              <ArabicTextField label="العنوان المختصر (عربي)" value={editing.short_titleAr ?? ''} onChange={(v) => setEditing({ ...editing, short_titleAr: v })} />
+            </div>
+            <div className="sm:col-span-2">
+              <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} />
+            </div>
+            <ArabicTextField label="اسم الجهة (عربي)" value={editing.authority_nameAr ?? ''} onChange={(v) => setEditing({ ...editing, authority_nameAr: v })} />
+            <ArabicTextField label="الدولة (عربي)" value={editing.countryAr ?? ''} onChange={(v) => setEditing({ ...editing, countryAr: v })} />
           </div>
           {error && <p className="text-red-600 text-xs">{error}</p>}
           <div className="flex gap-2">

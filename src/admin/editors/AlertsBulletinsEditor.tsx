@@ -7,13 +7,17 @@ import {
   ALERT_BULLETIN_YEARS,
   AlertBulletinType,
 } from '../../lib/alertBulletinFilters';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
 
 interface AlertBulletin {
   id: number;
   title: string;
+  titleAr?: string | null;
   type: AlertBulletinType;
   description: string;
+  descriptionAr?: string | null;
   content: string;
+  contentAr?: string | null;
   authority_name: string;
   year: string;
   date_published: string | null;
@@ -23,9 +27,12 @@ interface AlertBulletin {
 
 const empty = (): Omit<AlertBulletin, 'id'> => ({
   title: '',
+  titleAr: '',
   type: 'Alert',
   description: '',
+  descriptionAr: '',
   content: '',
+  contentAr: '',
   authority_name: ALERT_BULLETIN_AUTHORITIES[0],
   year: ALERT_BULLETIN_YEARS[0],
   date_published: new Date().toISOString().slice(0, 10),
@@ -82,9 +89,12 @@ export default function AlertsBulletinsEditor() {
     try {
       const payload = {
         title: editing.title.trim(),
+        titleAr: editing.titleAr?.trim() || null,
         type: editing.type ?? 'Alert',
         description: editing.description?.trim() ?? '',
+        descriptionAr: editing.descriptionAr?.trim() || null,
         content: editing.content?.trim() ?? '',
+        contentAr: editing.contentAr?.trim() || null,
         authority_name: editing.authority_name,
         year: editing.year ?? ALERT_BULLETIN_YEARS[0],
         date_published: editing.date_published ?? `${editing.year}-01-01`,
@@ -209,6 +219,16 @@ export default function AlertsBulletinsEditor() {
               value={editing.content ?? ''}
               onChange={(e) => setEditing({ ...editing, content: e.target.value })}
             />
+            <ArabicSectionDivider />
+            <div className="sm:col-span-2">
+              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
+            </div>
+            <div className="sm:col-span-2">
+              <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} />
+            </div>
+            <div className="sm:col-span-2">
+              <ArabicTextAreaField label="المحتوى (عربي)" value={editing.contentAr ?? ''} onChange={(v) => setEditing({ ...editing, contentAr: v })} rows={5} hint="HTML allowed" />
+            </div>
             <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
               <input
                 type="checkbox"

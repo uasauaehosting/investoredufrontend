@@ -1,12 +1,15 @@
 export interface Principle {
   id: number;
   title: string;
+  titleAr?: string;
   description: string;
+  descriptionAr?: string;
   author: string;
   date: string;
   fileUrl: string;
   imageUrl: string;
   content: string;
+  contentAr?: string;
   isActive: boolean;
 }
 

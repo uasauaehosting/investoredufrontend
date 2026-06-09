@@ -3,18 +3,23 @@ import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep, normalizeMediaUrl } from '../../lib/mediaUrl';
+import { ArabicSectionDivider, ArabicTextField } from './siteContent/FormFields';
 
 export interface Member {
   id: number;
   name: string;
+  nameAr?: string | null;
   country: string;
+  countryAr?: string | null;
   logo: string | null;
   website: string | null;
 }
 
 const empty: Omit<Member, 'id'> = {
   name: '',
+  nameAr: '',
   country: '',
+  countryAr: '',
   logo: '',
   website: '#',
 };
@@ -47,10 +52,15 @@ export default function MembersEditor() {
     if (!editing.name?.trim() || !editing.country?.trim()) { setError('Name and country are required.'); return; }
     setSaving(true); setError(null);
     try {
+      const payload = normalizeMediaFieldsDeep({
+        ...editing,
+        nameAr: editing.nameAr?.trim() || null,
+        countryAr: editing.countryAr?.trim() || null,
+      });
       if (editing.id) {
-        await api.put(`/home/members/${editing.id}`, normalizeMediaFieldsDeep(editing));
+        await api.put(`/home/members/${editing.id}`, payload);
       } else {
-        await api.post('/home/members', normalizeMediaFieldsDeep(editing));
+        await api.post('/home/members', payload);
       }
       setEditing(null);
       load();
@@ -123,6 +133,9 @@ export default function MembersEditor() {
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
               />
             </div>
+            <ArabicSectionDivider />
+            <ArabicTextField label="اسم الجهة (عربي)" value={editing.nameAr ?? ''} onChange={(v) => setEditing({ ...editing, nameAr: v })} />
+            <ArabicTextField label="الدولة (عربي)" value={editing.countryAr ?? ''} onChange={(v) => setEditing({ ...editing, countryAr: v })} />
           </div>
           {error && <p className="text-red-600 text-xs">{error}</p>}
           <div className="flex gap-2">

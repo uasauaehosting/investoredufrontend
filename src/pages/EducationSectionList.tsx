@@ -3,12 +3,17 @@ import { Link, useParams, Navigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { api } from '../lib/api';
 import { EDUCATION_SECTIONS, EducationItem, getSectionMeta, isValidSection } from '../lib/educationSections';
+import { useLanguage } from '../lib/LanguageContext';
+import { pickField, pickLocalized } from '../lib/localizedText';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800';
 
 function ItemCard({ item, basePath }: { item: EducationItem; basePath: string }) {
+  const { lang } = useLanguage();
   const [imgSrc, setImgSrc] = useState(item.imageUrl || FALLBACK_IMAGE);
+  const title = pickField(lang, item, 'title');
+  const description = pickField(lang, item, 'description');
 
   return (
     <Link
@@ -18,16 +23,16 @@ function ItemCard({ item, basePath }: { item: EducationItem; basePath: string })
       <div className="aspect-[16/10] overflow-hidden bg-gray-100">
         <img
           src={imgSrc}
-          alt={item.title}
+          alt={title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           onError={() => setImgSrc(FALLBACK_IMAGE)}
         />
       </div>
       <div className="p-6 flex flex-col flex-1">
         <h3 className="text-lg font-bold text-[#009900] mb-3 group-hover:text-green-700 transition-colors">
-          {item.title}
+          {title}
         </h3>
-        <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3">{item.description}</p>
+        <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3">{description}</p>
         <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#009900] mt-5 group-hover:text-amber-600 transition-colors">
           Read More <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
         </span>
@@ -37,6 +42,7 @@ function ItemCard({ item, basePath }: { item: EducationItem; basePath: string })
 }
 
 export default function EducationSectionList() {
+  const { lang } = useLanguage();
   const { section } = useParams<{ section: string }>();
   const meta = section ? getSectionMeta(section) : null;
   const valid = section && isValidSection(section) && meta;
@@ -63,8 +69,8 @@ export default function EducationSectionList() {
     <div className="bg-gray-50 min-h-screen">
       <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4">{meta.title}</h1>
-          <p className="text-green-100 max-w-2xl leading-relaxed">{meta.description}</p>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4">{pickLocalized(lang, meta.title, meta.titleAr)}</h1>
+          <p className="text-green-100 max-w-2xl leading-relaxed">{pickLocalized(lang, meta.description, meta.descriptionAr)}</p>
         </div>
       </div>
 

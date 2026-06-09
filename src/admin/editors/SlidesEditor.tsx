@@ -3,14 +3,17 @@ import { Plus, Pencil, Trash2, Save, X, ToggleLeft, ToggleRight, GripVertical } 
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
-import { MediaPreview } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextField, MediaPreview } from './siteContent/FormFields';
 
 export interface Slide {
   id: number;
   title: string;
+  titleAr?: string | null;
   subtitle: string | null;
+  subtitleAr?: string | null;
   image_url: string | null;
   cta_text: string | null;
+  cta_textAr?: string | null;
   cta_href: string | null;
   display_order: number;
   is_active: boolean;
@@ -18,9 +21,12 @@ export interface Slide {
 
 const empty: Omit<Slide, 'id'> = {
   title: '',
+  titleAr: '',
   subtitle: '',
+  subtitleAr: '',
   image_url: '',
   cta_text: 'Learn More',
+  cta_textAr: '',
   cta_href: '#',
   display_order: 0,
   is_active: true,
@@ -54,10 +60,16 @@ export default function SlidesEditor() {
     if (!editing.title?.trim()) { setError('Title is required.'); return; }
     setSaving(true); setError(null);
     try {
+      const payload = normalizeMediaFieldsDeep({
+        ...editing,
+        titleAr: editing.titleAr?.trim() || null,
+        subtitleAr: editing.subtitleAr?.trim() || null,
+        cta_textAr: editing.cta_textAr?.trim() || null,
+      });
       if (editing.id) {
-        await api.put(`/home/slides/${editing.id}`, normalizeMediaFieldsDeep(editing));
+        await api.put(`/home/slides/${editing.id}`, payload);
       } else {
-        await api.post('/home/slides', normalizeMediaFieldsDeep(editing));
+        await api.post('/home/slides', payload);
       }
       setEditing(null);
       load();
@@ -117,6 +129,10 @@ export default function SlidesEditor() {
             <Field label="CTA Text" value={editing.cta_text ?? ''} onChange={(v) => setEditing({ ...editing, cta_text: v })} />
             <Field label="CTA Link" value={editing.cta_href ?? ''} onChange={(v) => setEditing({ ...editing, cta_href: v })} />
             <Field label="Display Order" type="number" value={String(editing.display_order ?? 0)} onChange={(v) => setEditing({ ...editing, display_order: Number(v) })} />
+            <ArabicSectionDivider />
+            <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
+            <ArabicTextField label="العنوان الفرعي (عربي)" value={editing.subtitleAr ?? ''} onChange={(v) => setEditing({ ...editing, subtitleAr: v })} />
+            <ArabicTextField label="نص الزر (عربي)" value={editing.cta_textAr ?? ''} onChange={(v) => setEditing({ ...editing, cta_textAr: v })} />
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="is_active" checked={editing.is_active ?? true} onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })} className="rounded" />
@@ -168,3 +184,4 @@ function Field({ label, value, onChange, type = 'text' }: { label: string; value
     </div>
   );
 }
+

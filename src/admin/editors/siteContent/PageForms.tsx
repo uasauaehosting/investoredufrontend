@@ -6,6 +6,9 @@ import {
   ImageField,
   FileField,
   SectionHeading,
+  ArabicTextField,
+  ArabicTextAreaField,
+  ArabicSectionDivider,
 } from './FormFields';
 
 const cardClass = 'bg-gray-50 border border-gray-100 rounded-xl p-4 space-y-3';
@@ -32,11 +35,16 @@ function asArray<T>(value: T[] | undefined | null, fallback: T[]): T[] {
 
 export interface HomeWelcomeContent {
   badge: string;
+  badgeAr?: string;
   title: string;
+  titleAr?: string;
   paragraphs: string[];
+  paragraphsAr?: string[];
   ctaText: string;
+  ctaTextAr?: string;
   ctaHref: string;
   highlights: { icon: string; title: string; description: string }[];
+  highlightsAr?: { icon: string; title: string; description: string }[];
 }
 
 export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent>) {
@@ -61,6 +69,14 @@ export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent
       <TextField label="Heading" value={data.title ?? ''} onChange={(v) => set('title', v)} />
       <TextField label="Button Link" value={data.ctaHref ?? ''} onChange={(v) => set('ctaHref', v)} hint="Use # for same-page anchor or a full URL" />
       <StringListEditor label="Intro Paragraphs" items={data.paragraphs} onChange={(v) => set('paragraphs', v)} addLabel="Add paragraph" />
+
+      <ArabicSectionDivider />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <ArabicTextField label="نص الشارة (عربي)" value={data.badgeAr ?? ''} onChange={(v) => set('badgeAr', v)} />
+        <ArabicTextField label="نص الزر (عربي)" value={data.ctaTextAr ?? ''} onChange={(v) => set('ctaTextAr', v)} />
+      </div>
+      <ArabicTextField label="العنوان (عربي)" value={data.titleAr ?? ''} onChange={(v) => set('titleAr', v)} />
+      <StringListEditor label="فقرات المقدمة (عربي)" items={data.paragraphsAr} onChange={(v) => set('paragraphsAr', v)} addLabel="إضافة فقرة" placeholder="نص عربي..." />
 
       <SectionHeading title="Highlight Cards" description="Three feature cards shown beside the welcome text" />
       <div className="space-y-3">
@@ -103,6 +119,26 @@ export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent
             <Plus size={14} /> Add highlight card
           </button>
         )}
+      </div>
+
+      <SectionHeading title="Highlight Cards (Arabic)" description="Arabic titles and descriptions for each card" />
+      <div className="space-y-3">
+        {highlights.map((item, index) => {
+          const arItems = asArray(data.highlightsAr, highlights.map(() => ({ icon: item.icon, title: '', description: '' })));
+          const arItem = arItems[index] ?? { icon: item.icon, title: '', description: '' };
+          const updateAr = (field: 'title' | 'description', value: string) => {
+            const next = [...arItems];
+            next[index] = { ...arItem, [field]: value };
+            set('highlightsAr', next);
+          };
+          return (
+            <div key={`ar-${index}`} className={cardClass} dir="rtl">
+              <span className="text-xs font-semibold text-gray-500">البطاقة {index + 1}</span>
+              <ArabicTextField label="العنوان" value={arItem.title} onChange={(v) => updateAr('title', v)} />
+              <ArabicTextAreaField label="الوصف" value={arItem.description} onChange={(v) => updateAr('description', v)} rows={2} />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

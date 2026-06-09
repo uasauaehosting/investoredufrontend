@@ -185,3 +185,72 @@ export function SectionHeading({ title, description }: { title: string; descript
     </div>
   );
 }
+
+const arabicInputClass = `${inputClass} text-right`;
+
+export function ArabicTextField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  hint?: string;
+}) {
+  return (
+    <div dir="rtl">
+      <label className={labelClass}>{label}</label>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={arabicInputClass}
+      />
+      {hint && <p className="text-[10px] text-gray-400 mt-1 text-right">{hint}</p>}
+    </div>
+  );
+}
+
+export function ArabicTextAreaField({
+  label,
+  value,
+  onChange,
+  rows = 4,
+  placeholder,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  rows?: number;
+  placeholder?: string;
+  hint?: string;
+}) {
+  return (
+    <div dir="rtl">
+      <label className={labelClass}>{label}</label>
+      <textarea
+        rows={rows}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={`${arabicInputClass} resize-y`}
+      />
+      {hint && <p className="text-[10px] text-gray-400 mt-1 text-right">{hint}</p>}
+    </div>
+  );
+}
+
+export function ArabicSectionDivider() {
+  return (
+    <div className="sm:col-span-2 pt-2 border-t border-green-200">
+      <p className="text-xs font-semibold text-[#009900]">العربية — Arabic Content</p>
+      <p className="text-[10px] text-gray-400 mt-0.5">Shown when visitors switch to Arabic (RTL)</p>
+    </div>
+  );
+}

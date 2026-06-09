@@ -10,17 +10,20 @@ import {
 } from '../../lib/investmentProductContent';
 import { InvestmentProductBlock } from '../../lib/investmentProducts';
 import InvestmentProductBlocksEditor from './InvestmentProductBlocksEditor';
-import { MediaPreview } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
 
 interface InvestmentProduct {
   id: number;
   title: string;
+  titleAr?: string | null;
   description: string;
+  descriptionAr?: string | null;
   author: string;
   date: string;
   fileUrl: string;
   imageUrl: string;
   content: string;
+  contentAr?: string | null;
   slug: string;
   isActive: boolean;
 }
@@ -34,19 +37,26 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-type EditingProduct = Partial<InvestmentProduct> & { blocks?: InvestmentProductBlock[] };
+type EditingProduct = Partial<InvestmentProduct> & {
+  blocks?: InvestmentProductBlock[];
+  blocksAr?: InvestmentProductBlock[];
+};
 
 const empty = (): EditingProduct => ({
   title: '',
+  titleAr: '',
   description: '',
+  descriptionAr: '',
   author: '',
   date: today(),
   fileUrl: '',
   imageUrl: '',
   content: '',
+  contentAr: '',
   slug: '',
   isActive: true,
   blocks: [],
+  blocksAr: [],
 });
 
 export default function InvestmentProductsEditor() {
@@ -86,6 +96,7 @@ export default function InvestmentProductsEditor() {
         ...item,
         date: item.date ? String(item.date).slice(0, 10) : today(),
         blocks: parseInvestmentProductContent(item.content),
+        blocksAr: parseInvestmentProductContent(item.contentAr ?? undefined),
         slug: item.slug ?? '',
       }),
     );
@@ -111,7 +122,8 @@ export default function InvestmentProductsEditor() {
       return;
     }
 
-    const blocks = (editing.blocks ?? []).map((block) => ({
+    const normalizeBlocks = (source: InvestmentProductBlock[]) =>
+      source.map((block) => ({
       ...block,
       heading: block.heading?.trim() || undefined,
       paragraphs: block.paragraphs?.map((p) => p.trim()).filter(Boolean),
@@ -137,19 +149,25 @@ export default function InvestmentProductsEditor() {
         block.externalLink,
     );
 
+    const blocks = normalizeBlocks(editing.blocks ?? []);
+    const blocksAr = normalizeBlocks(editing.blocksAr ?? []);
     const content = serializeInvestmentProductContent(blocks);
+    const contentAr = blocksAr.length > 0 ? serializeInvestmentProductContent(blocksAr) : null;
 
     setSaving(true);
     setError(null);
     try {
       const payload = normalizeMediaFieldsDeep({
         title: editing.title.trim(),
+        titleAr: editing.titleAr?.trim() || null,
         description: editing.description.trim(),
+        descriptionAr: editing.descriptionAr?.trim() || null,
         author: editing.author?.trim() || '',
         date: editing.date || today(),
         fileUrl: editing.fileUrl?.trim() || '',
         imageUrl: editing.imageUrl?.trim() || '',
         content,
+        contentAr,
         slug,
         isActive: editing.isActive !== false,
       });
@@ -260,6 +278,20 @@ export default function InvestmentProductsEditor() {
               <InvestmentProductBlocksEditor
                 blocks={editing.blocks ?? []}
                 onChange={(blocks) => setEditing({ ...editing, blocks })}
+              />
+            </div>
+            <ArabicSectionDivider />
+            <div className="sm:col-span-2">
+              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
+            </div>
+            <div className="sm:col-span-2">
+              <ArabicTextAreaField label="الوصف المختصر (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} />
+            </div>
+            <div className="sm:col-span-2">
+              <InvestmentProductBlocksEditor
+                blocks={editing.blocksAr ?? []}
+                onChange={(blocksAr) => setEditing({ ...editing, blocksAr })}
+                rtl
               />
             </div>
             <div className="flex items-end">

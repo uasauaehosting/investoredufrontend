@@ -3,26 +3,30 @@ import { Plus, Pencil, Trash2, Save, X, GripVertical } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
-import { MediaPreview } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
 
 const CATEGORIES = ['News', 'Publication', 'Event'];
 
 export interface NewsItem {
   id: number;
   title: string;
+  titleAr?: string | null;
   image: string | null;
   category: string;
   date: string | null;
   excerpt: string | null;
+  excerptAr?: string | null;
   link?: string;
 }
 
 const empty: Omit<NewsItem, 'id'> = {
   title: '',
+  titleAr: '',
   image: '',
   category: 'News',
   date: new Date().toISOString().split('T')[0],
   excerpt: '',
+  excerptAr: '',
   link: '',
 };
 
@@ -54,10 +58,15 @@ export default function NewsEditor() {
     if (!editing.title?.trim()) { setError('Title is required.'); return; }
     setSaving(true); setError(null);
     try {
+      const payload = normalizeMediaFieldsDeep({
+        ...editing,
+        titleAr: editing.titleAr?.trim() || null,
+        excerptAr: editing.excerptAr?.trim() || null,
+      });
       if (editing.id) {
-        await api.put(`/home/news/${editing.id}`, normalizeMediaFieldsDeep(editing));
+        await api.put(`/home/news/${editing.id}`, payload);
       } else {
-        await api.post('/home/news', normalizeMediaFieldsDeep(editing));
+        await api.post('/home/news', payload);
       }
       setEditing(null);
       load();
@@ -129,6 +138,13 @@ export default function NewsEditor() {
               <label className="block text-xs font-medium text-gray-500 mb-1">Summary / Excerpt</label>
               <textarea rows={3} value={editing.excerpt ?? ''} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none" />
+            </div>
+            <ArabicSectionDivider />
+            <div className="sm:col-span-2">
+              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
+            </div>
+            <div className="sm:col-span-2">
+              <ArabicTextAreaField label="الملخص (عربي)" value={editing.excerptAr ?? ''} onChange={(v) => setEditing({ ...editing, excerptAr: v })} rows={3} />
             </div>
           </div>
           {error && <p className="text-red-600 text-xs">{error}</p>}

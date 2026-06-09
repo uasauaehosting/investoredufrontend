@@ -5,16 +5,24 @@ import {
   PROGRAM_FILTER_GROUPS,
   PROGRAM_MEMBERS,
 } from '../../lib/programFilters';
+import { ArabicSectionDivider, ArabicTextField, StringListEditor } from './siteContent/FormFields';
 
 interface Program {
   id: number;
   member_name: string;
+  member_name_ar?: string | null;
   general_info: string[];
+  general_info_ar?: string[];
   education_materials: string[];
+  education_materials_ar?: string[];
   specific_materials: string[];
+  specific_materials_ar?: string[];
   assisting_groups: string[];
+  assisting_groups_ar?: string[];
   evaluation: string[];
+  evaluation_ar?: string[];
   successful_programs: string[];
+  successful_programs_ar?: string[];
   is_active: boolean;
 }
 
@@ -29,7 +37,17 @@ const FIELD_KEYS = [
   'successful_programs',
 ] as const;
 
+const AR_FIELD_KEYS = [
+  'general_info_ar',
+  'education_materials_ar',
+  'specific_materials_ar',
+  'assisting_groups_ar',
+  'evaluation_ar',
+  'successful_programs_ar',
+] as const;
+
 type FieldKey = (typeof FIELD_KEYS)[number];
+type ArFieldKey = (typeof AR_FIELD_KEYS)[number];
 
 const GROUP_FIELD_MAP: Record<string, FieldKey> = {
   generalInfo: 'general_info',
@@ -38,6 +56,15 @@ const GROUP_FIELD_MAP: Record<string, FieldKey> = {
   assistingGroups: 'assisting_groups',
   evaluation: 'evaluation',
   successfulPrograms: 'successful_programs',
+};
+
+const GROUP_AR_FIELD_MAP: Record<string, ArFieldKey> = {
+  generalInfo: 'general_info_ar',
+  educationMaterials: 'education_materials_ar',
+  specificMaterials: 'specific_materials_ar',
+  assistingGroups: 'assisting_groups_ar',
+  evaluation: 'evaluation_ar',
+  successfulPrograms: 'successful_programs_ar',
 };
 
 function parseArray(value: unknown): string[] {
@@ -57,24 +84,38 @@ function normalizeProgram(raw: Record<string, unknown>): Program {
   return {
     id: raw.id as number,
     member_name: String(raw.member_name ?? ''),
+    member_name_ar: raw.member_name_ar != null ? String(raw.member_name_ar) : '',
     general_info: parseArray(raw.general_info),
+    general_info_ar: parseArray(raw.general_info_ar),
     education_materials: parseArray(raw.education_materials),
+    education_materials_ar: parseArray(raw.education_materials_ar),
     specific_materials: parseArray(raw.specific_materials),
+    specific_materials_ar: parseArray(raw.specific_materials_ar),
     assisting_groups: parseArray(raw.assisting_groups),
+    assisting_groups_ar: parseArray(raw.assisting_groups_ar),
     evaluation: parseArray(raw.evaluation),
+    evaluation_ar: parseArray(raw.evaluation_ar),
     successful_programs: parseArray(raw.successful_programs),
+    successful_programs_ar: parseArray(raw.successful_programs_ar),
     is_active: raw.is_active !== false && raw.is_active !== 0,
   };
 }
 
 const empty = (): ProgramForm => ({
   member_name: '',
+  member_name_ar: '',
   general_info: [],
+  general_info_ar: [],
   education_materials: [],
+  education_materials_ar: [],
   specific_materials: [],
+  specific_materials_ar: [],
   assisting_groups: [],
+  assisting_groups_ar: [],
   evaluation: [],
+  evaluation_ar: [],
   successful_programs: [],
+  successful_programs_ar: [],
   is_active: true,
 });
 
@@ -108,12 +149,19 @@ export default function ProgramsEditor() {
     try {
       const payload = {
         member_name: editing.member_name,
+        member_name_ar: editing.member_name_ar?.trim() || null,
         general_info: editing.general_info,
+        general_info_ar: editing.general_info_ar?.filter((v) => v.trim()) ?? [],
         education_materials: editing.education_materials,
+        education_materials_ar: editing.education_materials_ar?.filter((v) => v.trim()) ?? [],
         specific_materials: editing.specific_materials,
+        specific_materials_ar: editing.specific_materials_ar?.filter((v) => v.trim()) ?? [],
         assisting_groups: editing.assisting_groups,
+        assisting_groups_ar: editing.assisting_groups_ar?.filter((v) => v.trim()) ?? [],
         evaluation: editing.evaluation,
+        evaluation_ar: editing.evaluation_ar?.filter((v) => v.trim()) ?? [],
         successful_programs: editing.successful_programs,
+        successful_programs_ar: editing.successful_programs_ar?.filter((v) => v.trim()) ?? [],
         is_active: editing.is_active,
       };
       if (editing.id) {
@@ -137,6 +185,11 @@ export default function ProgramsEditor() {
   };
 
   const setField = (key: FieldKey, values: string[]) => {
+    if (!editing) return;
+    setEditing({ ...editing, [key]: values });
+  };
+
+  const setArField = (key: ArFieldKey, values: string[]) => {
     if (!editing) return;
     setEditing({ ...editing, [key]: values });
   };
@@ -200,6 +253,28 @@ export default function ProgramsEditor() {
                     </label>
                   ))}
                 </div>
+              </div>
+            );
+          })}
+
+          <ArabicSectionDivider />
+          <ArabicTextField
+            label="اسم العضو (عربي)"
+            value={editing.member_name_ar ?? ''}
+            onChange={(v) => setEditing({ ...editing, member_name_ar: v })}
+          />
+
+          {PROGRAM_FILTER_GROUPS.map((group) => {
+            const arFieldKey = GROUP_AR_FIELD_MAP[group.name];
+            return (
+              <div key={`${group.name}-ar`} dir="rtl">
+                <StringListEditor
+                  label={`${group.title} (عربي)`}
+                  items={editing[arFieldKey]?.length ? editing[arFieldKey] : ['']}
+                  onChange={(items) => setArField(arFieldKey, items)}
+                  placeholder="أدخل النص بالعربية..."
+                  addLabel="إضافة عنصر"
+                />
               </div>
             );
           })}

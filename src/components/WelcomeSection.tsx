@@ -1,5 +1,7 @@
 import { TrendingUp, Shield, Globe } from 'lucide-react';
-import { useSiteContent } from '../lib/useSiteContent';
+import { useLocalizedSiteContent } from '../lib/useLocalizedSiteContent';
+import { useLanguage } from '../lib/LanguageContext';
+import { pickField } from '../lib/localizedText';
 
 const ICON_MAP = { TrendingUp, Shield, Globe } as const;
 
@@ -20,7 +22,8 @@ const FALLBACK = {
 };
 
 export default function WelcomeSection() {
-  const { data } = useSiteContent('home.welcome', FALLBACK);
+  const { lang } = useLanguage();
+  const { data } = useLocalizedSiteContent('home.welcome', FALLBACK, ['badge', 'title', 'ctaText'], ['paragraphs']);
 
   return (
     <section className="py-14 bg-white">
@@ -44,19 +47,22 @@ export default function WelcomeSection() {
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            {data.highlights.map((item) => {
+            {data.highlights.map((item, index) => {
               const Icon = ICON_MAP[item.icon as keyof typeof ICON_MAP] ?? TrendingUp;
+              const arHighlight = (data as typeof FALLBACK & { highlightsAr?: typeof FALLBACK.highlights }).highlightsAr?.[index];
+              const cardTitle = pickField(lang, { title: item.title, titleAr: arHighlight?.title }, 'title');
+              const cardDesc = pickField(lang, { description: item.description, descriptionAr: arHighlight?.description }, 'description');
               return (
                 <div
-                  key={item.title}
+                  key={`${item.title}-${index}`}
                   className="flex items-start gap-4 p-4 rounded-xl bg-green-50 hover:bg-green-50 transition-colors group border border-transparent hover:border-green-200"
                 >
                   <div className="w-10 h-10 rounded-lg bg-[#009900] text-white flex items-center justify-center flex-shrink-0 group-hover:bg-amber-500 transition-colors shadow-sm">
                     <Icon size={18} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[#009900] text-sm mb-1">{item.title}</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed">{item.description}</p>
+                    <h3 className="font-semibold text-[#009900] text-sm mb-1">{cardTitle}</h3>
+                    <p className="text-gray-500 text-sm leading-relaxed">{cardDesc}</p>
                   </div>
                 </div>
               );

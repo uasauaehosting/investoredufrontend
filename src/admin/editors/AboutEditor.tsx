@@ -1,14 +1,26 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
 
 interface AboutSection {
   id: number;
   title: string;
+  titleAr?: string | null;
   content: string;
+  contentAr?: string | null;
   order: number;
   isActive: boolean;
 }
+
+const empty = (): Omit<AboutSection, 'id'> => ({
+  title: 'Section',
+  titleAr: '',
+  content: '',
+  contentAr: '',
+  order: 0,
+  isActive: true,
+});
 
 export default function AboutEditor() {
   const [sections, setSections] = useState<AboutSection[]>([]);
@@ -33,10 +45,19 @@ export default function AboutEditor() {
     if (!editing?.content?.trim()) return;
     setSaving(true);
     try {
+      const payload = {
+        ...editing,
+        titleAr: editing.titleAr?.trim() || null,
+        contentAr: editing.contentAr?.trim() || null,
+      };
       if (editing.id) {
-        await api.put(`/about/sections/${editing.id}`, editing);
+        await api.put(`/about/sections/${editing.id}`, payload);
       } else {
-        await api.post('/about/sections', { ...editing, order: editing.order ?? sections.length + 1, isActive: true });
+        await api.post('/about/sections', {
+          ...payload,
+          order: editing.order ?? sections.length + 1,
+          isActive: true,
+        });
       }
       setEditing(null);
       load();
@@ -62,7 +83,7 @@ export default function AboutEditor() {
           <h2 className="text-lg font-bold text-gray-800">About Page</h2>
           <p className="text-xs text-gray-400">Edit about page paragraphs</p>
         </div>
-        <button onClick={() => setEditing({ title: 'Section', content: '', order: sections.length + 1 })} className="btn-primary flex items-center gap-1.5">
+        <button onClick={() => setEditing({ ...empty(), order: sections.length + 1 })} className="btn-primary flex items-center gap-1.5">
           <Plus size={15} /> Add Section
         </button>
       </div>
@@ -71,6 +92,9 @@ export default function AboutEditor() {
         <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 space-y-4">
           <input className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Title" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
           <textarea className="w-full border rounded-lg px-3 py-2 text-sm min-h-[120px]" placeholder="Content paragraph" value={editing.content ?? ''} onChange={(e) => setEditing({ ...editing, content: e.target.value })} />
+          <ArabicSectionDivider />
+          <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
+          <ArabicTextAreaField label="المحتوى (عربي)" value={editing.contentAr ?? ''} onChange={(v) => setEditing({ ...editing, contentAr: v })} rows={6} />
           <div className="flex gap-2">
             <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5"><Save size={14} /> Save</button>
             <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"><X size={14} /> Cancel</button>

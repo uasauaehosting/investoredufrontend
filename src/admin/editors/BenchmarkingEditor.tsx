@@ -9,6 +9,7 @@ import {
   fromApiBenchmarkingRecord,
   toApiBenchmarkingPayload,
 } from '../../lib/benchmarking';
+import { ArabicSectionDivider, ArabicTextField } from './siteContent/FormFields';
 
 interface ApiBenchmarkingRecord {
   id: number;
@@ -24,8 +25,10 @@ const YEARS = ['2018', '2017', '2016', '2015', '2014', '2013', '2012'];
 
 const empty = (): BenchmarkingRecord & { id?: number } => ({
   authority: BENCHMARKING_AUTHORITIES[1],
+  authorityNameAr: '',
   year: YEARS[0],
   title: '',
+  indicatorAr: '',
   description: '',
   fileUrl: '',
 });
@@ -147,6 +150,13 @@ export default function BenchmarkingEditor() {
               onChange={(url) => setEditing({ ...editing, fileUrl: url })}
               hint="Optional PDF or document link"
             />
+          </div>
+          <ArabicSectionDivider />
+          <div className="sm:col-span-2">
+            <ArabicTextField label="اسم الجهة (عربي)" value={editing.authorityNameAr ?? ''} onChange={(v) => setEditing({ ...editing, authorityNameAr: v })} />
+          </div>
+          <div className="sm:col-span-2">
+            <ArabicTextField label="العنوان (عربي)" value={editing.indicatorAr ?? ''} onChange={(v) => setEditing({ ...editing, indicatorAr: v })} />
           </div>
           {error && <p className="text-red-500 text-xs sm:col-span-2">{error}</p>}
           <div className="sm:col-span-2 flex gap-2">

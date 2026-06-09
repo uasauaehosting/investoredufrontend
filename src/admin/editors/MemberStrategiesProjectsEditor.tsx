@@ -5,11 +5,14 @@ import {
   INCLUSION_CATEGORY_FILTERS,
   INCLUSION_MEMBER_FILTERS,
 } from '../../lib/inclusionMembers';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
 
 interface StrategyProject {
   id: number;
   title: string;
+  titleAr?: string | null;
   description: string;
+  descriptionAr?: string | null;
   authority_name: string;
   type: string;
   fileUrl: string | null;
@@ -18,7 +21,9 @@ interface StrategyProject {
 
 const empty = (): Omit<StrategyProject, 'id'> => ({
   title: '',
+  titleAr: '',
   description: 'View Description',
+  descriptionAr: '',
   authority_name: '',
   type: 'Strategy',
   fileUrl: '',
@@ -29,7 +34,9 @@ function normalize(raw: Record<string, unknown>): StrategyProject {
   return {
     id: raw.id as number,
     title: String(raw.title ?? ''),
+    titleAr: raw.titleAr != null ? String(raw.titleAr) : raw.title_ar != null ? String(raw.title_ar) : '',
     description: String(raw.description ?? 'View Description'),
+    descriptionAr: raw.descriptionAr != null ? String(raw.descriptionAr) : raw.description_ar != null ? String(raw.description_ar) : '',
     authority_name: String(raw.authority_name ?? raw.memberName ?? ''),
     type: String(raw.type ?? 'Strategy'),
     fileUrl: (raw.fileUrl as string | null) ?? (raw.file_url as string | null) ?? '',
@@ -65,7 +72,9 @@ export default function MemberStrategiesProjectsEditor() {
     try {
       const payload = {
         title: editing.title,
+        titleAr: editing.titleAr?.trim() || null,
         description: editing.description || 'View Description',
+        descriptionAr: editing.descriptionAr?.trim() || null,
         authority_name: editing.authority_name,
         type: editing.type || 'Strategy',
         fileUrl: editing.fileUrl || null,
@@ -154,6 +163,13 @@ export default function MemberStrategiesProjectsEditor() {
             value={editing.description ?? ''}
             onChange={(e) => setEditing({ ...editing, description: e.target.value })}
           />
+          <ArabicSectionDivider />
+          <div className="sm:col-span-2">
+            <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
+          </div>
+          <div className="sm:col-span-2">
+            <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} />
+          </div>
           <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
             <input
               type="checkbox"

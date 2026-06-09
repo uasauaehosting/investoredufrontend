@@ -1,10 +1,11 @@
 import { Plus, Trash2 } from 'lucide-react';
 import { InvestmentProductBlock } from '../../lib/investmentProducts';
-import { StringListEditor } from './siteContent/FormFields';
+import { ArabicTextField, StringListEditor } from './siteContent/FormFields';
 
 const cardClass = 'bg-white border border-gray-200 rounded-xl p-4 space-y-3';
 const inputClass =
   'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]';
+const arabicInputClass = `${inputClass} text-right`;
 const labelClass = 'block text-xs font-medium text-gray-500 mb-1';
 
 const emptyBlock = (): InvestmentProductBlock => ({
@@ -15,10 +16,13 @@ const emptyBlock = (): InvestmentProductBlock => ({
 export default function InvestmentProductBlocksEditor({
   blocks,
   onChange,
+  rtl = false,
 }: {
   blocks: InvestmentProductBlock[];
   onChange: (blocks: InvestmentProductBlock[]) => void;
+  rtl?: boolean;
 }) {
+  const fieldClass = rtl ? arabicInputClass : inputClass;
   const safeBlocks = blocks.length > 0 ? blocks : [emptyBlock()];
 
   const updateBlock = (index: number, next: InvestmentProductBlock) => {
@@ -35,9 +39,9 @@ export default function InvestmentProductBlocksEditor({
   const addBlock = () => onChange([...safeBlocks, emptyBlock()]);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" dir={rtl ? 'rtl' : undefined}>
       <div className="flex items-center justify-between gap-2">
-        <label className={labelClass}>Detail Page Content</label>
+        <label className={labelClass}>{rtl ? 'محتوى صفحة التفاصيل (عربي)' : 'Detail Page Content'}</label>
         <button type="button" onClick={addBlock} className="text-xs text-[#009900] hover:underline flex items-center gap-1">
           <Plus size={12} /> Add section
         </button>
@@ -59,37 +63,50 @@ export default function InvestmentProductBlocksEditor({
             )}
           </div>
 
-          <div>
-            <label className={labelClass}>Heading (optional)</label>
-            <input
-              type="text"
+          {rtl ? (
+            <ArabicTextField
+              label="العنوان (اختياري)"
               value={block.heading ?? ''}
-              onChange={(e) => updateBlock(index, { ...block, heading: e.target.value })}
-              className={inputClass}
-              placeholder="Section title"
+              onChange={(heading) => updateBlock(index, { ...block, heading })}
+              placeholder="عنوان القسم"
+            />
+          ) : (
+            <div>
+              <label className={labelClass}>Heading (optional)</label>
+              <input
+                type="text"
+                value={block.heading ?? ''}
+                onChange={(e) => updateBlock(index, { ...block, heading: e.target.value })}
+                className={inputClass}
+                placeholder="Section title"
+              />
+            </div>
+          )}
+
+          <div dir={rtl ? 'rtl' : undefined}>
+            <StringListEditor
+              label={rtl ? 'الفقرات' : 'Paragraphs'}
+              items={block.paragraphs ?? ['']}
+              onChange={(paragraphs) => updateBlock(index, { ...block, paragraphs })}
+              addLabel={rtl ? 'إضافة فقرة' : 'Add paragraph'}
+              placeholder={rtl ? 'نص الفقرة...' : 'Paragraph text...'}
             />
           </div>
 
-          <StringListEditor
-            label="Paragraphs"
-            items={block.paragraphs ?? ['']}
-            onChange={(paragraphs) => updateBlock(index, { ...block, paragraphs })}
-            addLabel="Add paragraph"
-            placeholder="Paragraph text..."
-          />
-
-          <StringListEditor
-            label="Bullet points (optional)"
-            items={block.bullets ?? []}
-            onChange={(bullets) =>
-              updateBlock(index, {
-                ...block,
-                bullets: bullets.length > 0 ? bullets : undefined,
-              })
-            }
-            addLabel="Add bullet"
-            placeholder="Bullet text..."
-          />
+          <div dir={rtl ? 'rtl' : undefined}>
+            <StringListEditor
+              label={rtl ? 'نقاط (اختياري)' : 'Bullet points (optional)'}
+              items={block.bullets ?? []}
+              onChange={(bullets) =>
+                updateBlock(index, {
+                  ...block,
+                  bullets: bullets.length > 0 ? bullets : undefined,
+                })
+              }
+              addLabel={rtl ? 'إضافة نقطة' : 'Add bullet'}
+              placeholder={rtl ? 'نص النقطة...' : 'Bullet text...'}
+            />
+          </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -132,8 +149,8 @@ export default function InvestmentProductBlocksEditor({
                     subItems[subIndex] = { ...item, title: e.target.value };
                     updateBlock(index, { ...block, subItems });
                   }}
-                  className={inputClass}
-                  placeholder="Title"
+                  className={fieldClass}
+                  placeholder={rtl ? 'العنوان' : 'Title'}
                 />
                 <textarea
                   rows={2}
@@ -143,27 +160,27 @@ export default function InvestmentProductBlocksEditor({
                     subItems[subIndex] = { ...item, text: e.target.value };
                     updateBlock(index, { ...block, subItems });
                   }}
-                  className={`${inputClass} resize-y`}
-                  placeholder="Description"
+                  className={`${fieldClass} resize-y`}
+                  placeholder={rtl ? 'الوصف' : 'Description'}
                 />
               </div>
             ))}
           </div>
 
           <div>
-            <label className={labelClass}>Source note (optional)</label>
+            <label className={labelClass}>{rtl ? 'المصدر (اختياري)' : 'Source note (optional)'}</label>
             <input
               type="text"
               value={block.source ?? ''}
               onChange={(e) => updateBlock(index, { ...block, source: e.target.value || undefined })}
-              className={inputClass}
-              placeholder="Source: www.example.com"
+              className={fieldClass}
+              placeholder={rtl ? 'المصدر: www.example.com' : 'Source: www.example.com'}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={labelClass}>External link label (optional)</label>
+              <label className={labelClass}>{rtl ? 'تسمية الرابط (اختياري)' : 'External link label (optional)'}</label>
               <input
                 type="text"
                 value={block.externalLink?.label ?? ''}
@@ -176,12 +193,12 @@ export default function InvestmentProductBlocksEditor({
                     },
                   })
                 }
-                className={inputClass}
-                placeholder="Read more"
+                className={fieldClass}
+                placeholder={rtl ? 'اقرأ المزيد' : 'Read more'}
               />
             </div>
             <div>
-              <label className={labelClass}>External link URL</label>
+              <label className={labelClass}>{rtl ? 'رابط خارجي' : 'External link URL'}</label>
               <input
                 type="url"
                 value={block.externalLink?.url ?? ''}
@@ -194,8 +211,9 @@ export default function InvestmentProductBlocksEditor({
                     },
                   })
                 }
-                className={inputClass}
+                className={fieldClass}
                 placeholder="https://..."
+                dir="ltr"
               />
             </div>
           </div>

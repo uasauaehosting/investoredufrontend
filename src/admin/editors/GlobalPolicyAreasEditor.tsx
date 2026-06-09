@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import { POLICY_CATEGORIES, POLICY_INSTITUTIONS } from '../../lib/globalPolicyFilters';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
 
 interface PolicyArea {
   id: number;
   title: string;
+  title_ar?: string | null;
   description: string;
+  description_ar?: string | null;
   institution: string;
   category: string;
   fileUrl: string | null;
@@ -15,7 +18,9 @@ interface PolicyArea {
 
 const empty = (): Omit<PolicyArea, 'id'> => ({
   title: '',
+  title_ar: '',
   description: 'View Description',
+  description_ar: '',
   institution: '',
   category: '',
   fileUrl: '',
@@ -26,7 +31,9 @@ function normalize(raw: Record<string, unknown>): PolicyArea {
   return {
     id: raw.id as number,
     title: String(raw.title ?? ''),
+    title_ar: raw.title_ar != null ? String(raw.title_ar) : '',
     description: String(raw.description ?? 'View Description'),
+    description_ar: raw.description_ar != null ? String(raw.description_ar) : '',
     institution: String(raw.institution ?? ''),
     category: String(raw.category ?? ''),
     fileUrl: (raw.fileUrl as string | null) ?? (raw.file_url as string | null) ?? '',
@@ -62,7 +69,9 @@ export default function GlobalPolicyAreasEditor() {
     try {
       const payload = {
         title: editing.title,
+        title_ar: editing.title_ar?.trim() || null,
         description: editing.description || 'View Description',
+        description_ar: editing.description_ar?.trim() || null,
         institution: editing.institution,
         category: editing.category,
         fileUrl: editing.fileUrl || null,
@@ -152,6 +161,13 @@ export default function GlobalPolicyAreasEditor() {
             value={editing.description ?? ''}
             onChange={(e) => setEditing({ ...editing, description: e.target.value })}
           />
+          <ArabicSectionDivider />
+          <div className="sm:col-span-2">
+            <ArabicTextField label="العنوان (عربي)" value={editing.title_ar ?? ''} onChange={(v) => setEditing({ ...editing, title_ar: v })} />
+          </div>
+          <div className="sm:col-span-2">
+            <ArabicTextAreaField label="الوصف (عربي)" value={editing.description_ar ?? ''} onChange={(v) => setEditing({ ...editing, description_ar: v })} rows={3} />
+          </div>
           <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
             <input
               type="checkbox"
