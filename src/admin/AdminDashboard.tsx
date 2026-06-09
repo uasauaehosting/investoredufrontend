@@ -19,11 +19,12 @@ import PrinciplesEditor from './editors/PrinciplesEditor';
 import InvestmentProductsEditor from './editors/InvestmentProductsEditor';
 import AlertsBulletinsEditor from './editors/AlertsBulletinsEditor';
 import MemberStrategiesProjectsEditor from './editors/MemberStrategiesProjectsEditor';
+import GlobalPolicyAreasEditor from './editors/GlobalPolicyAreasEditor';
 
 type Section =
   | 'overview' | 'slides' | 'news' | 'members' | 'portal' | 'education' | 'principles'
   | 'investment-products' | 'about' | 'pages' | 'glossary' | 'publications' | 'programs'
-  | 'alerts-bulletins' | 'member-strategies-projects';
+  | 'alerts-bulletins' | 'member-strategies-projects' | 'global-policy-areas';
 
 const navItems: { id: Section; label: string; icon: React.ElementType; desc: string }[] = [
   { id: 'overview',      label: 'Overview',           icon: LayoutDashboard, desc: 'Dashboard summary' },
@@ -41,6 +42,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType; desc: str
   { id: 'programs',      label: 'Programs',             icon: ClipboardList,   desc: 'Member education programs' },
   { id: 'alerts-bulletins', label: 'Alerts & Bulletins', icon: FileText,        desc: 'Market alerts and bulletins' },
   { id: 'member-strategies-projects', label: 'Strategies & Projects', icon: ClipboardList, desc: 'Member financial inclusion resources' },
+  { id: 'global-policy-areas', label: 'Global Policy Areas', icon: Globe, desc: 'OECD, AFI & global policy resources' },
 ];
 
 export default function AdminDashboard() {
@@ -142,6 +144,7 @@ export default function AdminDashboard() {
           {section === 'programs' && <ProgramsEditor />}
           {section === 'alerts-bulletins' && <AlertsBulletinsEditor />}
           {section === 'member-strategies-projects' && <MemberStrategiesProjectsEditor />}
+          {section === 'global-policy-areas' && <GlobalPolicyAreasEditor />}
         </main>
       </div>
     </div>

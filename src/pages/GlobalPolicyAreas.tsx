@@ -1,7 +1,8 @@
-import { FormEvent, useState } from 'react';
-import { ExternalLink, FileText } from 'lucide-react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import PageHeader from '../components/PageHeader';
+import GlobalPolicyAreasResultsTable from '../components/global-policy-areas/GlobalPolicyAreasResultsTable';
 import { api } from '../lib/api';
+import { groupGlobalPolicyAreas } from '../lib/globalPolicyGrouping';
 import {
   POLICY_CATEGORIES,
   POLICY_INSTITUTIONS,
@@ -45,17 +46,15 @@ export default function GlobalPolicyAreas() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const institutionSelect = form.elements.namedItem('institution') as HTMLSelectElement;
-    const categorySelect = form.elements.namedItem('category') as HTMLSelectElement;
+  const groupedPolicyAreas = useMemo(
+    () => groupGlobalPolicyAreas(policyAreas, selectedInstitutions),
+    [policyAreas, selectedInstitutions],
+  );
 
-    const institutions = getMultiSelectValues(institutionSelect) as PolicyInstitution[];
-    const categories = getMultiSelectValues(categorySelect) as PolicyCategory[];
-
-    setSelectedInstitutions(institutions);
-    setSelectedCategories(categories);
+  const fetchPolicyAreas = async (
+    institutions: PolicyInstitution[],
+    categories: PolicyCategory[],
+  ) => {
     setLoading(true);
     setError(null);
     setSubmitted(true);
@@ -71,6 +70,24 @@ export default function GlobalPolicyAreas() {
     }
   };
 
+  useEffect(() => {
+    fetchPolicyAreas([], []);
+  }, []);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const institutionSelect = form.elements.namedItem('institution') as HTMLSelectElement;
+    const categorySelect = form.elements.namedItem('category') as HTMLSelectElement;
+
+    const institutions = getMultiSelectValues(institutionSelect) as PolicyInstitution[];
+    const categories = getMultiSelectValues(categorySelect) as PolicyCategory[];
+
+    setSelectedInstitutions(institutions);
+    setSelectedCategories(categories);
+    await fetchPolicyAreas(institutions, categories);
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
       <PageHeader
@@ -84,7 +101,6 @@ export default function GlobalPolicyAreas() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10 mb-10">
-
           <form onSubmit={handleSubmit}>
             <div className="space-y-6">
               <div>
@@ -148,69 +164,14 @@ export default function GlobalPolicyAreas() {
             </div>
           </form>
 
-          {submitted && !loading && !error && (
-            <div className="mt-10 border-t border-gray-100 pt-8">
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-                <h3 className="text-lg font-bold text-[#009900]">Results</h3>
-                <p className="text-sm text-gray-500">
-                  {policyAreas.length} resource{policyAreas.length === 1 ? '' : 's'} found
-                  {(selectedInstitutions.length > 0 || selectedCategories.length > 0) && (
-                    <> for selected filters</>
-                  )}
-                </p>
-              </div>
-
-              {policyAreas.length === 0 ? (
-                <p className="text-gray-500 text-sm">No global policy areas match the selected filters.</p>
+          {submitted && !error && (
+            <div className="mt-10 border-t border-gray-200 pt-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Global Policy Areas</h2>
+              <hr className="border-gray-300 mb-8" />
+              {loading ? (
+                <p className="text-sm text-gray-500">Loading global policy areas...</p>
               ) : (
-                <div className="space-y-4">
-                  {policyAreas.map((policyArea) => (
-                    <article
-                      key={policyArea.id}
-                      className="rounded-xl border border-gray-100 bg-gray-50 p-5 hover:border-[#009900]/20 transition-colors"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-start gap-3">
-                            <FileText size={18} className="text-[#009900] mt-1 flex-shrink-0" />
-                            <div>
-                              <h4 className="font-semibold text-[#009900] leading-snug">{policyArea.title}</h4>
-                              {policyArea.description && (
-                                <p className="mt-2 text-sm text-gray-600 leading-relaxed">
-                                  {policyArea.description}
-                                </p>
-                              )}
-                              <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                                <span className="rounded-full bg-green-100 px-2.5 py-1 font-medium text-green-700">
-                                  {policyArea.institution}
-                                </span>
-                                <span className="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-800">
-                                  {policyArea.category}
-                                </span>
-                                {policyArea.date_published && (
-                                  <span className="rounded-full bg-gray-200 px-2.5 py-1 font-medium text-gray-700">
-                                    {policyArea.date_published}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        {policyArea.file_url && (
-                          <a
-                            href={policyArea.file_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 self-start rounded-lg border border-[#009900]/20 px-4 py-2 text-sm font-semibold text-[#009900] hover:bg-[#009900] hover:text-white transition-colors"
-                          >
-                            View
-                            <ExternalLink size={14} />
-                          </a>
-                        )}
-                      </div>
-                    </article>
-                  ))}
-                </div>
+                <GlobalPolicyAreasResultsTable groups={groupedPolicyAreas} />
               )}
             </div>
           )}
