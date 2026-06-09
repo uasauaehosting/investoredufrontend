@@ -267,7 +267,7 @@ export default function MembersStrategiesProjects() {
                           className="inline-flex items-center gap-2 mt-5 text-sm font-semibold text-[#009900] hover:text-amber-600 transition-colors"
                         >
                           <FileText size={16} />
-                          View Document
+                          Link
                         </a>
                       )}
                     </article>
