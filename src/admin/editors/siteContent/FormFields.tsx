@@ -73,26 +73,27 @@ export function StringListEditor({
   addLabel = 'Add item',
 }: {
   label: string;
-  items: string[];
+  items: string[] | undefined;
   onChange: (items: string[]) => void;
   placeholder?: string;
   addLabel?: string;
 }) {
+  const safeItems = Array.isArray(items) ? items : [''];
   const update = (index: number, value: string) => {
-    const next = [...items];
+    const next = [...safeItems];
     next[index] = value;
     onChange(next);
   };
 
-  const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
+  const remove = (index: number) => onChange(safeItems.filter((_, i) => i !== index));
 
-  const add = () => onChange([...items, '']);
+  const add = () => onChange([...safeItems, '']);
 
   return (
     <div>
       <label className={labelClass}>{label}</label>
       <div className="space-y-2">
-        {items.map((item, index) => (
+        {safeItems.map((item, index) => (
           <div key={index} className="flex items-start gap-2">
             <GripVertical size={14} className="text-gray-300 mt-2.5 flex-shrink-0" />
             <textarea

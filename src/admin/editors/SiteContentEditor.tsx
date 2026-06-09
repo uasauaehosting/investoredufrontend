@@ -68,7 +68,7 @@ export default function SiteContentEditor() {
     setSuccess(false);
     setSaving(true);
     try {
-      await api.put(`/site-content/${activeKey}`, { content });
+      await api.put(`/site-content/${activeKey}`, { content: mergeWithDefaults(activeKey, content) });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: unknown) {
@@ -78,26 +78,28 @@ export default function SiteContentEditor() {
     }
   };
 
+  const formData = mergeWithDefaults(activeKey, content);
+
   const renderForm = () => {
     switch (activeKey) {
       case 'home.welcome':
-        return <HomeWelcomeForm data={content as never} onChange={setContent} />;
+        return <HomeWelcomeForm data={formData as never} onChange={handleChange} />;
       case 'home.portal_section':
-        return <HomePortalForm data={content as never} onChange={setContent} />;
+        return <HomePortalForm data={formData as never} onChange={handleChange} />;
       case 'about.hero':
-        return <AboutHeroForm data={content as never} onChange={setContent} />;
+        return <AboutHeroForm data={formData as never} onChange={handleChange} />;
       case 'principles':
-        return <PrinciplesPageForm data={content as never} onChange={setContent} />;
+        return <PrinciplesPageForm data={formData as never} onChange={handleChange} />;
       case 'framework':
-        return <FrameworkPageForm data={content as never} onChange={setContent} />;
+        return <FrameworkPageForm data={formData as never} onChange={handleChange} />;
       case 'the_index':
-        return <TheIndexForm data={content as never} onChange={setContent} />;
+        return <TheIndexForm data={formData as never} onChange={handleChange} />;
       case 'feedback':
-        return <FeedbackForm data={content as never} onChange={setContent} />;
+        return <FeedbackForm data={formData as never} onChange={handleChange} />;
       case 'footer':
-        return <FooterForm data={content as never} onChange={setContent} />;
+        return <FooterForm data={formData as never} onChange={handleChange} />;
       case 'glossary_meta':
-        return <GlossaryMetaForm data={content as never} onChange={setContent} />;
+        return <GlossaryMetaForm data={formData as never} onChange={handleChange} />;
       default:
         return null;
     }
@@ -114,7 +116,7 @@ export default function SiteContentEditor() {
         {PAGE_KEYS.map(({ key, label }) => (
           <button
             key={key}
-            onClick={() => setActiveKey(key)}
+            onClick={() => selectKey(key)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               activeKey === key ? 'bg-[#009900] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}

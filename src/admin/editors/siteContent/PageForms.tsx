@@ -23,6 +23,10 @@ type FormProps<T> = {
   onChange: (data: T) => void;
 };
 
+function asArray<T>(value: T[] | undefined | null, fallback: T[]): T[] {
+  return Array.isArray(value) ? value : fallback;
+}
+
 // ─── Home Welcome ─────────────────────────────────────────────────────────────
 
 export interface HomeWelcomeContent {
@@ -35,36 +39,38 @@ export interface HomeWelcomeContent {
 }
 
 export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent>) {
+  const highlights = asArray(data.highlights, [{ icon: 'TrendingUp', title: '', description: '' }]);
+
   const set = <K extends keyof HomeWelcomeContent>(key: K, value: HomeWelcomeContent[K]) =>
     onChange({ ...data, [key]: value });
 
   const updateHighlight = (index: number, field: keyof HomeWelcomeContent['highlights'][0], value: string) => {
-    const highlights = [...data.highlights];
-    highlights[index] = { ...highlights[index], [field]: value };
-    set('highlights', highlights);
+    const next = [...highlights];
+    next[index] = { ...next[index], [field]: value };
+    set('highlights', next);
   };
 
   return (
     <div className="space-y-6">
       <SectionHeading title="Welcome Section" description="Main hero content on the home page" />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TextField label="Badge Text" value={data.badge} onChange={(v) => set('badge', v)} placeholder="Welcome" />
-        <TextField label="Button Text" value={data.ctaText} onChange={(v) => set('ctaText', v)} placeholder="Explore the Portal" />
+        <TextField label="Badge Text" value={data.badge ?? ''} onChange={(v) => set('badge', v)} placeholder="Welcome" />
+        <TextField label="Button Text" value={data.ctaText ?? ''} onChange={(v) => set('ctaText', v)} placeholder="Explore the Portal" />
       </div>
-      <TextField label="Heading" value={data.title} onChange={(v) => set('title', v)} />
-      <TextField label="Button Link" value={data.ctaHref} onChange={(v) => set('ctaHref', v)} hint="Use # for same-page anchor or a full URL" />
+      <TextField label="Heading" value={data.title ?? ''} onChange={(v) => set('title', v)} />
+      <TextField label="Button Link" value={data.ctaHref ?? ''} onChange={(v) => set('ctaHref', v)} hint="Use # for same-page anchor or a full URL" />
       <StringListEditor label="Intro Paragraphs" items={data.paragraphs} onChange={(v) => set('paragraphs', v)} addLabel="Add paragraph" />
 
       <SectionHeading title="Highlight Cards" description="Three feature cards shown beside the welcome text" />
       <div className="space-y-3">
-        {data.highlights.map((item, index) => (
+        {highlights.map((item, index) => (
           <div key={index} className={cardClass}>
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-gray-500">Card {index + 1}</span>
-              {data.highlights.length > 1 && (
+              {highlights.length > 1 && (
                 <button
                   type="button"
-                  onClick={() => set('highlights', data.highlights.filter((_, i) => i !== index))}
+                  onClick={() => set('highlights', highlights.filter((_, i) => i !== index))}
                   className="p-1 text-gray-400 hover:text-red-500 rounded"
                 >
                   <Trash2 size={14} />
@@ -87,10 +93,10 @@ export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent
             <TextAreaField label="Description" value={item.description} onChange={(v) => updateHighlight(index, 'description', v)} rows={2} />
           </div>
         ))}
-        {data.highlights.length < 6 && (
+        {highlights.length < 6 && (
           <button
             type="button"
-            onClick={() => set('highlights', [...data.highlights, { icon: 'TrendingUp', title: '', description: '' }])}
+            onClick={() => set('highlights', [...highlights, { icon: 'TrendingUp', title: '', description: '' }])}
             className="flex items-center gap-1.5 text-xs font-medium text-[#009900]"
           >
             <Plus size={14} /> Add highlight card
@@ -109,30 +115,32 @@ export interface HomePortalContent {
 }
 
 export function HomePortalForm({ data, onChange }: FormProps<HomePortalContent>) {
+  const cards = asArray(data.cards, [{ title: '', href: '', image_url: '' }]);
+
   const set = <K extends keyof HomePortalContent>(key: K, value: HomePortalContent[K]) =>
     onChange({ ...data, [key]: value });
 
   const updateCard = (index: number, field: keyof HomePortalContent['cards'][0], value: string) => {
-    const cards = [...data.cards];
-    cards[index] = { ...cards[index], [field]: value };
-    set('cards', cards);
+    const next = [...cards];
+    next[index] = { ...next[index], [field]: value };
+    set('cards', next);
   };
 
   return (
     <div className="space-y-6">
       <SectionHeading title="Portal Section" description="Banner and navigation cards below the hero slider" />
-      <ImageField label="Banner Image" value={data.heroImage} onChange={(v) => set('heroImage', v)} />
+      <ImageField label="Banner Image" value={data.heroImage ?? ''} onChange={(v) => set('heroImage', v)} />
 
       <SectionHeading title="Portal Cards" description="Clickable cards linking to main sections" />
       <div className="space-y-3">
-        {data.cards.map((card, index) => (
+        {cards.map((card, index) => (
           <div key={index} className={cardClass}>
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-gray-500">Card {index + 1}</span>
-              {data.cards.length > 1 && (
+              {cards.length > 1 && (
                 <button
                   type="button"
-                  onClick={() => set('cards', data.cards.filter((_, i) => i !== index))}
+                  onClick={() => set('cards', cards.filter((_, i) => i !== index))}
                   className="p-1 text-gray-400 hover:text-red-500 rounded"
                 >
                   <Trash2 size={14} />
@@ -146,7 +154,7 @@ export function HomePortalForm({ data, onChange }: FormProps<HomePortalContent>)
         ))}
         <button
           type="button"
-          onClick={() => set('cards', [...data.cards, { title: '', href: '', image_url: '' }])}
+          onClick={() => set('cards', [...cards, { title: '', href: '', image_url: '' }])}
           className="flex items-center gap-1.5 text-xs font-medium text-[#009900]"
         >
           <Plus size={14} /> Add portal card
@@ -281,13 +289,15 @@ export interface FooterContent {
 }
 
 export function FooterForm({ data, onChange }: FormProps<FooterContent>) {
+  const usefulLinks = asArray(data.usefulLinks, [{ label: '', href: '' }]);
+
   const set = <K extends keyof FooterContent>(key: K, value: FooterContent[K]) =>
     onChange({ ...data, [key]: value });
 
   const updateLink = (index: number, field: 'label' | 'href', value: string) => {
-    const usefulLinks = [...data.usefulLinks];
-    usefulLinks[index] = { ...usefulLinks[index], [field]: value };
-    set('usefulLinks', usefulLinks);
+    const next = [...usefulLinks];
+    next[index] = { ...next[index], [field]: value };
+    set('usefulLinks', next);
   };
 
   return (
@@ -299,7 +309,7 @@ export function FooterForm({ data, onChange }: FormProps<FooterContent>) {
       <div>
         <label className={labelClass}>Useful Links</label>
         <div className="space-y-2">
-          {data.usefulLinks.map((link, index) => (
+          {usefulLinks.map((link, index) => (
             <div key={index} className={`${cardClass} !p-3`}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <input
@@ -317,7 +327,7 @@ export function FooterForm({ data, onChange }: FormProps<FooterContent>) {
               </div>
               <button
                 type="button"
-                onClick={() => set('usefulLinks', data.usefulLinks.filter((_, i) => i !== index))}
+                onClick={() => set('usefulLinks', usefulLinks.filter((_, i) => i !== index))}
                 className="text-xs text-red-500 hover:text-red-700 mt-1"
               >
                 Remove
@@ -326,7 +336,7 @@ export function FooterForm({ data, onChange }: FormProps<FooterContent>) {
           ))}
           <button
             type="button"
-            onClick={() => set('usefulLinks', [...data.usefulLinks, { label: '', href: '' }])}
+            onClick={() => set('usefulLinks', [...usefulLinks, { label: '', href: '' }])}
             className="flex items-center gap-1.5 text-xs font-medium text-[#009900]"
           >
             <Plus size={14} /> Add useful link
