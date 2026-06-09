@@ -4,6 +4,12 @@ import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import FileUpload from '../../lib/FileUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
+import {
+  parseInvestmentProductContent,
+  serializeInvestmentProductContent,
+} from '../../lib/investmentProductContent';
+import { InvestmentProductBlock } from '../../lib/investmentProducts';
+import InvestmentProductBlocksEditor from './InvestmentProductBlocksEditor';
 import { MediaPreview } from './siteContent/FormFields';
 
 interface InvestmentProduct {
@@ -28,32 +34,25 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-const empty = (): Omit<InvestmentProduct, 'id'> => ({
+type EditingProduct = Partial<InvestmentProduct> & { blocks?: InvestmentProductBlock[] };
+
+const empty = (): EditingProduct => ({
   title: '',
   description: '',
   author: '',
   date: today(),
   fileUrl: '',
   imageUrl: '',
-  content: JSON.stringify({ blocks: [] }, null, 2),
+  content: '',
   slug: '',
   isActive: true,
+  blocks: [],
 });
-
-const formatContentForEdit = (content: string | undefined) => {
-  if (!content?.trim()) return JSON.stringify({ blocks: [] }, null, 2);
-  try {
-    const parsed = JSON.parse(content);
-    return JSON.stringify(parsed, null, 2);
-  } catch {
-    return content;
-  }
-};
 
 export default function InvestmentProductsEditor() {
   const [items, setItems] = useState<InvestmentProduct[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<Partial<InvestmentProduct> | null>(null);
+  const [editing, setEditing] = useState<EditingProduct | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -86,7 +85,7 @@ export default function InvestmentProductsEditor() {
       normalizeMediaFieldsDeep({
         ...item,
         date: item.date ? String(item.date).slice(0, 10) : today(),
-        content: formatContentForEdit(item.content),
+        blocks: parseInvestmentProductContent(item.content),
         slug: item.slug ?? '',
       }),
     );
@@ -112,15 +111,33 @@ export default function InvestmentProductsEditor() {
       return;
     }
 
-    let content = editing.content?.trim() || JSON.stringify({ blocks: [] });
-    if (content) {
-      try {
-        JSON.parse(content);
-      } catch {
-        setError('Detail content must be valid JSON (e.g. {"blocks":[...]}).');
-        return;
-      }
-    }
+    const blocks = (editing.blocks ?? []).map((block) => ({
+      ...block,
+      heading: block.heading?.trim() || undefined,
+      paragraphs: block.paragraphs?.map((p) => p.trim()).filter(Boolean),
+      bullets: block.bullets?.map((b) => b.trim()).filter(Boolean),
+      subItems: block.subItems
+        ?.map((item) => ({ title: item.title.trim(), text: item.text.trim() }))
+        .filter((item) => item.title || item.text),
+      source: block.source?.trim() || undefined,
+      externalLink:
+        block.externalLink?.url?.trim()
+          ? {
+              label: block.externalLink.label?.trim() || 'Read more',
+              url: block.externalLink.url.trim(),
+            }
+          : undefined,
+    })).filter(
+      (block) =>
+        block.heading ||
+        (block.paragraphs && block.paragraphs.length > 0) ||
+        (block.bullets && block.bullets.length > 0) ||
+        (block.subItems && block.subItems.length > 0) ||
+        block.source ||
+        block.externalLink,
+    );
+
+    const content = serializeInvestmentProductContent(blocks);
 
     setSaving(true);
     setError(null);
@@ -240,15 +257,9 @@ export default function InvestmentProductsEditor() {
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Detail Page Content (JSON with blocks array)
-              </label>
-              <textarea
-                rows={12}
-                value={editing.content ?? ''}
-                onChange={(e) => setEditing({ ...editing, content: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-y"
-                placeholder='{"blocks":[{"heading":"Section title","paragraphs":["..."]}]}'
+              <InvestmentProductBlocksEditor
+                blocks={editing.blocks ?? []}
+                onChange={(blocks) => setEditing({ ...editing, blocks })}
               />
             </div>
             <div className="flex items-end">
