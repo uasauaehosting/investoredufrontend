@@ -4,6 +4,7 @@ import {
   TextAreaField,
   StringListEditor,
   ImageField,
+  FileField,
   SectionHeading,
 } from './FormFields';
 
@@ -225,7 +226,7 @@ export function FrameworkPageForm({ data, onChange }: FormProps<FrameworkPageCon
       <StringListEditor label="Introduction Paragraphs" items={data.introParagraphs} onChange={(v) => set('introParagraphs', v)} addLabel="Add paragraph" />
       <StringListEditor label="Best Practices" items={data.practices} onChange={(v) => set('practices', v)} addLabel="Add practice" />
       <ImageField label="Framework Image" value={data.imageUrl} onChange={(v) => set('imageUrl', v)} />
-      <TextField label="PDF Download URL" value={data.pdfUrl} onChange={(v) => set('pdfUrl', v)} placeholder="https://..." hint="Link to the IOSCO framework PDF document" />
+      <FileField label="PDF Document" value={data.pdfUrl} onChange={(v) => set('pdfUrl', v)} hint="Upload the IOSCO framework PDF" />
     </div>
   );
 }
@@ -367,7 +368,7 @@ export function GlossaryMetaForm({ data, onChange }: FormProps<GlossaryMetaConte
   return (
     <div className="space-y-6">
       <SectionHeading title="Glossary Page Settings" description="PDF download and background image. Terms are edited in the Glossary section." />
-      <TextField label="PDF Download URL" value={data.pdfUrl} onChange={(v) => set('pdfUrl', v)} placeholder="https://..." />
+      <FileField label="PDF Download" value={data.pdfUrl} onChange={(v) => set('pdfUrl', v)} hint="Glossary PDF available for download on the page" />
       <ImageField label="Background Image" value={data.backgroundImage} onChange={(v) => set('backgroundImage', v)} />
     </div>
   );

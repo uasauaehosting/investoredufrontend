@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
+import FileUpload from '../../lib/FileUpload';
+import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
 
 interface Publication {
   id: number;
@@ -27,11 +29,11 @@ export default function PublicationsEditor() {
   const load = async () => {
     try {
       const data = await api.get('/publications?is_active=false');
-      setItems(data ?? []);
+      setItems(normalizeMediaFieldsDeep(data ?? []));
     } catch {
       try {
         const data = await api.get('/publications');
-        setItems(data ?? []);
+        setItems(normalizeMediaFieldsDeep(data ?? []));
       } catch (err) {
         console.error(err);
       }
@@ -47,9 +49,9 @@ export default function PublicationsEditor() {
     setSaving(true);
     try {
       if (editing.id) {
-        await api.put(`/publications/${editing.id}`, editing);
+        await api.put(`/publications/${editing.id}`, normalizeMediaFieldsDeep(editing));
       } else {
-        await api.post('/publications', editing);
+        await api.post('/publications', normalizeMediaFieldsDeep(editing));
       }
       setEditing(null);
       load();
@@ -87,7 +89,12 @@ export default function PublicationsEditor() {
           <select className="border rounded-lg px-3 py-2 text-sm" value={editing.category ?? 'General'} onChange={(e) => setEditing({ ...editing, category: e.target.value })}>
             {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
-          <input className="border rounded-lg px-3 py-2 text-sm sm:col-span-2" placeholder="File URL" value={editing.file_url ?? ''} onChange={(e) => setEditing({ ...editing, file_url: e.target.value })} />
+          <FileUpload
+            label="Publication File"
+            value={editing.file_url ?? ''}
+            onChange={(url) => setEditing({ ...editing, file_url: url })}
+            hint="Upload a PDF or document for this publication"
+          />
           <textarea className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[60px]" placeholder="Description" value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
           <div className="sm:col-span-2 flex gap-2">
             <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5"><Save size={14} /> Save</button>

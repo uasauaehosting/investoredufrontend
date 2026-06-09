@@ -1,4 +1,4 @@
-const DEFAULT_UPLOADS_BASE = 'https://ahwuae.com/investoredu/uploads';
+const DEFAULT_UPLOADS_BASE = 'https://ahwuae.com/investoredu/investoredu/uploads';
 
 function getUploadsBase(): string {
   const configured = import.meta.env.VITE_UPLOADS_BASE_URL;
@@ -14,6 +14,26 @@ const REWRITE_RULES: RegExp[] = [
   /^https?:\/\/uasa\.ae\/en\/galorg\/(.+)$/i,
   /^https?:\/\/uasa\.ae\/en\/galimg\/(.+)$/i,
 ];
+
+const MEDIA_FIELD_KEYS = new Set([
+  'image_url',
+  'imageUrl',
+  'file_url',
+  'fileUrl',
+  'pdfUrl',
+  'heroImage',
+  'backgroundImage',
+  'image',
+  'logo',
+]);
+
+function looksLikeMediaUrl(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+    return false;
+  }
+  return /uploads\/|galorg\/|galimg\/|\.(jpe?g|png|gif|webp|svg|pdf)(\?|$)/i.test(trimmed);
+}
 
 function extractFilename(urlPath: string): string {
   return decodeURIComponent(urlPath.split('?')[0].split('/').pop() || urlPath);
@@ -38,4 +58,29 @@ export function normalizeMediaUrl(url: string | null | undefined): string {
   }
 
   return trimmed;
+}
+
+/** Normalize known media URL fields in admin records and nested site content. */
+export function normalizeMediaFieldsDeep<T>(value: T): T {
+  if (typeof value === 'string') {
+    return (looksLikeMediaUrl(value) ? normalizeMediaUrl(value) : value) as T;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeMediaFieldsDeep(item)) as T;
+  }
+
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [key, nested] of Object.entries(value)) {
+      if (typeof nested === 'string' && MEDIA_FIELD_KEYS.has(key)) {
+        out[key] = normalizeMediaUrl(nested);
+      } else {
+        out[key] = normalizeMediaFieldsDeep(nested);
+      }
+    }
+    return out as T;
+  }
+
+  return value;
 }

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
+import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
+import { MediaPreview } from './siteContent/FormFields';
 import {
   EDUCATION_SECTIONS,
   EducationItem,
@@ -32,7 +34,7 @@ export default function EducationContentEditor() {
     setLoading(true);
     try {
       const data = await api.get(`/investor-education/content/admin?section=${section}`);
-      setItems(data ?? []);
+      setItems(normalizeMediaFieldsDeep(data ?? []));
     } catch (err) {
       console.error('Failed to load education content:', err);
       setItems([]);
@@ -46,7 +48,7 @@ export default function EducationContentEditor() {
   }, [activeSection]);
 
   const openNew = () => setEditing({ ...empty(activeSection) });
-  const openEdit = (item: EducationItem) => setEditing({ ...item });
+  const openEdit = (item: EducationItem) => setEditing(normalizeMediaFieldsDeep({ ...item }));
   const cancel = () => {
     setEditing(null);
     setError(null);
@@ -66,7 +68,7 @@ export default function EducationContentEditor() {
     setSaving(true);
     setError(null);
     try {
-      const payload = {
+      const payload = normalizeMediaFieldsDeep({
         section: editing.section ?? activeSection,
         title: editing.title,
         description: editing.description,
@@ -74,7 +76,7 @@ export default function EducationContentEditor() {
         content: editing.content || null,
         displayOrder: editing.displayOrder ?? 0,
         isActive: editing.isActive !== false,
-      };
+      });
 
       if (editing.id) {
         await api.put(`/investor-education/content/${editing.id}`, payload);
@@ -223,13 +225,7 @@ export default function EducationContentEditor() {
               key={item.id}
               className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-green-300 transition-colors"
             >
-              {item.imageUrl && (
-                <img
-                  src={item.imageUrl}
-                  alt=""
-                  className="w-20 h-14 object-cover rounded-lg flex-shrink-0"
-                />
-              )}
+              {item.imageUrl && <MediaPreview url={item.imageUrl} />}
               <div className="flex-1 min-w-0">
                 <h4 className="text-sm font-bold text-gray-800 truncate">{item.title}</h4>
                 <p className="text-xs text-gray-400 line-clamp-2 mt-0.5">{item.description}</p>

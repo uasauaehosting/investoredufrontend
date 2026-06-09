@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
+import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
+import { MediaPreview } from './siteContent/FormFields';
 import { Principle } from '../../lib/principles';
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -28,7 +30,7 @@ export default function PrinciplesEditor() {
     setLoading(true);
     try {
       const data = await api.get('/investor-education/principles/admin');
-      setItems(data ?? []);
+      setItems(normalizeMediaFieldsDeep(data ?? []));
     } catch (err) {
       console.error('Failed to load principles:', err);
       setItems([]);
@@ -42,10 +44,10 @@ export default function PrinciplesEditor() {
   }, []);
 
   const openNew = () => setEditing({ ...empty() });
-  const openEdit = (item: Principle) => setEditing({
+  const openEdit = (item: Principle) => setEditing(normalizeMediaFieldsDeep({
     ...item,
     date: item.date ? String(item.date).slice(0, 10) : today(),
-  });
+  }));
   const cancel = () => {
     setEditing(null);
     setError(null);
@@ -65,7 +67,7 @@ export default function PrinciplesEditor() {
     setSaving(true);
     setError(null);
     try {
-      const payload = {
+      const payload = normalizeMediaFieldsDeep({
         title: editing.title.trim(),
         description: editing.description.trim(),
         author: editing.author?.trim() || '',
@@ -74,7 +76,7 @@ export default function PrinciplesEditor() {
         imageUrl: editing.imageUrl?.trim() || null,
         content: editing.content?.trim() || '',
         isActive: editing.isActive !== false,
-      };
+      });
 
       if (editing.id) {
         await api.put(`/investor-education/principles/${editing.id}`, payload);
@@ -202,13 +204,7 @@ export default function PrinciplesEditor() {
               key={item.id}
               className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-green-300 transition-colors"
             >
-              {item.imageUrl && (
-                <img
-                  src={item.imageUrl}
-                  alt=""
-                  className="w-20 h-14 object-cover rounded-lg flex-shrink-0"
-                />
-              )}
+              {item.imageUrl && <MediaPreview url={item.imageUrl} />}
               <div className="flex-1 min-w-0">
                 <h4 className="text-sm font-bold text-gray-800 truncate">{item.title}</h4>
                 <p className="text-xs text-gray-400 line-clamp-2 mt-0.5">{item.description}</p>

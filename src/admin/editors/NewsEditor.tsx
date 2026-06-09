@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X, GripVertical } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
+import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
+import { MediaPreview } from './siteContent/FormFields';
 
 const CATEGORIES = ['News', 'Publication', 'Event'];
 
@@ -34,7 +36,7 @@ export default function NewsEditor() {
   const load = async () => {
     try {
       const data = await api.get('/home/news');
-      setItems(data ?? []);
+      setItems(normalizeMediaFieldsDeep(data ?? []));
     } catch (err) {
       console.error('Failed to load news:', err);
     } finally {
@@ -44,7 +46,7 @@ export default function NewsEditor() {
   useEffect(() => { load(); }, []);
 
   const openNew = () => setEditing({ ...empty });
-  const openEdit = (n: NewsItem) => setEditing({ ...n });
+  const openEdit = (n: NewsItem) => setEditing(normalizeMediaFieldsDeep({ ...n }));
   const cancel = () => { setEditing(null); setError(null); };
 
   const save = async () => {
@@ -53,9 +55,9 @@ export default function NewsEditor() {
     setSaving(true); setError(null);
     try {
       if (editing.id) {
-        await api.put(`/home/news/${editing.id}`, editing);
+        await api.put(`/home/news/${editing.id}`, normalizeMediaFieldsDeep(editing));
       } else {
-        await api.post('/home/news', editing);
+        await api.post('/home/news', normalizeMediaFieldsDeep(editing));
       }
       setEditing(null);
       load();
@@ -143,10 +145,7 @@ export default function NewsEditor() {
         {items.map((item) => (
           <div key={item.id} className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 group hover:border-green-300 transition-colors">
             <GripVertical size={16} className="text-gray-300 flex-shrink-0" />
-            {item.image && (
-              <img src={item.image} alt="" className="w-14 h-10 object-cover rounded-lg flex-shrink-0"
-                onError={(e) => (e.currentTarget.style.display = 'none')} />
-            )}
+            {item.image && <MediaPreview url={item.image} className="w-14 h-10 object-cover rounded-lg flex-shrink-0" />}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-gray-800 truncate">{item.title}</p>
               <p className="text-xs text-gray-400">{item.date} &middot; {item.category}</p>

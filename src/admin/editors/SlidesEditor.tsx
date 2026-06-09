@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X, ToggleLeft, ToggleRight, GripVertical } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
+import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
+import { MediaPreview } from './siteContent/FormFields';
 
 export interface Slide {
   id: number;
@@ -34,7 +36,7 @@ export default function SlidesEditor() {
   const load = async () => {
     try {
       const data = await api.get('/home/slides');
-      setSlides(data ?? []);
+      setSlides(normalizeMediaFieldsDeep(data ?? []));
     } catch (err) {
       console.error('Failed to load slides:', err);
     } finally {
@@ -44,7 +46,7 @@ export default function SlidesEditor() {
   useEffect(() => { load(); }, []);
 
   const openNew = () => setEditing({ ...empty, display_order: slides.length + 1 });
-  const openEdit = (s: Slide) => setEditing({ ...s });
+  const openEdit = (s: Slide) => setEditing(normalizeMediaFieldsDeep({ ...s }));
   const cancel = () => { setEditing(null); setError(null); };
 
   const save = async () => {
@@ -53,9 +55,9 @@ export default function SlidesEditor() {
     setSaving(true); setError(null);
     try {
       if (editing.id) {
-        await api.put(`/home/slides/${editing.id}`, editing);
+        await api.put(`/home/slides/${editing.id}`, normalizeMediaFieldsDeep(editing));
       } else {
-        await api.post('/home/slides', editing);
+        await api.post('/home/slides', normalizeMediaFieldsDeep(editing));
       }
       setEditing(null);
       load();
@@ -134,9 +136,7 @@ export default function SlidesEditor() {
         {slides.map((s) => (
           <div key={s.id} className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 group hover:border-green-300 transition-colors">
             <GripVertical size={16} className="text-gray-300 flex-shrink-0" />
-            {s.image_url && (
-              <img src={s.image_url} alt="" className="w-14 h-10 object-cover rounded-lg flex-shrink-0" onError={(e) => (e.currentTarget.style.display = 'none')} />
-            )}
+            {s.image_url && <MediaPreview url={s.image_url} className="w-14 h-10 object-cover rounded-lg flex-shrink-0" />}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-gray-800 truncate">{s.title}</p>
               <p className="text-xs text-gray-400 truncate">{s.subtitle}</p>

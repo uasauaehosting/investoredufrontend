@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
+import ImageUpload from '../../lib/ImageUpload';
+import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
+import { MediaPreview } from './siteContent/FormFields';
 
 export interface PortalCategory {
   id: number;
@@ -31,7 +34,7 @@ export default function PortalCategoriesEditor() {
   const load = async () => {
     try {
       const data = await api.get('/portals');
-      setCats(data ?? []);
+      setCats(normalizeMediaFieldsDeep(data ?? []));
     } catch (err) {
       console.error('Failed to load portals:', err);
     } finally {
@@ -41,7 +44,7 @@ export default function PortalCategoriesEditor() {
   useEffect(() => { load(); }, []);
 
   const openNew = () => setEditing({ ...empty });
-  const openEdit = (c: PortalCategory) => setEditing({ ...c });
+  const openEdit = (c: PortalCategory) => setEditing(normalizeMediaFieldsDeep({ ...c }));
   const cancel = () => { setEditing(null); setError(null); };
 
   const save = async () => {
@@ -50,9 +53,9 @@ export default function PortalCategoriesEditor() {
     setSaving(true); setError(null);
     try {
       if (editing.id) {
-        await api.put(`/portals/${editing.id}`, editing);
+        await api.put(`/portals/${editing.id}`, normalizeMediaFieldsDeep(editing));
       } else {
-        await api.post('/portals', editing);
+        await api.post('/portals', normalizeMediaFieldsDeep(editing));
       }
       setEditing(null);
       load();
@@ -111,10 +114,12 @@ export default function PortalCategoriesEditor() {
               <input type="text" value={editing.country ?? ''} onChange={(e) => setEditing({ ...editing, country: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
             </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Image URL</label>
-              <input type="text" value={editing.image_url ?? ''} onChange={(e) => setEditing({ ...editing, image_url: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+            <div className="sm:col-span-2">
+              <ImageUpload
+                label="Image"
+                value={editing.image_url ?? ''}
+                onChange={(url) => setEditing({ ...editing, image_url: url })}
+              />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Link URL</label>
@@ -135,9 +140,7 @@ export default function PortalCategoriesEditor() {
       <div className="space-y-3">
         {cats.map((c) => (
           <div key={c.id} className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-green-300 transition-colors">
-            {c.image_url && (
-              <img src={c.image_url} alt="" className="w-20 h-14 object-cover rounded-lg flex-shrink-0" />
-            )}
+            {c.image_url && <MediaPreview url={c.image_url} />}
             <div className="flex-1 min-w-0">
               <h4 className="text-sm font-bold text-gray-800 truncate">{c.title}</h4>
               <p className="text-xs text-gray-400 line-clamp-1">{c.description}</p>

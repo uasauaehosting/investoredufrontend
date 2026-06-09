@@ -1,5 +1,7 @@
 import { Plus, Trash2, GripVertical } from 'lucide-react';
 import ImageUpload from '../../../lib/ImageUpload';
+import FileUpload from '../../../lib/FileUpload';
+import { normalizeMediaUrl } from '../../../lib/mediaUrl';
 
 const inputClass =
   'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]';
@@ -135,6 +137,44 @@ export function ImageField({
   onChange: (v: string) => void;
 }) {
   return <ImageUpload label={label} value={value} onChange={onChange} />;
+}
+
+export function FileField({
+  label,
+  value,
+  onChange,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  hint?: string;
+}) {
+  return <FileUpload label={label} value={value} onChange={onChange} hint={hint} />;
+}
+
+export function MediaPreview({
+  url,
+  alt = '',
+  className = 'w-20 h-14 object-cover rounded-lg flex-shrink-0',
+}: {
+  url: string | null | undefined;
+  alt?: string;
+  className?: string;
+}) {
+  const src = normalizeMediaUrl(url);
+  if (!src) return null;
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onError={(e) => {
+        e.currentTarget.style.display = 'none';
+      }}
+    />
+  );
 }
 
 export function SectionHeading({ title, description }: { title: string; description?: string }) {

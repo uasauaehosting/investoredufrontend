@@ -1,6 +1,7 @@
 import { useState, useLayoutEffect, useCallback } from 'react';
 import { Save } from 'lucide-react';
 import { api } from '../../lib/api';
+import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
 import { PAGE_KEYS, mergeWithDefaults, type PageKey } from './siteContent/defaults';
 import {
   HomeWelcomeForm,
@@ -45,7 +46,9 @@ export default function SiteContentEditor() {
       try {
         const data = await api.get(`/site-content/${key}`);
         if (!cancelled) {
-          setContent(mergeWithDefaults(key, (data ?? {}) as Record<string, unknown>));
+          setContent(
+            mergeWithDefaults(key, normalizeMediaFieldsDeep((data ?? {}) as Record<string, unknown>))
+          );
         }
       } catch {
         if (!cancelled) {
@@ -68,7 +71,9 @@ export default function SiteContentEditor() {
     setSuccess(false);
     setSaving(true);
     try {
-      await api.put(`/site-content/${activeKey}`, { content: mergeWithDefaults(activeKey, content) });
+      await api.put(`/site-content/${activeKey}`, {
+        content: mergeWithDefaults(activeKey, normalizeMediaFieldsDeep(content)),
+      });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: unknown) {
