@@ -11,7 +11,7 @@ const PAGE_KEYS = [
   { key: 'the_index', label: 'The Index Page' },
   { key: 'feedback', label: 'Feedback Page' },
   { key: 'footer', label: 'Footer Links & Contact' },
-  { key: 'glossary_meta', label: 'Glossary PDF URL' },
+  { key: 'glossary_meta', label: 'Glossary Page Meta' },
 ];
 
 export default function SiteContentEditor() {
