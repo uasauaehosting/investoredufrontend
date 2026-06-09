@@ -48,14 +48,19 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
       });
 
       if (!response.ok) {
-        throw new Error('Upload failed');
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.message || body.error || `Upload failed (${response.status})`);
       }
 
       const data = await response.json();
-      onChange(normalizeMediaUrl(data.url));
+      const uploadedUrl = normalizeMediaUrl(data.url);
+      if (!uploadedUrl) {
+        throw new Error('Upload succeeded but no URL was returned');
+      }
+      onChange(uploadedUrl);
     } catch (err) {
       console.error('Upload error:', err);
-      setError('Failed to upload image. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to upload image. Please try again.');
     } finally {
       setUploading(false);
     }
