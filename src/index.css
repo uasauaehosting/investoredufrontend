@@ -32,4 +32,44 @@
   .icon-btn {
     @apply p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors;
   }
+
+  .rich-html-editor .ql-toolbar.ql-snow {
+    @apply rounded-t-lg border border-gray-200 bg-gray-50;
+  }
+
+  .rich-html-editor .ql-container.ql-snow {
+    @apply rounded-b-lg border border-t-0 border-gray-200 bg-white text-sm;
+    min-height: var(--rich-editor-min-height, 220px);
+  }
+
+  .rich-html-editor .ql-editor {
+    min-height: var(--rich-editor-min-height, 220px);
+  }
+
+  .rich-html-editor .ql-editor.ql-blank::before {
+    @apply text-gray-400 not-italic;
+  }
+
+  .rich-html-editor .ql-toolbar.ql-snow .ql-picker-label:hover,
+  .rich-html-editor .ql-toolbar.ql-snow .ql-picker-label.ql-active,
+  .rich-html-editor .ql-toolbar.ql-snow .ql-picker-item:hover,
+  .rich-html-editor .ql-toolbar.ql-snow .ql-picker-item.ql-selected,
+  .rich-html-editor .ql-toolbar.ql-snow button:hover,
+  .rich-html-editor .ql-toolbar.ql-snow button.ql-active {
+    color: #009900;
+  }
+
+  .rich-html-editor .ql-toolbar.ql-snow button:hover .ql-stroke,
+  .rich-html-editor .ql-toolbar.ql-snow button.ql-active .ql-stroke,
+  .rich-html-editor .ql-toolbar.ql-snow .ql-picker-label:hover .ql-stroke,
+  .rich-html-editor .ql-toolbar.ql-snow .ql-picker-label.ql-active .ql-stroke {
+    stroke: #009900;
+  }
+
+  .rich-html-editor .ql-toolbar.ql-snow button:hover .ql-fill,
+  .rich-html-editor .ql-toolbar.ql-snow button.ql-active .ql-fill,
+  .rich-html-editor .ql-toolbar.ql-snow .ql-picker-label:hover .ql-fill,
+  .rich-html-editor .ql-toolbar.ql-snow .ql-picker-label.ql-active .ql-fill {
+    fill: #009900;
+  }
 }

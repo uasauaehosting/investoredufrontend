@@ -3,6 +3,7 @@ import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
+import RichHtmlEditor from '../components/RichHtmlEditor';
 import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
 import {
   EDUCATION_SECTIONS,
@@ -167,15 +168,12 @@ export default function EducationContentEditor() {
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Full Content (detail page — HTML allowed)
-              </label>
-              <textarea
-                rows={6}
+              <RichHtmlEditor
+                label="Full Content (detail page — HTML allowed)"
                 value={editing.content ?? ''}
-                onChange={(e) => setEditing({ ...editing, content: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-y"
-                placeholder="<p>Full article content here...</p>"
+                onChange={(content) => setEditing({ ...editing, content })}
+                placeholder="Full article content here..."
+                hint="Use Visual mode to paste formatted text, or switch to HTML to paste raw markup."
               />
             </div>
             <ArabicSectionDivider />
@@ -186,7 +184,14 @@ export default function EducationContentEditor() {
               <ArabicTextAreaField label="الوصف المختصر (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} />
             </div>
             <div className="sm:col-span-2">
-              <ArabicTextAreaField label="المحتوى الكامل (عربي)" value={editing.contentAr ?? ''} onChange={(v) => setEditing({ ...editing, contentAr: v })} rows={6} />
+              <RichHtmlEditor
+                label="المحتوى الكامل (عربي)"
+                value={editing.contentAr ?? ''}
+                onChange={(contentAr) => setEditing({ ...editing, contentAr })}
+                dir="rtl"
+                placeholder="المحتوى الكامل للمقال..."
+                hint="يمكنك لصق النص المنسق أو التبديل إلى HTML للصق التنسيق مباشرة."
+              />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Display Order</label>
