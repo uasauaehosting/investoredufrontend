@@ -21,6 +21,7 @@ import EducationItemDetail from './pages/EducationItemDetail';
 import Principles from './pages/Principles';
 import PrincipleDetail from './pages/PrincipleDetail';
 import Framework from './pages/Framework';
+import FrameworkDetail from './pages/FrameworkDetail';
 import InvestmentProductsLiterature from './pages/InvestmentProductsLiterature';
 import InvestmentProductDetail from './pages/InvestmentProductDetail';
 import TheIndex from './pages/TheIndex';
@@ -78,6 +79,7 @@ export default function App() {
                   <Route path="/education/reading-materials/principles" element={<Principles />} />
                   <Route path="/education/reading-materials/principles/:id" element={<PrincipleDetail />} />
                   <Route path="/education/reading-materials/framework" element={<Framework />} />
+                  <Route path="/education/reading-materials/framework/:id" element={<FrameworkDetail />} />
                   <Route
                     path="/education/reading-materials/products"
                     element={<InvestmentProductsLiterature />}

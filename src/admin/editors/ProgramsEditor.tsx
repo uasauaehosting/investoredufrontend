@@ -144,11 +144,11 @@ export default function ProgramsEditor() {
   useEffect(() => { load(); }, []);
 
   const save = async () => {
-    if (!editing?.member_name?.trim()) return;
+    if (!editing) return;
     setSaving(true);
     try {
       const payload = {
-        member_name: editing.member_name,
+        member_name: editing.member_name?.trim() || '',
         member_name_ar: editing.member_name_ar?.trim() || null,
         general_info: editing.general_info,
         general_info_ar: editing.general_info_ar?.filter((v) => v.trim()) ?? [],

@@ -1,28 +1,52 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Layers } from 'lucide-react';
-import { useSiteContent } from '../lib/useSiteContent';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { api } from '../lib/api';
+import { Framework, frameworkDetailPath } from '../lib/frameworks';
 
-const FALLBACK = {
-  introParagraphs: [
-    'The need for investor education and financial literacy has never been greater. As the financial marketplace continues to evolve and innovate, investment products are becoming increasingly complex and financial services increasingly diverse.',
-    "The International Organization of Securities Commissions (IOSCO) is responding to these challenges through the Committee on Retail Investors (C8).",
-  ],
-  practices: [
-    'Focus investor education and financial literacy programs on improving retail investor knowledge of basic core competencies for investing.',
-    'Develop investor education and financial literacy programs that meet investor needs and support regulatory initiatives.',
-    'Develop investor education and financial literacy programs to meet the needs of specific audiences.',
-    'Consider insights gathered from research when developing investor education and financial literacy programs.',
-    'Develop investor education and financial literacy programs with clear and measurable outcomes.',
-    'Collaborate or partner with other relevant organisations in developing and delivering investor education programs.',
-    'Consider national strategies and collaboration with other organisations to complement financial education programs.',
-    'Promote international cooperation, sharing of information and coordination on investor education and financial literacy.',
-  ],
-  imageUrl: 'http://uasa.ae/en/galorg/23562017015639iosco.jpg',
-  pdfUrl: 'http://www.iosco.org/library/pubdocs/pdf/IOSCOPD462.pdf',
-};
+const FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1454165804603-c3d57bc86b40?auto=format&fit=crop&q=80&w=800';
 
-export default function Framework() {
-  const { data } = useSiteContent('framework', FALLBACK);
+function FrameworkCard({ item }: { item: Framework }) {
+  const [imgSrc, setImgSrc] = useState(item.imageUrl || FALLBACK_IMAGE);
+
+  return (
+    <Link
+      to={frameworkDetailPath(item.id)}
+      className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col"
+    >
+      <div className="aspect-[16/10] overflow-hidden bg-gray-100">
+        <img
+          src={imgSrc}
+          alt={item.title}
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+          onError={() => setImgSrc(FALLBACK_IMAGE)}
+        />
+      </div>
+      <div className="p-6 flex flex-col flex-1">
+        <h3 className="text-lg font-bold text-[#009900] mb-3 group-hover:text-green-700 transition-colors">
+          {item.title}
+        </h3>
+        <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3">{item.description}</p>
+        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#009900] mt-5 group-hover:text-amber-600 transition-colors">
+          Read More <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+        </span>
+      </div>
+    </Link>
+  );
+}
+
+export default function FrameworkPage() {
+  const [frameworks, setFrameworks] = useState<Framework[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api
+      .get('/investor-education/frameworks')
+      .then((data) => setFrameworks(data ?? []))
+      .catch(() => setFrameworks([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
@@ -37,49 +61,30 @@ export default function Framework() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-10 space-y-8">
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-12 lg:p-16">
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#009900] mb-8">IOSCO Framework</h2>
-          <div className="grid lg:grid-cols-2 gap-10 items-start mb-10">
-            <div className="space-y-6">
-              {data.introParagraphs.map((text, index) => (
-                <p key={index} className="text-gray-600 text-base sm:text-lg leading-relaxed">{text}</p>
+      <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-10">
+        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#009900] mb-8">Framework Library</h2>
+          {loading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="bg-gray-50 rounded-2xl border border-gray-100 animate-pulse overflow-hidden">
+                  <div className="aspect-[16/10] bg-gray-200" />
+                  <div className="p-6 space-y-3">
+                    <div className="h-5 bg-gray-200 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 rounded w-full" />
+                  </div>
+                </div>
               ))}
             </div>
-            <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-md bg-gray-50">
-              <img src={data.imageUrl} alt="IOSCO Strategic Framework" className="w-full h-auto object-cover" />
+          ) : frameworks.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {frameworks.map((item) => (
+                <FrameworkCard key={item.id} item={item} />
+              ))}
             </div>
-          </div>
-
-          <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-8">
-            The following framework identifies practices currently used by C8 members to help guide IOSCO members in developing and enhancing their own investor education and financial literacy programs:
-          </p>
-
-          <div className="space-y-5">
-            {data.practices.map((practice, index) => (
-              <div key={index} className="flex gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100">
-                <div className="shrink-0 w-10 h-10 rounded-xl bg-[#009900] text-white flex items-center justify-center font-bold text-sm">{index + 1}</div>
-                <div>
-                  <h3 className="font-bold text-[#009900] mb-2">Practice {index + 1}</h3>
-                  <p className="text-gray-600 leading-relaxed">{practice}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10">
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-green-50 rounded-xl text-[#009900] shrink-0"><Layers size={24} /></div>
-            <div>
-              <p className="text-gray-600 leading-relaxed mb-4">
-                <span className="font-semibold text-[#009900]">See more at:</span> IOSCO Strategic Framework for Investor Education and Financial Literacy.
-              </p>
-              <a href={data.pdfUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[#009900] font-semibold hover:text-amber-600 transition-colors">
-                Download the full IOSCO framework document <ExternalLink size={16} />
-              </a>
-            </div>
-          </div>
+          ) : (
+            <p className="text-gray-500 text-center py-8">No frameworks have been published yet.</p>
+          )}
         </div>
       </div>
     </div>

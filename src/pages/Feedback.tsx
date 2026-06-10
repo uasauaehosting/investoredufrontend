@@ -48,7 +48,6 @@ export default function Feedback() {
                     <div className="relative">
                       <User className="absolute start-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                       <input 
-                        required
                         type="text" 
                         className="w-full ps-12 pe-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                         placeholder="John Doe"
@@ -62,7 +61,6 @@ export default function Feedback() {
                     <div className="relative">
                       <Mail className="absolute start-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                       <input 
-                        required
                         type="email" 
                         className="w-full ps-12 pe-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                         placeholder="john@example.com"
@@ -76,7 +74,6 @@ export default function Feedback() {
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Subject</label>
                   <input 
-                    required
                     type="text" 
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                     placeholder="General Inquiry"
@@ -88,7 +85,6 @@ export default function Feedback() {
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Message</label>
                   <textarea 
-                    required
                     rows={6}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#009900]/20 resize-none"
                     placeholder="How can we help you today?"

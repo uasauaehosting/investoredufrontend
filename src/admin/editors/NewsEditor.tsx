@@ -55,7 +55,6 @@ export default function NewsEditor() {
 
   const save = async () => {
     if (!editing) return;
-    if (!editing.title?.trim()) { setError('Title is required.'); return; }
     setSaving(true); setError(null);
     try {
       const payload = normalizeMediaFieldsDeep({

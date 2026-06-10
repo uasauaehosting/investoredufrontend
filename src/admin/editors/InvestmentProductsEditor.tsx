@@ -107,20 +107,8 @@ export default function InvestmentProductsEditor() {
 
   const save = async () => {
     if (!editing) return;
-    if (!editing.title?.trim()) {
-      setError('Title is required.');
-      return;
-    }
-    if (!editing.description?.trim()) {
-      setError('Short description is required.');
-      return;
-    }
 
-    const slug = (editing.slug?.trim() || slugify(editing.title)).trim();
-    if (!slug) {
-      setError('URL slug is required.');
-      return;
-    }
+    const slug = (editing.slug?.trim() || slugify(editing.title || '') || `product-${Date.now()}`).trim();
 
     const normalizeBlocks = (source: InvestmentProductBlock[]) =>
       source.map((block) => ({
@@ -158,9 +146,9 @@ export default function InvestmentProductsEditor() {
     setError(null);
     try {
       const payload = normalizeMediaFieldsDeep({
-        title: editing.title.trim(),
+        title: editing.title?.trim() || '',
         titleAr: editing.titleAr?.trim() || null,
-        description: editing.description.trim(),
+        description: editing.description?.trim() || '',
         descriptionAr: editing.descriptionAr?.trim() || null,
         author: editing.author?.trim() || '',
         date: editing.date || today(),

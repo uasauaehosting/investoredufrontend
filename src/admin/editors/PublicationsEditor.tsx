@@ -50,7 +50,7 @@ export default function PublicationsEditor() {
   useEffect(() => { load(); }, []);
 
   const save = async () => {
-    if (!editing?.title?.trim()) return;
+    if (!editing) return;
     setSaving(true);
     try {
       const payload = normalizeMediaFieldsDeep({

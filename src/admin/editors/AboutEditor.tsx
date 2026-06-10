@@ -42,7 +42,7 @@ export default function AboutEditor() {
   useEffect(() => { load(); }, []);
 
   const save = async () => {
-    if (!editing?.content?.trim()) return;
+    if (!editing) return;
     setSaving(true);
     try {
       const payload = {

@@ -67,15 +67,15 @@ export default function MemberStrategiesProjectsEditor() {
   }, []);
 
   const save = async () => {
-    if (!editing?.title?.trim() || !editing?.authority_name?.trim()) return;
+    if (!editing) return;
     setSaving(true);
     try {
       const payload = {
-        title: editing.title,
+        title: editing.title?.trim() || '',
         titleAr: editing.titleAr?.trim() || null,
         description: editing.description || 'View Description',
         descriptionAr: editing.descriptionAr?.trim() || null,
-        authority_name: editing.authority_name,
+        authority_name: editing.authority_name?.trim() || '',
         type: editing.type || 'Strategy',
         fileUrl: editing.fileUrl || null,
         isActive: editing.isActive !== false,

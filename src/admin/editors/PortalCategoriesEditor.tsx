@@ -61,9 +61,6 @@ export default function PortalCategoriesEditor() {
 
   const save = async () => {
     if (!editing) return;
-    if (!editing.title?.trim()) { setError('Panel title is required.'); return; }
-    if (!editing.short_title?.trim()) { setError('Display title is required.'); return; }
-    if (!editing.authority_name?.trim()) { setError('Authority name is required.'); return; }
     setSaving(true); setError(null);
     try {
       const payload = normalizeMediaFieldsDeep({

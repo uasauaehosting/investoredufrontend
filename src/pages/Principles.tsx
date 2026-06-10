@@ -1,30 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, CheckCircle2, Target } from 'lucide-react';
-import { useSiteContent } from '../lib/useSiteContent';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { api } from '../lib/api';
 import { Principle, principleDetailPath } from '../lib/principles';
-
-const FALLBACK = {
-  introParagraphs: [
-    'Investor education plays a vital role in helping individuals make informed financial decisions, understand investment opportunities, and manage financial risks effectively. Through comprehensive educational resources, investors can develop the knowledge and skills needed to participate confidently in financial markets.',
-    'This section provides access to key principles, frameworks, and guidance documents that support investor awareness and financial literacy initiatives. The objective is to empower investors with the information necessary to evaluate investment products, understand market dynamics, and protect themselves from potential financial risks.',
-  ],
-  objectives: [
-    'Promote financial literacy among investors.',
-    'Improve understanding of investment products and services.',
-    'Encourage informed decision-making.',
-    'Enhance investor protection and awareness.',
-    'Support responsible participation in financial markets.',
-  ],
-  benefits: [
-    'Better understanding of financial products.',
-    'Improved risk assessment capabilities.',
-    'Enhanced confidence in investment decisions.',
-    'Increased awareness of investor rights and responsibilities.',
-    'Greater ability to identify fraudulent schemes and financial scams.',
-  ],
-};
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1454165804603-c3d57bc86b40?auto=format&fit=crop&q=80&w=800';
@@ -41,7 +19,7 @@ function PrincipleCard({ item }: { item: Principle }) {
         <img
           src={imgSrc}
           alt={item.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
           onError={() => setImgSrc(FALLBACK_IMAGE)}
         />
       </div>
@@ -59,7 +37,6 @@ function PrincipleCard({ item }: { item: Principle }) {
 }
 
 export default function Principles() {
-  const { data } = useSiteContent('principles', FALLBACK);
   const [principles, setPrinciples] = useState<Principle[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -84,52 +61,7 @@ export default function Principles() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-10 space-y-8">
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-12 lg:p-16">
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#009900] mb-8">Principles of Investor Education</h2>
-          <div className="max-w-4xl space-y-6">
-            {data.introParagraphs.map((text, index) => (
-              <p key={index} className="text-gray-600 text-base sm:text-lg leading-relaxed">{text}</p>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-8">
-          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-3 bg-green-50 rounded-xl text-green-600"><Target size={24} /></div>
-              <h2 className="text-xl sm:text-2xl font-bold text-[#009900]">Objectives</h2>
-            </div>
-            <ul className="space-y-4">
-              {data.objectives.map((item, index) => (
-                <li key={index} className="flex gap-4">
-                  <div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center text-green-600 shrink-0 mt-0.5">
-                    <CheckCircle2 size={14} />
-                  </div>
-                  <span className="text-gray-600 leading-relaxed">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-3 bg-amber-50 rounded-xl text-amber-600"><CheckCircle2 size={24} /></div>
-              <h2 className="text-xl sm:text-2xl font-bold text-[#009900]">Benefits for Investors</h2>
-            </div>
-            <ul className="space-y-4">
-              {data.benefits.map((item, index) => (
-                <li key={index} className="flex gap-4">
-                  <div className="w-6 h-6 rounded-full bg-amber-50 flex items-center justify-center text-amber-600 shrink-0 mt-0.5">
-                    <CheckCircle2 size={14} />
-                  </div>
-                  <span className="text-gray-600 leading-relaxed">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
+      <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-10">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-12">
           <h2 className="text-2xl sm:text-3xl font-bold text-[#009900] mb-8">Principles Library</h2>
           {loading ? (

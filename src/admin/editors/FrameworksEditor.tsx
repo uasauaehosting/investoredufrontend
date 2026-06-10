@@ -4,11 +4,11 @@ import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
 import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
-import { Principle } from '../../lib/principles';
+import { Framework } from '../../lib/frameworks';
 
 const today = () => new Date().toISOString().slice(0, 10);
 
-const empty = (): Omit<Principle, 'id'> => ({
+const empty = (): Omit<Framework, 'id'> => ({
   title: '',
   titleAr: '',
   description: '',
@@ -22,20 +22,20 @@ const empty = (): Omit<Principle, 'id'> => ({
   isActive: true,
 });
 
-export default function PrinciplesEditor() {
-  const [items, setItems] = useState<Principle[]>([]);
+export default function FrameworksEditor() {
+  const [items, setItems] = useState<Framework[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<Partial<Principle> | null>(null);
+  const [editing, setEditing] = useState<Partial<Framework> | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
     try {
-      const data = await api.get('/investor-education/principles/admin');
+      const data = await api.get('/investor-education/frameworks/admin');
       setItems(normalizeMediaFieldsDeep(data ?? []));
     } catch (err) {
-      console.error('Failed to load principles:', err);
+      console.error('Failed to load frameworks:', err);
       setItems([]);
     } finally {
       setLoading(false);
@@ -47,7 +47,7 @@ export default function PrinciplesEditor() {
   }, []);
 
   const openNew = () => setEditing({ ...empty() });
-  const openEdit = (item: Principle) => setEditing(normalizeMediaFieldsDeep({
+  const openEdit = (item: Framework) => setEditing(normalizeMediaFieldsDeep({
     ...item,
     date: item.date ? String(item.date).slice(0, 10) : today(),
   }));
@@ -77,9 +77,9 @@ export default function PrinciplesEditor() {
       });
 
       if (editing.id) {
-        await api.put(`/investor-education/principles/${editing.id}`, payload);
+        await api.put(`/investor-education/frameworks/${editing.id}`, payload);
       } else {
-        await api.post('/investor-education/principles', payload);
+        await api.post('/investor-education/frameworks', payload);
       }
       setEditing(null);
       load();
@@ -91,13 +91,13 @@ export default function PrinciplesEditor() {
   };
 
   const remove = async (id: number) => {
-    if (!confirm('Delete this principle? This cannot be undone.')) return;
+    if (!confirm('Delete this framework? This cannot be undone.')) return;
     try {
-      await api.delete(`/investor-education/principles/${id}`);
+      await api.delete(`/investor-education/frameworks/${id}`);
       setItems((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
       console.error('Failed to delete:', err);
-      setError('Failed to delete principle.');
+      setError('Failed to delete framework.');
     }
   };
 
@@ -105,20 +105,20 @@ export default function PrinciplesEditor() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
         <div>
-          <h2 className="text-lg font-bold text-gray-800">Principles</h2>
+          <h2 className="text-lg font-bold text-gray-800">Framework</h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Add and manage individual principle pages with images and content
+            Add and manage individual framework pages with images and content
           </p>
         </div>
         <button onClick={openNew} className="btn-primary flex items-center gap-1.5 self-start">
-          <Plus size={15} /> Add Principle
+          <Plus size={15} /> Add Framework
         </button>
       </div>
 
       {editing && (
         <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
           <h3 className="font-semibold text-[#009900] text-sm">
-            {editing.id ? 'Edit Principle' : 'New Principle'}
+            {editing.id ? 'Edit Framework' : 'New Framework'}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
@@ -128,7 +128,7 @@ export default function PrinciplesEditor() {
                 value={editing.title ?? ''}
                 onChange={(e) => setEditing({ ...editing, title: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-                placeholder="Principle name"
+                placeholder="Framework name"
               />
             </div>
             <div className="sm:col-span-2">
@@ -158,7 +158,7 @@ export default function PrinciplesEditor() {
                 value={editing.content ?? ''}
                 onChange={(e) => setEditing({ ...editing, content: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-y"
-                placeholder="<p>Detailed principle content here...</p>"
+                placeholder="<p>Detailed framework content here...</p>"
               />
             </div>
             <ArabicSectionDivider />
@@ -205,7 +205,7 @@ export default function PrinciplesEditor() {
       )}
 
       {loading ? (
-        <div className="text-gray-400 text-sm animate-pulse py-8">Loading principles...</div>
+        <div className="text-gray-400 text-sm animate-pulse py-8">Loading frameworks...</div>
       ) : (
         <div className="space-y-3">
           {items.map((item) => (
@@ -238,7 +238,7 @@ export default function PrinciplesEditor() {
             </div>
           ))}
           {items.length === 0 && (
-            <p className="text-sm text-gray-400 py-8 text-center">No principles yet. Add your first one above.</p>
+            <p className="text-sm text-gray-400 py-8 text-center">No frameworks yet. Add your first one above.</p>
           )}
         </div>
       )}

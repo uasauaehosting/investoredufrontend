@@ -63,10 +63,7 @@ export default function BenchmarkingEditor() {
   }, []);
 
   const save = async () => {
-    if (!editing?.title?.trim() || !editing.authority?.trim() || !editing.year?.trim()) {
-      setError('Authority, year, and title are required.');
-      return;
-    }
+    if (!editing) return;
     setSaving(true);
     setError(null);
     try {

@@ -16,6 +16,7 @@ import GlossaryEditor from './editors/GlossaryEditor';
 import PublicationsEditor from './editors/PublicationsEditor';
 import ProgramsEditor from './editors/ProgramsEditor';
 import PrinciplesEditor from './editors/PrinciplesEditor';
+import FrameworksEditor from './editors/FrameworksEditor';
 import InvestmentProductsEditor from './editors/InvestmentProductsEditor';
 import AlertsBulletinsEditor from './editors/AlertsBulletinsEditor';
 import MemberStrategiesProjectsEditor from './editors/MemberStrategiesProjectsEditor';
@@ -24,7 +25,7 @@ import BenchmarkingEditor from './editors/BenchmarkingEditor';
 import FeedbackInboxEditor from './editors/FeedbackInboxEditor';
 
 type Section =
-  | 'overview' | 'slides' | 'news' | 'members' | 'member-portals' | 'education' | 'principles'
+  | 'overview' | 'slides' | 'news' | 'members' | 'member-portals' | 'education' | 'principles' | 'frameworks'
   | 'investment-products' | 'about' | 'pages' | 'glossary' | 'publications' | 'programs'
   | 'alerts-bulletins' | 'member-strategies-projects' | 'global-policy-areas'
   | 'benchmarking' | 'feedback-inbox';
@@ -38,6 +39,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType; desc: str
   { id: 'about',         label: 'About',                 icon: Info,            desc: 'About page (/about)' },
   { id: 'education',     label: 'Education Sections',    icon: BookOpen,        desc: 'Section landing pages (/education/:section)' },
   { id: 'principles',    label: 'Principles',            icon: BookOpen,        desc: 'Principles pages (/education/reading-materials/principles)' },
+  { id: 'frameworks',    label: 'Framework',             icon: BookOpen,        desc: 'Framework pages (/education/reading-materials/framework)' },
   { id: 'investment-products', label: 'Investment Products', icon: BookOpen, desc: 'Product literature (/education/reading-materials/products)' },
   { id: 'publications',  label: 'Publications',          icon: FileText,        desc: 'Member publications (/education/members-activities/publications)' },
   { id: 'programs',      label: 'Programs',              icon: ClipboardList,   desc: 'Education programs (/education/members-activities/programs)' },
@@ -141,6 +143,7 @@ export default function AdminDashboard() {
           {section === 'member-portals' && <PortalCategoriesEditor />}
           {section === 'education' && <EducationContentEditor />}
           {section === 'principles' && <PrinciplesEditor />}
+          {section === 'frameworks' && <FrameworksEditor />}
           {section === 'investment-products' && <InvestmentProductsEditor />}
           {section === 'about' && <AboutEditor />}
           {section === 'pages' && <SiteContentEditor />}

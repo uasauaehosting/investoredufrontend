@@ -59,23 +59,15 @@ export default function EducationContentEditor() {
 
   const save = async () => {
     if (!editing) return;
-    if (!editing.title?.trim()) {
-      setError('Title is required.');
-      return;
-    }
-    if (!editing.description?.trim()) {
-      setError('Description is required.');
-      return;
-    }
 
     setSaving(true);
     setError(null);
     try {
       const payload = normalizeMediaFieldsDeep({
         section: editing.section ?? activeSection,
-        title: editing.title,
+        title: editing.title?.trim() || '',
         titleAr: editing.titleAr?.trim() || null,
-        description: editing.description,
+        description: editing.description?.trim() || '',
         descriptionAr: editing.descriptionAr?.trim() || null,
         imageUrl: editing.imageUrl || null,
         content: editing.content || null,

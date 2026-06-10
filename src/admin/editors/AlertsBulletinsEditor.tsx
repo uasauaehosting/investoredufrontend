@@ -75,27 +75,20 @@ export default function AlertsBulletinsEditor() {
   }, []);
 
   const save = async () => {
-    if (!editing?.title?.trim()) {
-      setError('Title is required.');
-      return;
-    }
-    if (!editing.authority_name?.trim()) {
-      setError('Authority is required.');
-      return;
-    }
+    if (!editing) return;
 
     setSaving(true);
     setError(null);
     try {
       const payload = {
-        title: editing.title.trim(),
+        title: editing.title?.trim() || '',
         titleAr: editing.titleAr?.trim() || null,
         type: editing.type ?? 'Alert',
         description: editing.description?.trim() ?? '',
         descriptionAr: editing.descriptionAr?.trim() || null,
         content: editing.content?.trim() ?? '',
         contentAr: editing.contentAr?.trim() || null,
-        authority_name: editing.authority_name,
+        authority_name: editing.authority_name?.trim() || '',
         year: editing.year ?? ALERT_BULLETIN_YEARS[0],
         date_published: editing.date_published ?? `${editing.year}-01-01`,
         link: editing.link?.trim() ?? '',

@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { api } from '../lib/api';
 
 export interface Slide {
@@ -41,7 +40,6 @@ export default function HeroSlider() {
     [animating, slides.length]
   );
 
-  const prev = () => goTo((current - 1 + slides.length) % slides.length);
   const next = useCallback(
     () => goTo((current + 1) % slides.length),
     [current, goTo, slides.length]
@@ -67,79 +65,35 @@ export default function HeroSlider() {
   if (slides.length === 0) return null;
 
   return (
-    <div className="relative w-full overflow-hidden" style={{ height: 'clamp(280px, 50vw, 520px)' }}>
+    <div className="relative w-full overflow-hidden bg-white" style={{ height: 'clamp(280px, 50vw, 520px)' }}>
       {slides.map((slide, i) => (
         <div
           key={slide.id}
-          className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+          className={`absolute inset-0 flex items-center justify-center transition-all duration-700 ease-in-out ${
             i === current ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
           }`}
         >
           <img
             src={slide.image_url ?? ''}
-            alt={slide.title}
+            alt=""
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r rtl:bg-gradient-to-l from-[#009900]/85 via-[#009900]/40 to-transparent" />
-
-          <div className="absolute inset-0 flex items-center">
-            <div className="max-w-7xl mx-auto px-6 sm:px-10 w-full">
-              <div
-                className={`max-w-lg transition-all duration-700 delay-200 ${
-                  i === current ? 'opacity-100 translate-x-0' : 'opacity-0 ltr:-translate-x-8 rtl:translate-x-8'
-                }`}
-              >
-                <div className="w-12 h-1 bg-amber-400 mb-4 rounded-full" />
-                <h2 className="text-white text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-3 drop-shadow-md">
-                  {slide.title}
-                </h2>
-                {slide.subtitle && (
-                  <p className="text-green-100 text-sm sm:text-base mb-6 leading-relaxed drop-shadow">
-                    {slide.subtitle}
-                  </p>
-                )}
-                <a
-                  href={slide.cta_href ?? '#'}
-                  className="inline-block bg-amber-500 hover:bg-amber-400 text-white font-semibold text-sm px-6 py-2.5 rounded transition-colors shadow-lg"
-                >
-                  {slide.cta_text ?? 'Learn More'}
-                </a>
-              </div>
-            </div>
-          </div>
         </div>
       ))}
 
       {slides.length > 1 && (
-        <>
-          <button
-            onClick={prev}
-            className="absolute start-3 sm:start-5 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white rounded-full p-2 transition-colors backdrop-blur-sm"
-            aria-label="Previous slide"
-          >
-            <ChevronLeft size={20} className="rtl:rotate-180" />
-          </button>
-          <button
-            onClick={next}
-            className="absolute end-3 sm:end-5 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white rounded-full p-2 transition-colors backdrop-blur-sm"
-            aria-label="Next slide"
-          >
-            <ChevronRight size={20} className="rtl:rotate-180" />
-          </button>
-
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-            {slides.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i)}
-                className={`rounded-full transition-all duration-300 ${
-                  i === current ? 'w-6 h-2.5 bg-amber-400' : 'w-2.5 h-2.5 bg-white/50 hover:bg-white/80'
-                }`}
-                aria-label={`Go to slide ${i + 1}`}
-              />
-            ))}
-          </div>
-        </>
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              className={`rounded-full transition-all duration-300 ${
+                i === current ? 'w-6 h-2.5 bg-amber-400' : 'w-2.5 h-2.5 bg-gray-400/60 hover:bg-gray-500/80'
+              }`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
       )}
     </div>
   );

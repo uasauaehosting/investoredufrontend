@@ -52,7 +52,7 @@ export default function FeedbackInboxEditor() {
   };
 
   const sendResponse = async () => {
-    if (!selected || !response.trim()) return;
+    if (!selected) return;
     setSaving(true);
     try {
       await api.put(`/feedback/${selected.id}/respond`, { response });

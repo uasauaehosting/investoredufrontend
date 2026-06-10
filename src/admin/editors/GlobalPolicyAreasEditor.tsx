@@ -64,16 +64,16 @@ export default function GlobalPolicyAreasEditor() {
   }, []);
 
   const save = async () => {
-    if (!editing?.title?.trim() || !editing?.institution?.trim() || !editing?.category?.trim()) return;
+    if (!editing) return;
     setSaving(true);
     try {
       const payload = {
-        title: editing.title,
+        title: editing.title?.trim() || '',
         title_ar: editing.title_ar?.trim() || null,
         description: editing.description || 'View Description',
         description_ar: editing.description_ar?.trim() || null,
-        institution: editing.institution,
-        category: editing.category,
+        institution: editing.institution?.trim() || '',
+        category: editing.category?.trim() || '',
         fileUrl: editing.fileUrl || null,
         isActive: editing.isActive !== false,
       };

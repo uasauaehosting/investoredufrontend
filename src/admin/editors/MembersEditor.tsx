@@ -49,7 +49,6 @@ export default function MembersEditor() {
 
   const save = async () => {
     if (!editing) return;
-    if (!editing.name?.trim() || !editing.country?.trim()) { setError('Name and country are required.'); return; }
     setSaving(true); setError(null);
     try {
       const payload = normalizeMediaFieldsDeep({

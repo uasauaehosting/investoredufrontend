@@ -38,12 +38,12 @@ export default function GlossaryEditor() {
   ).slice(0, 50);
 
   const save = async () => {
-    if (!editing?.term?.trim() || !editing?.definition?.trim()) return;
+    if (!editing) return;
     setSaving(true);
     try {
       const payload = {
-        term: editing.term,
-        definition: editing.definition,
+        term: editing.term?.trim() || '',
+        definition: editing.definition?.trim() || '',
         arabicTerm: editing.arabicTerm?.trim() || null,
         arabicDefinition: editing.arabicDefinition?.trim() || null,
         frenchTerm: editing.frenchTerm?.trim() || null,
