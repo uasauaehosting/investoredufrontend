@@ -1,8 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { api } from '../lib/api';
-import { getInvestmentProduct, InvestmentProductBlock } from '../lib/investmentProducts';
+import {
+  InvestmentProductItem,
+  InvestmentProductBlock,
+  INVESTMENT_PRODUCTS_LIST_PATH,
+} from '../lib/investmentProducts';
+import { parseInvestmentProductContent } from '../lib/investmentProductContent';
+
+const FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1454165804603-c3d57bc86b40?auto=format&fit=crop&q=80&w=1200';
 
 function ContentBlock({ block }: { block: InvestmentProductBlock }) {
   return (
@@ -36,82 +44,89 @@ function ContentBlock({ block }: { block: InvestmentProductBlock }) {
   );
 }
 
-interface ProductView {
-  title: string;
-  imageUrl: string;
-  blocks: InvestmentProductBlock[];
-}
-
 export default function InvestmentProductDetail() {
-  const { slug } = useParams<{ slug: string }>();
-  const [product, setProduct] = useState<ProductView | null>(null);
+  const { id } = useParams<{ id: string }>();
+  const [item, setItem] = useState<InvestmentProductItem | null>(null);
+  const [blocks, setBlocks] = useState<InvestmentProductBlock[]>([]);
   const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+  const [imgSrc, setImgSrc] = useState(FALLBACK_IMAGE);
 
   useEffect(() => {
-    if (!slug) return;
-    const fallback = getInvestmentProduct(slug);
+    if (!id) return;
+    setLoading(true);
     api
-      .get(`/investor-education/investment-products/slug/${slug}`)
-      .then((data) => {
-        let blocks: InvestmentProductBlock[] = fallback?.blocks ?? [];
-        if (data.content) {
-          try {
-            const parsed = typeof data.content === 'string' ? JSON.parse(data.content) : data.content;
-            if (parsed.blocks) blocks = parsed.blocks;
-            else if (Array.isArray(parsed)) blocks = parsed;
-          } catch { /* use fallback blocks */ }
-        }
-        setProduct({
-          title: data.title ?? fallback?.title ?? '',
-          imageUrl: data.imageUrl ?? data.image_url ?? fallback?.imageUrl ?? '',
-          blocks,
-        });
+      .get(`/investor-education/investment-products/${id}`)
+      .then((data: InvestmentProductItem) => {
+        setItem(data);
+        setBlocks(parseInvestmentProductContent(data.content));
+        if (data.imageUrl) setImgSrc(data.imageUrl);
       })
       .catch(() => {
-        if (fallback) {
-          setProduct({ title: fallback.title, imageUrl: fallback.imageUrl, blocks: fallback.blocks });
-        } else {
-          setNotFound(true);
-        }
+        setItem(null);
+        setBlocks([]);
       })
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [id]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>;
+    return <div className="py-24 text-center text-gray-400">Loading...</div>;
   }
 
-  if (notFound || !product) {
-    return <Navigate to="/education/reading-materials/products" replace />;
+  if (!item) {
+    return (
+      <div className="py-24 text-center">
+        <p className="text-gray-500 mb-4">Investment product not found.</p>
+        <Link to={INVESTMENT_PRODUCTS_LIST_PATH} className="text-[#009900] hover:text-amber-600 font-medium">
+          Back to Investment Products/ Literature
+        </Link>
+      </div>
+    );
   }
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
+      <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-12 px-4">
         <div className="max-w-7xl mx-auto">
-          <Link to="/education/reading-materials/products" className="inline-flex items-center gap-2 text-green-200 hover:text-white text-sm mb-6 transition-colors">
+          <Link
+            to={INVESTMENT_PRODUCTS_LIST_PATH}
+            className="inline-flex items-center gap-2 text-green-200 hover:text-white text-sm mb-6 transition-colors"
+          >
             <ArrowLeft size={16} /> Back to Investment Products/ Literature
           </Link>
-          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">Investment Products/ Literature</span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">{product.title}</h1>
-          <div className="h-1.5 w-24 bg-amber-400 mt-8 rounded-full" />
+          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full mb-4 tracking-widest uppercase">
+            Investment Products/ Literature
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-bold leading-tight">{item.title}</h1>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-10">
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-12 lg:p-16">
-          {product.imageUrl && (
-            <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-md mb-10 max-w-3xl">
-              <img src={product.imageUrl} alt={product.title} className="w-full h-auto object-cover" />
+      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
+        <article className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-0">
+            <div className="bg-gray-50 border-b lg:border-b-0 lg:border-r border-gray-100 flex items-center justify-center p-6 sm:p-8 lg:p-10">
+              <img
+                src={imgSrc}
+                alt={item.title}
+                className="w-full max-h-72 sm:max-h-96 lg:max-h-[32rem] object-contain rounded-2xl"
+                onError={() => setImgSrc(FALLBACK_IMAGE)}
+              />
             </div>
-          )}
-          <div className="max-w-4xl space-y-10">
-            {product.blocks.map((block, index) => (
-              <ContentBlock key={index} block={block} />
-            ))}
+            <div className="p-8 sm:p-12 lg:p-14">
+              <p className="text-gray-600 text-lg leading-relaxed mb-8 border-b border-gray-100 pb-8">
+                {item.description}
+              </p>
+              {blocks.length > 0 ? (
+                <div className="space-y-10">
+                  {blocks.map((block, index) => (
+                    <ContentBlock key={index} block={block} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">{item.description}</p>
+              )}
+            </div>
           </div>
-        </div>
+        </article>
       </div>
     </div>
   );

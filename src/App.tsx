@@ -85,7 +85,7 @@ export default function App() {
                     element={<InvestmentProductsLiterature />}
                   />
                   <Route
-                    path="/education/reading-materials/products/:slug"
+                    path="/education/reading-materials/products/:id"
                     element={<InvestmentProductDetail />}
                   />
                   <Route path="/education/members-activities/portals" element={<Portals />} />

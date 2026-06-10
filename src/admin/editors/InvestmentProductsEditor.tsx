@@ -175,12 +175,13 @@ export default function InvestmentProductsEditor() {
   };
 
   const remove = async (id: number) => {
-    if (!confirm('Delete this investment product?')) return;
+    if (!confirm('Delete this investment product? This cannot be undone.')) return;
     try {
       await api.delete(`/investor-education/investment-products/${id}`);
-      load();
+      setItems((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
       console.error('Failed to delete:', err);
+      setError('Failed to delete investment product.');
     }
   };
 
@@ -224,7 +225,7 @@ export default function InvestmentProductsEditor() {
                 placeholder="introduction-to-financial-markets"
               />
               <p className="text-[10px] text-gray-400 mt-1">
-                Used in /education/reading-materials/products/{'{slug}'}
+                Used in /education/reading-materials/products/{'{id}'}
               </p>
             </div>
             <div>
@@ -326,7 +327,7 @@ export default function InvestmentProductsEditor() {
                   <span className="text-[10px] text-amber-600 mt-1 inline-block">Hidden</span>
                 )}
               </div>
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-1">
                 <button
                   onClick={() => openEdit(item)}
                   className="p-1.5 text-gray-400 hover:text-[#009900] hover:bg-green-50 rounded-lg transition-colors"
