@@ -1,18 +1,4 @@
-export interface InvestmentProductSubItem {
-  title: string;
-  text: string;
-}
-
-export interface InvestmentProductBlock {
-  heading?: string;
-  paragraphs?: string[];
-  bullets?: string[];
-  subItems?: InvestmentProductSubItem[];
-  source?: string;
-  externalLink?: { label: string; url: string };
-}
-
-export interface InvestmentProductItem {
+export interface InvestmentProduct {
   id: number;
   title: string;
   titleAr?: string;
@@ -24,7 +10,6 @@ export interface InvestmentProductItem {
   imageUrl: string;
   content: string;
   contentAr?: string;
-  slug?: string;
   isActive: boolean;
 }
 

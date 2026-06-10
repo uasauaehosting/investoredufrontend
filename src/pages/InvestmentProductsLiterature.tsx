@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { api } from '../lib/api';
 import {
-  InvestmentProductItem,
+  InvestmentProduct,
   investmentProductDetailPath,
 } from '../lib/investmentProducts';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1454165804603-c3d57bc86b40?auto=format&fit=crop&q=80&w=800';
 
-function ProductCard({ item }: { item: InvestmentProductItem }) {
+function ProductCard({ item }: { item: InvestmentProduct }) {
   const [imgSrc, setImgSrc] = useState(item.imageUrl || FALLBACK_IMAGE);
 
   return (
@@ -30,7 +30,7 @@ function ProductCard({ item }: { item: InvestmentProductItem }) {
         <h3 className="text-lg font-bold text-[#009900] mb-3 group-hover:text-green-700 transition-colors">
           {item.title}
         </h3>
-        <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3">{item.description}</p>
+        {/* <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3">{item.description}</p> */}
         <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#009900] mt-5 group-hover:text-amber-600 transition-colors">
           Read More <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
         </span>
@@ -40,7 +40,7 @@ function ProductCard({ item }: { item: InvestmentProductItem }) {
 }
 
 export default function InvestmentProductsLiterature() {
-  const [products, setProducts] = useState<InvestmentProductItem[]>([]);
+  const [products, setProducts] = useState<InvestmentProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

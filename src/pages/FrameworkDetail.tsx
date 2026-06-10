@@ -59,9 +59,9 @@ export default function FrameworkDetail() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
-        <article className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-          <div className="grid lg:grid-cols-2 gap-0">
-            <div className="bg-gray-50 border-b lg:border-b-0 lg:border-r border-gray-100 flex items-center justify-center p-6 sm:p-8 lg:p-10">
+        <article className="bg-white rounded-3xl shadow-xl border border-gray-100">
+          <div className="grid lg:grid-cols-2 gap-0 items-start">
+            <div className="bg-gray-50 border-b lg:border-b-0 lg:border-r border-gray-100 flex items-center justify-center p-6 sm:p-8 lg:p-10 lg:sticky lg:top-6 lg:self-start rounded-t-3xl lg:rounded-s-3xl lg:rounded-tr-none">
               <img
                 src={imgSrc}
                 alt={item.title}

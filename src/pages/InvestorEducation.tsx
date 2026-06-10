@@ -63,7 +63,7 @@ export default function InvestorEducation() {
                   <Icon size={28} />
                 </div>
                 <h3 className="text-xl font-bold text-[#009900] mb-4">{section.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed mb-8">{section.description}</p>
+                {/* <p className="text-gray-500 text-sm leading-relaxed mb-8">{section.description}</p> */}
                 <Link
                   to={section.listPath}
                   className="inline-flex items-center gap-2 text-sm font-bold text-[#009900] group-hover:text-amber-600 transition-colors"

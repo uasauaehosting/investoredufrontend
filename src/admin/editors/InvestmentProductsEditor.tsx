@@ -2,47 +2,15 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
-import FileUpload from '../../lib/FileUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
-import {
-  parseInvestmentProductContent,
-  serializeInvestmentProductContent,
-} from '../../lib/investmentProductContent';
-import { InvestmentProductBlock } from '../../lib/investmentProducts';
-import InvestmentProductBlocksEditor from './InvestmentProductBlocksEditor';
+import RichHtmlEditor from '../components/RichHtmlEditor';
 import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
-
-interface InvestmentProduct {
-  id: number;
-  title: string;
-  titleAr?: string | null;
-  description: string;
-  descriptionAr?: string | null;
-  author: string;
-  date: string;
-  fileUrl: string;
-  imageUrl: string;
-  content: string;
-  contentAr?: string | null;
-  slug: string;
-  isActive: boolean;
-}
+import { InvestmentProduct } from '../../lib/investmentProducts';
+import { normalizeInvestmentProductContent } from '../../lib/investmentProductContent';
 
 const today = () => new Date().toISOString().slice(0, 10);
 
-const slugify = (value: string) =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-
-type EditingProduct = Partial<InvestmentProduct> & {
-  blocks?: InvestmentProductBlock[];
-  blocksAr?: InvestmentProductBlock[];
-};
-
-const empty = (): EditingProduct => ({
+const empty = (): Omit<InvestmentProduct, 'id'> => ({
   title: '',
   titleAr: '',
   description: '',
@@ -53,16 +21,13 @@ const empty = (): EditingProduct => ({
   imageUrl: '',
   content: '',
   contentAr: '',
-  slug: '',
   isActive: true,
-  blocks: [],
-  blocksAr: [],
 });
 
 export default function InvestmentProductsEditor() {
   const [items, setItems] = useState<InvestmentProduct[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<EditingProduct | null>(null);
+  const [editing, setEditing] = useState<Partial<InvestmentProduct> | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -74,7 +39,6 @@ export default function InvestmentProductsEditor() {
         normalizeMediaFieldsDeep(data ?? []).map((item: InvestmentProduct) => ({
           ...item,
           date: item.date ? String(item.date).slice(0, 10) : today(),
-          slug: item.slug ?? '',
         })),
       );
     } catch (err) {
@@ -95,9 +59,8 @@ export default function InvestmentProductsEditor() {
       normalizeMediaFieldsDeep({
         ...item,
         date: item.date ? String(item.date).slice(0, 10) : today(),
-        blocks: parseInvestmentProductContent(item.content),
-        blocksAr: parseInvestmentProductContent(item.contentAr ?? undefined),
-        slug: item.slug ?? '',
+        content: normalizeInvestmentProductContent(item.content),
+        contentAr: item.contentAr ? normalizeInvestmentProductContent(item.contentAr) : '',
       }),
     );
   const cancel = () => {
@@ -107,40 +70,6 @@ export default function InvestmentProductsEditor() {
 
   const save = async () => {
     if (!editing) return;
-
-    const slug = (editing.slug?.trim() || slugify(editing.title || '') || `product-${Date.now()}`).trim();
-
-    const normalizeBlocks = (source: InvestmentProductBlock[]) =>
-      source.map((block) => ({
-      ...block,
-      heading: block.heading?.trim() || undefined,
-      paragraphs: block.paragraphs?.map((p) => p.trim()).filter(Boolean),
-      bullets: block.bullets?.map((b) => b.trim()).filter(Boolean),
-      subItems: block.subItems
-        ?.map((item) => ({ title: item.title.trim(), text: item.text.trim() }))
-        .filter((item) => item.title || item.text),
-      source: block.source?.trim() || undefined,
-      externalLink:
-        block.externalLink?.url?.trim()
-          ? {
-              label: block.externalLink.label?.trim() || 'Read more',
-              url: block.externalLink.url.trim(),
-            }
-          : undefined,
-    })).filter(
-      (block) =>
-        block.heading ||
-        (block.paragraphs && block.paragraphs.length > 0) ||
-        (block.bullets && block.bullets.length > 0) ||
-        (block.subItems && block.subItems.length > 0) ||
-        block.source ||
-        block.externalLink,
-    );
-
-    const blocks = normalizeBlocks(editing.blocks ?? []);
-    const blocksAr = normalizeBlocks(editing.blocksAr ?? []);
-    const content = serializeInvestmentProductContent(blocks);
-    const contentAr = blocksAr.length > 0 ? serializeInvestmentProductContent(blocksAr) : null;
 
     setSaving(true);
     setError(null);
@@ -154,9 +83,8 @@ export default function InvestmentProductsEditor() {
         date: editing.date || today(),
         fileUrl: editing.fileUrl?.trim() || '',
         imageUrl: editing.imageUrl?.trim() || '',
-        content,
-        contentAr,
-        slug,
+        content: editing.content?.trim() || '',
+        contentAr: editing.contentAr?.trim() || null,
         isActive: editing.isActive !== false,
       });
 
@@ -191,7 +119,7 @@ export default function InvestmentProductsEditor() {
         <div>
           <h2 className="text-lg font-bold text-gray-800">Investment Products/ Literature</h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Manage product cards and detail pages shown under Reading Materials
+            Add and manage individual investment product pages with images and content
           </p>
         </div>
         <button onClick={openNew} className="btn-primary flex items-center gap-1.5 self-start">
@@ -212,34 +140,12 @@ export default function InvestmentProductsEditor() {
                 value={editing.title ?? ''}
                 onChange={(e) => setEditing({ ...editing, title: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-                placeholder="Introduction to Financial Markets"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">URL Slug *</label>
-              <input
-                type="text"
-                value={editing.slug ?? ''}
-                onChange={(e) => setEditing({ ...editing, slug: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-                placeholder="introduction-to-financial-markets"
-              />
-              <p className="text-[10px] text-gray-400 mt-1">
-                Used in /education/reading-materials/products/{'{id}'}
-              </p>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
-              <input
-                type="date"
-                value={editing.date ?? today()}
-                onChange={(e) => setEditing({ ...editing, date: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
+                placeholder="Product name"
               />
             </div>
             <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-gray-500 mb-1">
-                Short Description (shown on list card) *
+                Short Description (shown on list) *
               </label>
               <textarea
                 rows={3}
@@ -250,23 +156,18 @@ export default function InvestmentProductsEditor() {
             </div>
             <div className="sm:col-span-2">
               <ImageUpload
-                label="Card Image"
+                label="Image"
                 value={editing.imageUrl ?? ''}
                 onChange={(url) => setEditing({ ...editing, imageUrl: url })}
               />
             </div>
             <div className="sm:col-span-2">
-              <FileUpload
-                label="Downloadable File (optional)"
-                value={editing.fileUrl ?? ''}
-                onChange={(url) => setEditing({ ...editing, fileUrl: url })}
-                hint="Optional PDF or document attached to this product"
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <InvestmentProductBlocksEditor
-                blocks={editing.blocks ?? []}
-                onChange={(blocks) => setEditing({ ...editing, blocks })}
+              <RichHtmlEditor
+                label="Full Content (detail page — HTML allowed)"
+                value={editing.content ?? ''}
+                onChange={(content) => setEditing({ ...editing, content })}
+                placeholder="Detailed product content here..."
+                hint="Use Visual mode to paste formatted text, or switch to HTML to paste raw markup."
               />
             </div>
             <ArabicSectionDivider />
@@ -277,10 +178,22 @@ export default function InvestmentProductsEditor() {
               <ArabicTextAreaField label="الوصف المختصر (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} />
             </div>
             <div className="sm:col-span-2">
-              <InvestmentProductBlocksEditor
-                blocks={editing.blocksAr ?? []}
-                onChange={(blocksAr) => setEditing({ ...editing, blocksAr })}
-                rtl
+              <RichHtmlEditor
+                label="المحتوى الكامل (عربي)"
+                value={editing.contentAr ?? ''}
+                onChange={(contentAr) => setEditing({ ...editing, contentAr })}
+                dir="rtl"
+                placeholder="المحتوى التفصيلي للمنتج..."
+                hint="يمكنك لصق النص المنسق أو التبديل إلى HTML للصق التنسيق مباشرة."
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
+              <input
+                type="date"
+                value={editing.date ?? today()}
+                onChange={(e) => setEditing({ ...editing, date: e.target.value })}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
               />
             </div>
             <div className="flex items-end">
@@ -320,9 +233,6 @@ export default function InvestmentProductsEditor() {
               <div className="flex-1 min-w-0">
                 <h4 className="text-sm font-bold text-gray-800 truncate">{item.title}</h4>
                 <p className="text-xs text-gray-400 line-clamp-2 mt-0.5">{item.description}</p>
-                {item.slug && (
-                  <p className="text-[10px] text-gray-400 mt-1 font-mono truncate">/{item.slug}</p>
-                )}
                 {!item.isActive && (
                   <span className="text-[10px] text-amber-600 mt-1 inline-block">Hidden</span>
                 )}

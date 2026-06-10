@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import ScrollToTop from './components/ScrollToTop';
 import Header from './components/Header';
 import HeroSlider from './components/HeroSlider';
 import WelcomeSection from './components/WelcomeSection';
@@ -60,6 +61,7 @@ function AdminRouter() {
 export default function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         {/* Admin Routes */}
         <Route path="/admin/*" element={<AdminRouter />} />
