@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Download } from 'lucide-react';
 import { api } from '../lib/api';
 import { useLanguage } from '../lib/LanguageContext';
-import { pickField } from '../lib/localizedText';
+import { pickLocalized } from '../lib/localizedText';
 import { normalizeMediaUrl } from '../lib/mediaUrl';
 
 export interface NewsItem {
@@ -35,7 +35,8 @@ function formatDate(dateStr: string | null): string {
 
 function NewsCard({ item }: { item: NewsItem }) {
   const { lang } = useLanguage();
-  const title = pickField(lang, item, 'title');
+  const title = pickLocalized(lang, item.title, item.titleAr);
+  const excerpt = pickLocalized(lang, item.excerpt, item.excerptAr);
   const [imgSrc, setImgSrc] = useState(item.image ?? 'https://images.unsplash.com/photo-1504711432869-efd597cdd042?auto=format&fit=crop&q=80&w=800');
   const documentUrl = item.pdfFile ? normalizeMediaUrl(item.pdfFile) : '';
 
@@ -67,10 +68,15 @@ function NewsCard({ item }: { item: NewsItem }) {
           </div>
         </div>
         <div className="p-4">
-          <p className="text-xs text-gray-400 mb-1.5">{formatDate(item.date)}</p>
-          <h3 className="text-sm font-semibold text-gray-800 leading-snug group-hover:text-[#009900] transition-colors line-clamp-3">
+          {/* <p className="text-xs text-gray-400 mb-1.5">{formatDate(item.date)}</p> */}
+          <h3 className="text-sm font-semibold text-gray-800 leading-snug group-hover:text-[#009900] transition-colors line-clamp-2">
             {title}
           </h3>
+          {excerpt && (
+            <p className="text-xs text-gray-500 mt-2 leading-relaxed line-clamp-3">
+              {excerpt}
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-3 mt-3">
             <span className="inline-flex items-center gap-1 text-xs text-[#009900] font-medium group-hover:text-amber-600 transition-colors">
               Read More <span aria-hidden className="inline-block rtl:rotate-180">→</span>
