@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { FileText, Filter, X } from 'lucide-react';
+import { Filter, X } from 'lucide-react';
+import MemberStrategiesProjectsResultsTable from '../components/member-strategies-projects/MemberStrategiesProjectsResultsTable';
 import { api } from '../lib/api';
 import {
   INCLUSION_CATEGORY_FILTERS,
@@ -9,6 +10,7 @@ import {
   matchesInclusionCategory,
   matchesInclusionMember,
 } from '../lib/inclusionMembers';
+import { groupStrategiesProjectsByMember } from '../lib/strategiesProjectsGrouping';
 
 interface StrategyProject {
   id: number;
@@ -93,6 +95,11 @@ export default function MembersStrategiesProjects() {
 
   const hasActiveFilters = selectedMembers.length > 0 || selectedCategories.length > 0;
 
+  const groupedProjects = useMemo(
+    () => groupStrategiesProjectsByMember(filteredProjects),
+    [filteredProjects],
+  );
+
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
       <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
@@ -168,13 +175,13 @@ export default function MembersStrategiesProjects() {
           </aside>
 
           <section>
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-sm text-gray-500">
-                {loading
-                  ? 'Loading resources...'
-                  : `${filteredProjects.length} resource${filteredProjects.length === 1 ? '' : 's'} found`}
-              </p>
-              {hasActiveFilters && (
+            {hasActiveFilters && (
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-sm text-gray-500">
+                  {loading
+                    ? 'Loading resources...'
+                    : `${filteredProjects.length} resource${filteredProjects.length === 1 ? '' : 's'} found`}
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {selectedMembers.map((member) => (
                     <span
@@ -199,81 +206,29 @@ export default function MembersStrategiesProjects() {
                     </span>
                   ))}
                 </div>
-              )}
-            </div>
-
-            {loading && (
-              <div className="grid gap-6">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="bg-white rounded-2xl border border-gray-100 p-6 animate-pulse">
-                    <div className="h-5 bg-gray-200 rounded w-2/3 mb-3" />
-                    <div className="h-3 bg-gray-200 rounded w-full mb-2" />
-                    <div className="h-3 bg-gray-200 rounded w-5/6" />
-                  </div>
-                ))}
               </div>
             )}
 
-            {error && <p className="text-center text-red-500 py-12">{error}</p>}
-
-            {!loading && !error && filteredProjects.length === 0 && (
+            {!hasActiveFilters && !loading && (
               <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-                <FileText size={40} className="mx-auto text-gray-300 mb-4" />
                 <p className="text-gray-500">
-                  {hasActiveFilters
-                    ? 'No resources match your selected filters. Try adjusting your selection.'
-                    : 'No strategies or projects are available yet.'}
+                  Select one or more member or category filters to view strategies and projects.
                 </p>
               </div>
             )}
 
-            {!loading && !error && filteredProjects.length > 0 && (
-              <div className="grid gap-6">
-                {filteredProjects.map((project) => {
-                  const displayDate = project.date || project.start_date;
-                  return (
-                    <article
-                      key={project.id}
-                      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-6 sm:p-8"
-                    >
-                      <div className="flex flex-wrap items-center gap-2 mb-4">
-                        {project.memberName && (
-                          <span className="px-3 py-1 rounded-full bg-green-50 text-[#009900] text-xs font-semibold">
-                            {project.memberName}
-                          </span>
-                        )}
-                        {(project.categoryName || project.type) && (
-                          <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">
-                            {project.categoryName || project.type}
-                          </span>
-                        )}
-                        {displayDate && (
-                          <span className="text-xs text-gray-400 ms-auto">
-                            {new Date(displayDate).toLocaleDateString('en-GB', {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric',
-                            })}
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="text-xl font-bold text-[#009900] mb-3">{project.title}</h3>
-                      <p className="text-gray-600 leading-relaxed">{project.description}</p>
-                      {project.fileUrl && (
-                        <a
-                          href={project.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 mt-5 text-sm font-semibold text-[#009900] hover:text-amber-600 transition-colors"
-                        >
-                          <FileText size={16} />
-                          Link
-                        </a>
-                      )}
-                    </article>
-                  );
-                })}
+            {hasActiveFilters && loading && (
+              <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center animate-pulse">
+                <p className="text-gray-400">Loading resources...</p>
               </div>
+            )}
+
+            {hasActiveFilters && error && (
+              <p className="text-center text-red-500 py-12">{error}</p>
+            )}
+
+            {hasActiveFilters && !loading && !error && (
+              <MemberStrategiesProjectsResultsTable groups={groupedProjects} />
             )}
           </section>
         </div>

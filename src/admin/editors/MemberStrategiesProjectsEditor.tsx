@@ -77,6 +77,18 @@ export default function MemberStrategiesProjectsEditor() {
 
   const save = async () => {
     if (!editing) return;
+    if (!editing.title?.trim()) {
+      alert('Title is required.');
+      return;
+    }
+    if (!editing.authority_name?.trim()) {
+      alert('Active Member is required.');
+      return;
+    }
+    if (!editing.type?.trim()) {
+      alert('Category is required.');
+      return;
+    }
     setSaving(true);
     try {
       const payload = {
@@ -132,47 +144,80 @@ export default function MemberStrategiesProjectsEditor() {
 
       {editing && (
         <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 grid sm:grid-cols-2 gap-3">
-          <input
-            className="border rounded-lg px-3 py-2 text-sm sm:col-span-2"
-            placeholder="Title"
-            value={editing.title ?? ''}
-            onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-          />
-          <select
-            className="border rounded-lg px-3 py-2 text-sm sm:col-span-2"
-            value={editing.authority_name ?? ''}
-            onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })}
-          >
-            <option value="">Select member authority...</option>
-            {INCLUSION_MEMBER_FILTERS.map((member) => (
-              <option key={member} value={member}>
-                {member}
-              </option>
-            ))}
-          </select>
-          <select
-            className="border rounded-lg px-3 py-2 text-sm"
-            value={editing.type ?? 'Strategy'}
-            onChange={(e) => setEditing({ ...editing, type: e.target.value })}
-          >
-            {INCLUSION_CATEGORY_FILTERS.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <input
-            className="border rounded-lg px-3 py-2 text-sm"
-            placeholder="URL / File link"
-            value={editing.fileUrl ?? ''}
-            onChange={(e) => setEditing({ ...editing, fileUrl: e.target.value })}
-          />
-          <textarea
-            className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[60px]"
-            placeholder="Description"
-            value={editing.description ?? ''}
-            onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-          />
+          <h3 className="font-semibold text-[#009900] text-sm sm:col-span-2">
+            {editing.id ? 'Edit Entry' : 'New Entry'}
+          </h3>
+          <div className="sm:col-span-2">
+            <label htmlFor="msp-title" className="block text-sm font-semibold text-[#009900] mb-1">
+              Title
+            </label>
+            <input
+              id="msp-title"
+              className="border rounded-lg px-3 py-2 text-sm w-full"
+              placeholder="Title"
+              value={editing.title ?? ''}
+              onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+            />
+          </div>
+          <div>
+            <label htmlFor="msp-active-member" className="block text-sm font-semibold text-[#009900] mb-1">
+              Active Member
+            </label>
+            <input
+              id="msp-active-member"
+              list="msp-active-member-options"
+              className="border rounded-lg px-3 py-2 text-sm w-full"
+              placeholder="Select or type member authority"
+              value={editing.authority_name ?? ''}
+              onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })}
+            />
+            <datalist id="msp-active-member-options">
+              {INCLUSION_MEMBER_FILTERS.map((member) => (
+                <option key={member} value={member} />
+              ))}
+            </datalist>
+          </div>
+          <div>
+            <label htmlFor="msp-category" className="block text-sm font-semibold text-[#009900] mb-1">
+              Category
+            </label>
+            <select
+              id="msp-category"
+              className="border rounded-lg px-3 py-2 text-sm w-full"
+              value={editing.type ?? 'Strategy'}
+              onChange={(e) => setEditing({ ...editing, type: e.target.value })}
+            >
+              {INCLUSION_CATEGORY_FILTERS.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="sm:col-span-2">
+            <label htmlFor="msp-file-url" className="block text-sm font-semibold text-[#009900] mb-1">
+              URL / File
+            </label>
+            <input
+              id="msp-file-url"
+              className="border rounded-lg px-3 py-2 text-sm w-full"
+              placeholder="URL / File link"
+              value={editing.fileUrl ?? ''}
+              onChange={(e) => setEditing({ ...editing, fileUrl: e.target.value })}
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label htmlFor="msp-description" className="block text-sm font-semibold text-[#009900] mb-1">
+              Description
+            </label>
+            <textarea
+              id="msp-description"
+              className="border rounded-lg px-3 py-2 text-sm w-full min-h-[60px]"
+              placeholder="Description shown in View Description modal"
+              value={editing.description ?? ''}
+              onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+            />
+          </div>
           <ArabicSectionDivider />
           <div className="sm:col-span-2">
             <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
@@ -227,7 +272,7 @@ export default function MemberStrategiesProjectsEditor() {
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-sm text-gray-800 line-clamp-1">{item.title}</p>
               <p className="text-xs text-gray-400">
-                {item.authority_name} · {item.type}
+                Active Member: {item.authority_name || '—'} · Category: {item.type || '—'}
                 {!item.isActive && ' · Inactive'}
               </p>
             </div>
