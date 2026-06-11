@@ -51,6 +51,7 @@ export default function MemberStrategiesProjectsEditor() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<StrategyProject> | null>(null);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
     try {
@@ -116,9 +117,18 @@ export default function MemberStrategiesProjectsEditor() {
   };
 
   const remove = async (id: number) => {
-    if (!confirm('Delete this strategy/project entry?')) return;
-    await api.delete(`/investor-education/member-strategies-projects/${id}`);
-    load();
+    if (!confirm('Delete this strategy/project entry? This cannot be undone.')) return;
+    setError(null);
+    try {
+      await api.delete(`/investor-education/member-strategies-projects/${id}`);
+      setItems((prev) => prev.filter((item) => item.id !== id));
+      if (editing?.id === id) {
+        setEditing(null);
+      }
+    } catch (err) {
+      console.error(err);
+      setError(typeof err === 'string' ? err : 'Failed to delete entry. Please try again.');
+    }
   };
 
   if (loading) {
@@ -136,6 +146,7 @@ export default function MemberStrategiesProjectsEditor() {
             Manage financial inclusion strategies and reports by member authority
           </p>
           <SortableReorderHint reordering={sortable.reordering} />
+          {error && <p className="text-xs text-red-500 mt-2">{error}</p>}
         </div>
         <button onClick={() => setEditing(empty())} className="btn-primary flex items-center gap-1.5">
           <Plus size={15} /> Add Entry
