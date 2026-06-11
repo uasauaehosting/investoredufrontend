@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Download } from 'lucide-react';
 import { api } from '../lib/api';
 import { useLanguage } from '../lib/LanguageContext';
 import { pickField } from '../lib/localizedText';
+import { normalizeMediaUrl } from '../lib/mediaUrl';
 
 export interface NewsItem {
   id: number;
@@ -13,6 +15,7 @@ export interface NewsItem {
   date: string | null;
   excerpt: string | null;
   excerptAr?: string | null;
+  pdfFile?: string | null;
 }
 
 const categoryColors: Record<string, string> = {
@@ -34,41 +37,61 @@ function NewsCard({ item }: { item: NewsItem }) {
   const { lang } = useLanguage();
   const title = pickField(lang, item, 'title');
   const [imgSrc, setImgSrc] = useState(item.image ?? 'https://images.unsplash.com/photo-1504711432869-efd597cdd042?auto=format&fit=crop&q=80&w=800');
+  const documentUrl = item.pdfFile ? normalizeMediaUrl(item.pdfFile) : '';
 
   return (
-    <Link
-      to={`/news/${item.id}`}
-      className="group block bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-0.5"
-    >
-      <div className="relative h-44 overflow-hidden bg-gray-100">
-        <img
-          src={imgSrc}
-          alt={title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          onError={() => {
-            setImgSrc('https://images.unsplash.com/photo-1504711432869-efd597cdd042?auto=format&fit=crop&q=80&w=800');
-          }}
-        />
-        <div className="absolute top-3 start-3">
-          <span
-            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-              categoryColors[item.category] ?? 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            {item.category}
-          </span>
+    <article className="relative group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-0.5">
+      <Link
+        to={`/news/${item.id}`}
+        className="absolute inset-0 z-0 rounded-xl"
+        aria-label={title}
+      />
+      <div className="relative z-[1] pointer-events-none">
+        <div className="relative h-44 overflow-hidden bg-gray-100">
+          <img
+            src={imgSrc}
+            alt={title}
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+            onError={() => {
+              setImgSrc('https://images.unsplash.com/photo-1504711432869-efd597cdd042?auto=format&fit=crop&q=80&w=800');
+            }}
+          />
+          <div className="absolute top-3 start-3">
+            <span
+              className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                categoryColors[item.category] ?? 'bg-gray-100 text-gray-600'
+              }`}
+            >
+              {item.category}
+            </span>
+          </div>
+        </div>
+        <div className="p-4">
+          <p className="text-xs text-gray-400 mb-1.5">{formatDate(item.date)}</p>
+          <h3 className="text-sm font-semibold text-gray-800 leading-snug group-hover:text-[#009900] transition-colors line-clamp-3">
+            {title}
+          </h3>
+          <div className="flex flex-wrap items-center gap-3 mt-3">
+            <span className="inline-flex items-center gap-1 text-xs text-[#009900] font-medium group-hover:text-amber-600 transition-colors">
+              Read More <span aria-hidden className="inline-block rtl:rotate-180">→</span>
+            </span>
+            {documentUrl && (
+              <a
+                href={documentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                className="pointer-events-auto inline-flex items-center gap-1 text-xs font-medium text-amber-600 hover:text-[#009900] border border-amber-200 hover:border-[#009900]/30 rounded-full px-2.5 py-1 transition-colors bg-amber-50/80"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Download size={12} />
+                Download
+              </a>
+            )}
+          </div>
         </div>
       </div>
-      <div className="p-4">
-        <p className="text-xs text-gray-400 mb-1.5">{formatDate(item.date)}</p>
-        <h3 className="text-sm font-semibold text-gray-800 leading-snug group-hover:text-[#009900] transition-colors line-clamp-3">
-          {title}
-        </h3>
-        <span className="inline-flex items-center gap-1 text-xs text-[#009900] font-medium mt-3 group-hover:text-amber-600 transition-colors">
-          Read More <span aria-hidden className="inline-block rtl:rotate-180">→</span>
-        </span>
-      </div>
-    </Link>
+    </article>
   );
 }
 

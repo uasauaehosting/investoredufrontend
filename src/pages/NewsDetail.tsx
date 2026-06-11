@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../lib/api';
-import { Calendar, Tag, ArrowLeft } from 'lucide-react';
+import { Calendar, Tag, ArrowLeft, Download } from 'lucide-react';
+import { normalizeMediaUrl } from '../lib/mediaUrl';
 import { useLanguage } from '../lib/LanguageContext';
 import { pickField, pickLocalized } from '../lib/localizedText';
 
@@ -15,6 +16,7 @@ interface NewsItem {
   excerptAr?: string;
   fullDetail?: string;
   fullDetailAr?: string;
+  pdfFile?: string | null;
   image: string | null;
 }
 
@@ -36,13 +38,28 @@ export default function NewsDetail() {
 
   const title = pickField(lang, item, 'title');
   const body = pickLocalized(lang, item.fullDetail || item.excerpt, item.fullDetailAr || item.excerptAr);
+  const documentUrl = item.pdfFile ? normalizeMediaUrl(item.pdfFile) : '';
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <Link to="/" className="inline-flex items-center gap-2 text-[#009900] hover:text-amber-600 mb-8 transition-colors">
-        <ArrowLeft size={16} />
-        <span>Back to News</span>
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <Link to="/" className="inline-flex items-center gap-2 text-[#009900] hover:text-amber-600 transition-colors">
+          <ArrowLeft size={16} />
+          <span>Back to News</span>
+        </Link>
+        {documentUrl && (
+          <a
+            href={documentUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            className="inline-flex items-center gap-2 text-sm font-medium text-white bg-[#009900] hover:bg-green-700 rounded-full px-4 py-2 transition-colors"
+          >
+            <Download size={16} />
+            Download Document
+          </a>
+        )}
+      </div>
 
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
         {item.image && (

@@ -26,6 +26,7 @@ const MEDIA_FIELD_KEYS = new Set([
   'backgroundImage',
   'image',
   'logo',
+  'pdfFile',
 ]);
 
 function looksLikeMediaUrl(value: string): boolean {

@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X, GripVertical } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
+import FileUpload from '../../lib/FileUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
+import RichHtmlEditor from '../components/RichHtmlEditor';
 import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
 
 const CATEGORIES = ['News', 'Publication', 'Event'];
@@ -16,6 +18,9 @@ export interface NewsItem {
   date: string | null;
   excerpt: string | null;
   excerptAr?: string | null;
+  fullDetail?: string | null;
+  fullDetailAr?: string | null;
+  pdfFile?: string | null;
   link?: string;
 }
 
@@ -27,6 +32,9 @@ const empty: Omit<NewsItem, 'id'> = {
   date: new Date().toISOString().split('T')[0],
   excerpt: '',
   excerptAr: '',
+  fullDetail: '',
+  fullDetailAr: '',
+  pdfFile: '',
   link: '',
 };
 
@@ -61,6 +69,8 @@ export default function NewsEditor() {
         ...editing,
         titleAr: editing.titleAr?.trim() || null,
         excerptAr: editing.excerptAr?.trim() || null,
+        fullDetailAr: editing.fullDetailAr?.trim() || null,
+        pdfFile: editing.pdfFile?.trim() || null,
       });
       if (editing.id) {
         await api.put(`/home/news/${editing.id}`, payload);
@@ -138,12 +148,42 @@ export default function NewsEditor() {
               <textarea rows={3} value={editing.excerpt ?? ''} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none" />
             </div>
+            <div className="sm:col-span-2">
+              <RichHtmlEditor
+                label="Full Description (detail page)"
+                value={editing.fullDetail ?? ''}
+                onChange={(fullDetail) => setEditing({ ...editing, fullDetail })}
+                placeholder="Full news article content..."
+                hint="Shown on the news detail page. Use Visual mode for formatted text or HTML for raw markup."
+                minHeight={280}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <FileUpload
+                label="Document / PDF"
+                value={editing.pdfFile ?? ''}
+                onChange={(url) => setEditing({ ...editing, pdfFile: url })}
+                accept=".pdf,.doc,.docx,.xls,.xlsx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                hint="Optional. When uploaded, a Download button appears on the news card and detail page."
+              />
+            </div>
             <ArabicSectionDivider />
             <div className="sm:col-span-2">
               <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
             </div>
             <div className="sm:col-span-2">
               <ArabicTextAreaField label="الملخص (عربي)" value={editing.excerptAr ?? ''} onChange={(v) => setEditing({ ...editing, excerptAr: v })} rows={3} />
+            </div>
+            <div className="sm:col-span-2">
+              <RichHtmlEditor
+                label="الوصف الكامل (عربي)"
+                value={editing.fullDetailAr ?? ''}
+                onChange={(fullDetailAr) => setEditing({ ...editing, fullDetailAr })}
+                dir="rtl"
+                placeholder="المحتوى الكامل للخبر..."
+                hint="يُعرض في صفحة تفاصيل الخبر."
+                minHeight={280}
+              />
             </div>
           </div>
           {error && <p className="text-red-600 text-xs">{error}</p>}
