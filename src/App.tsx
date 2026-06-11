@@ -12,6 +12,7 @@ import AdminDashboard from './admin/AdminDashboard';
 import { useAuth } from './lib/useAuth';
 
 // Pages
+import NewsList from './pages/NewsList';
 import NewsDetail from './pages/NewsDetail';
 import Glossary from './pages/Glossary';
 import About from './pages/About';
@@ -75,6 +76,7 @@ export default function App() {
               <main className="flex-1">
                 <Routes>
                   <Route path="/" element={<Home />} />
+                  <Route path="/news" element={<NewsList />} />
                   <Route path="/news/:id" element={<NewsDetail />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/education" element={<Navigate to="/" replace />} />

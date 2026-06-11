@@ -6,6 +6,8 @@ import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
 import RichHtmlEditor from '../components/RichHtmlEditor';
 import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
 import { Principle } from '../../lib/principles';
+import { useSortableReorder } from '../hooks/useSortableReorder';
+import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -46,6 +48,13 @@ export default function PrinciplesEditor() {
   useEffect(() => {
     load();
   }, []);
+
+  const sortable = useSortableReorder({
+    items,
+    setItems,
+    resource: 'principles',
+    onError: load,
+  });
 
   const openNew = () => setEditing({ ...empty() });
   const openEdit = (item: Principle) => setEditing(normalizeMediaFieldsDeep({
@@ -110,6 +119,7 @@ export default function PrinciplesEditor() {
           <p className="text-xs text-gray-400 mt-0.5">
             Add and manage individual principle pages with images and content
           </p>
+          <SortableReorderHint reordering={sortable.reordering} />
         </div>
         <button onClick={openNew} className="btn-primary flex items-center gap-1.5 self-start">
           <Plus size={15} /> Add Principle
@@ -213,11 +223,22 @@ export default function PrinciplesEditor() {
         <div className="text-gray-400 text-sm animate-pulse py-8">Loading principles...</div>
       ) : (
         <div className="space-y-3">
-          {items.map((item) => (
+          {items.map((item, index) => (
             <div
               key={item.id}
-              className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-green-300 transition-colors"
+              onDragOver={sortable.handleDragOver}
+              onDrop={(e) => sortable.handleDrop(e, item.id)}
+              className={sortable.rowClassName(
+                item.id,
+                'bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-green-300 transition-colors',
+              )}
             >
+              <SortableGrip
+                id={item.id}
+                index={index}
+                onDragStart={sortable.handleDragStart}
+                onDragEnd={sortable.clearDragging}
+              />
               {item.imageUrl && <MediaPreview url={item.imageUrl} />}
               <div className="flex-1 min-w-0">
                 <h4 className="text-sm font-bold text-gray-800 truncate">{item.title}</h4>

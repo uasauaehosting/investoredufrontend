@@ -10,6 +10,8 @@ import {
   EducationItem,
   EducationSectionSlug,
 } from '../../lib/educationSections';
+import { useSortableReorder } from '../hooks/useSortableReorder';
+import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
 const sectionKeys = Object.keys(EDUCATION_SECTIONS) as EducationSectionSlug[];
 
@@ -50,6 +52,14 @@ export default function EducationContentEditor() {
   useEffect(() => {
     load(activeSection);
   }, [activeSection]);
+
+  const sortable = useSortableReorder({
+    items,
+    setItems,
+    resource: 'education-content',
+    section: activeSection,
+    onError: () => load(activeSection),
+  });
 
   const openNew = () => setEditing({ ...empty(activeSection) });
   const openEdit = (item: EducationItem) => setEditing(normalizeMediaFieldsDeep({ ...item }));
@@ -109,6 +119,7 @@ export default function EducationContentEditor() {
           <p className="text-xs text-gray-400 mt-0.5">
             Manage list items and detail pages for each education section
           </p>
+          <SortableReorderHint reordering={sortable.reordering} />
         </div>
         <button onClick={openNew} className="btn-primary flex items-center gap-1.5 self-start">
           <Plus size={15} /> Add Item
@@ -193,19 +204,7 @@ export default function EducationContentEditor() {
                 hint="يمكنك لصق النص المنسق أو التبديل إلى HTML للصق التنسيق مباشرة."
               />
             </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Display Order</label>
-              <input
-                type="number"
-                min={0}
-                value={editing.displayOrder ?? 0}
-                onChange={(e) =>
-                  setEditing({ ...editing, displayOrder: parseInt(e.target.value) || 0 })
-                }
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-              />
-            </div>
-            <div className="flex items-end">
+            <div className="flex items-end sm:col-span-2">
               <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
                 <input
                   type="checkbox"
@@ -233,19 +232,29 @@ export default function EducationContentEditor() {
         <div className="text-gray-400 text-sm animate-pulse py-8">Loading items...</div>
       ) : (
         <div className="space-y-3">
-          {items.map((item) => (
+          {items.map((item, index) => (
             <div
               key={item.id}
-              className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-green-300 transition-colors"
+              onDragOver={sortable.handleDragOver}
+              onDrop={(e) => sortable.handleDrop(e, item.id)}
+              className={sortable.rowClassName(
+                item.id,
+                'bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-green-300 transition-colors',
+              )}
             >
+              <SortableGrip
+                id={item.id}
+                index={index}
+                onDragStart={sortable.handleDragStart}
+                onDragEnd={sortable.clearDragging}
+              />
               {item.imageUrl && <MediaPreview url={item.imageUrl} />}
               <div className="flex-1 min-w-0">
                 <h4 className="text-sm font-bold text-gray-800 truncate">{item.title}</h4>
                 <p className="text-xs text-gray-400 line-clamp-2 mt-0.5">{item.description}</p>
-                <span className="text-[10px] text-gray-400 mt-1 inline-block">
-                  Order: {item.displayOrder}
-                  {!item.isActive && ' · Hidden'}
-                </span>
+                {!item.isActive && (
+                  <span className="text-[10px] text-gray-400 mt-1 inline-block">Hidden</span>
+                )}
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button

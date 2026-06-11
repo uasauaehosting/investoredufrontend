@@ -1,7 +1,10 @@
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { useCallback } from 'react';
+import { Plus, Trash2 } from 'lucide-react';
 import ImageUpload from '../../../lib/ImageUpload';
 import FileUpload from '../../../lib/FileUpload';
 import { normalizeMediaUrl } from '../../../lib/mediaUrl';
+import { useLocalSortableList } from '../../hooks/useLocalSortableList';
+import { SortableGrip } from '../../components/SortableControls';
 
 const inputClass =
   'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]';
@@ -91,13 +94,32 @@ export function StringListEditor({
 
   const add = () => onChange([...safeItems, '']);
 
+  const handleReorder = useCallback((fromIndex: number, toIndex: number) => {
+    const next = [...safeItems];
+    const [moved] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, moved);
+    onChange(next);
+  }, [safeItems, onChange]);
+
+  const sortable = useLocalSortableList({ onReorder: handleReorder });
+
   return (
     <div>
       <label className={labelClass}>{label}</label>
       <div className="space-y-2">
         {safeItems.map((item, index) => (
-          <div key={index} className="flex items-start gap-2">
-            <GripVertical size={14} className="text-gray-300 mt-2.5 flex-shrink-0" />
+          <div
+            key={index}
+            onDragOver={sortable.handleDragOver}
+            onDrop={(e) => sortable.handleDrop(e, index)}
+            className={sortable.rowClassName(index, 'flex items-start gap-2 border border-transparent rounded-lg')}
+          >
+            <SortableGrip
+              id={index}
+              index={index}
+              onDragStart={sortable.handleDragStart}
+              onDragEnd={sortable.clearDragging}
+            />
             <textarea
               rows={2}
               value={item}

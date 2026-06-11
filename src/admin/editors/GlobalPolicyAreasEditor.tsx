@@ -3,6 +3,8 @@ import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import { POLICY_CATEGORIES, POLICY_INSTITUTIONS } from '../../lib/globalPolicyFilters';
 import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
+import { useSortableReorder } from '../hooks/useSortableReorder';
+import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
 interface PolicyArea {
   id: number;
@@ -63,6 +65,13 @@ export default function GlobalPolicyAreasEditor() {
     load();
   }, []);
 
+  const sortable = useSortableReorder({
+    items,
+    setItems,
+    resource: 'global-policy-areas',
+    onError: load,
+  });
+
   const save = async () => {
     if (!editing) return;
     setSaving(true);
@@ -111,6 +120,7 @@ export default function GlobalPolicyAreasEditor() {
           <p className="text-xs text-gray-400">
             Manage OECD, AFI, and other global financial inclusion policy resources
           </p>
+          <SortableReorderHint reordering={sortable.reordering} />
         </div>
         <button onClick={() => setEditing(empty())} className="btn-primary flex items-center gap-1.5">
           <Plus size={15} /> Add Entry
@@ -196,12 +206,23 @@ export default function GlobalPolicyAreasEditor() {
             No entries yet. Add one or run the seed script to populate legacy data.
           </p>
         )}
-        {items.map((item) => (
+        {items.map((item, index) => (
           <div
             key={item.id}
-            className="bg-white rounded-xl border border-gray-200 p-3 flex items-start justify-between gap-3"
+            onDragOver={sortable.handleDragOver}
+            onDrop={(e) => sortable.handleDrop(e, item.id)}
+            className={sortable.rowClassName(
+              item.id,
+              'bg-white rounded-xl border border-gray-200 p-3 flex items-start justify-between gap-3',
+            )}
           >
-            <div className="min-w-0">
+            <SortableGrip
+              id={item.id}
+              index={index}
+              onDragStart={sortable.handleDragStart}
+              onDragEnd={sortable.clearDragging}
+            />
+            <div className="min-w-0 flex-1">
               <p className="font-semibold text-sm text-gray-800 line-clamp-1">{item.title}</p>
               <p className="text-xs text-gray-400">
                 {item.institution} · {item.category}

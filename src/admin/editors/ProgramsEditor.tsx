@@ -6,6 +6,8 @@ import {
   PROGRAM_MEMBERS,
 } from '../../lib/programFilters';
 import { ArabicSectionDivider, ArabicTextField, StringListEditor } from './siteContent/FormFields';
+import { useSortableReorder } from '../hooks/useSortableReorder';
+import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
 interface Program {
   id: number;
@@ -143,6 +145,13 @@ export default function ProgramsEditor() {
 
   useEffect(() => { load(); }, []);
 
+  const sortable = useSortableReorder({
+    items,
+    setItems,
+    resource: 'programs',
+    onError: load,
+  });
+
   const save = async () => {
     if (!editing) return;
     setSaving(true);
@@ -202,6 +211,7 @@ export default function ProgramsEditor() {
         <div>
           <h2 className="text-lg font-bold text-gray-800">Programs ({items.length})</h2>
           <p className="text-xs text-gray-400">Manage member investor education program profiles</p>
+          <SortableReorderHint reordering={sortable.reordering} />
         </div>
         <button onClick={() => setEditing(empty())} className="btn-primary flex items-center gap-1.5">
           <Plus size={15} /> Add Program
@@ -296,11 +306,25 @@ export default function ProgramsEditor() {
             No program entries yet. Add one or run the seed script to populate sample data.
           </p>
         )}
-        {items.map((item) => {
+        {items.map((item, index) => {
           const totalTags = FIELD_KEYS.reduce((sum, key) => sum + item[key].length, 0);
           return (
-            <div key={item.id} className="bg-white rounded-xl border border-gray-200 p-3 flex items-start justify-between gap-3">
-              <div className="min-w-0">
+            <div
+              key={item.id}
+              onDragOver={sortable.handleDragOver}
+              onDrop={(e) => sortable.handleDrop(e, item.id)}
+              className={sortable.rowClassName(
+                item.id,
+                'bg-white rounded-xl border border-gray-200 p-3 flex items-start justify-between gap-3',
+              )}
+            >
+              <SortableGrip
+                id={item.id}
+                index={index}
+                onDragStart={sortable.handleDragStart}
+                onDragEnd={sortable.clearDragging}
+              />
+              <div className="min-w-0 flex-1">
                 <p className="font-semibold text-sm text-gray-800 line-clamp-1">{item.member_name}</p>
                 <p className="text-xs text-gray-400">
                   {totalTags} categor{totalTags === 1 ? 'y' : 'ies'} selected

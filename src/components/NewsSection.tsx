@@ -33,7 +33,7 @@ function formatDate(dateStr: string | null): string {
   });
 }
 
-function NewsCard({ item }: { item: NewsItem }) {
+export function NewsCard({ item }: { item: NewsItem }) {
   const { lang } = useLanguage();
   const title = pickLocalized(lang, item.title, item.titleAr);
   const excerpt = pickLocalized(lang, item.excerpt, item.excerptAr);
@@ -132,12 +132,12 @@ export default function NewsSection() {
               Stay updated with the latest investor education news from Arab markets
             </p>
           </div>
-          <a
-            href="#"
+          <Link
+            to="/news"
             className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-[#009900] hover:text-amber-600 transition-colors border border-[#009900]/30 hover:border-amber-500 rounded-full px-4 py-1.5"
           >
             View All News
-          </a>
+          </Link>
         </div>
 
         {loading && (
@@ -168,12 +168,12 @@ export default function NewsSection() {
         )}
 
         <div className="mt-6 sm:hidden text-center">
-          <a
-            href="#"
+          <Link
+            to="/news"
             className="inline-block text-sm font-medium text-[#009900] hover:text-amber-600 transition-colors border border-[#009900]/30 rounded-full px-6 py-2"
           >
             View All News
-          </a>
+          </Link>
         </div>
       </div>
     </section>

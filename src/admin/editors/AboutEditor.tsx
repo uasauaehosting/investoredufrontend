@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
+import { useSortableReorder } from '../hooks/useSortableReorder';
+import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
 interface AboutSection {
   id: number;
@@ -40,6 +42,13 @@ export default function AboutEditor() {
   };
 
   useEffect(() => { load(); }, []);
+
+  const sortable = useSortableReorder({
+    items: sections,
+    setItems: setSections,
+    resource: 'about-sections',
+    onError: load,
+  });
 
   const save = async () => {
     if (!editing) return;
@@ -82,6 +91,7 @@ export default function AboutEditor() {
         <div>
           <h2 className="text-lg font-bold text-gray-800">About Page</h2>
           <p className="text-xs text-gray-400">Edit about page paragraphs</p>
+          <SortableReorderHint reordering={sortable.reordering} />
         </div>
         <button onClick={() => setEditing({ ...empty(), order: sections.length + 1 })} className="btn-primary flex items-center gap-1.5">
           <Plus size={15} /> Add Section
@@ -103,8 +113,22 @@ export default function AboutEditor() {
       )}
 
       <div className="space-y-3">
-        {sections.map((s) => (
-          <div key={s.id} className="bg-white rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-4">
+        {sections.map((s, index) => (
+          <div
+            key={s.id}
+            onDragOver={sortable.handleDragOver}
+            onDrop={(e) => sortable.handleDrop(e, s.id)}
+            className={sortable.rowClassName(
+              s.id,
+              'bg-white rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-4',
+            )}
+          >
+            <SortableGrip
+              id={s.id}
+              index={index}
+              onDragStart={sortable.handleDragStart}
+              onDragEnd={sortable.clearDragging}
+            />
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm text-gray-800">{s.title}</p>
               <p className="text-xs text-gray-500 mt-1 line-clamp-2">{s.content}</p>

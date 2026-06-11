@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X, Search } from 'lucide-react';
 import { api } from '../../lib/api';
 import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
+import { useSortableReorder } from '../hooks/useSortableReorder';
+import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
 interface GlossaryTerm {
   id: number;
@@ -33,9 +35,19 @@ export default function GlossaryEditor() {
 
   useEffect(() => { load(); }, []);
 
+  const sortable = useSortableReorder({
+    items: terms,
+    setItems: setTerms,
+    resource: 'glossary',
+    onError: load,
+    disabled: !!search,
+  });
+
   const filtered = terms.filter((t) =>
     !search || t.term.toLowerCase().includes(search.toLowerCase()) || t.definition.toLowerCase().includes(search.toLowerCase()),
   ).slice(0, 50);
+
+  const displayTerms = search ? filtered : terms;
 
   const save = async () => {
     if (!editing) return;
@@ -79,6 +91,7 @@ export default function GlossaryEditor() {
         <div>
           <h2 className="text-lg font-bold text-gray-800">Glossary ({terms.length} terms)</h2>
           <p className="text-xs text-gray-400">Manage glossary terms</p>
+          <SortableReorderHint reordering={sortable.reordering} disabled={!!search} />
         </div>
         <button onClick={() => setEditing({ term: '', definition: '', arabicTerm: '', arabicDefinition: '', frenchTerm: '' })} className="btn-primary flex items-center gap-1.5">
           <Plus size={15} /> Add Term
@@ -106,9 +119,24 @@ export default function GlossaryEditor() {
       )}
 
       <div className="space-y-2">
-        {filtered.map((t) => (
-          <div key={t.id} className="bg-white rounded-xl border border-gray-200 p-3 flex items-start justify-between gap-3">
-            <div className="min-w-0">
+        {displayTerms.map((t, index) => (
+          <div
+            key={t.id}
+            onDragOver={sortable.handleDragOver}
+            onDrop={(e) => sortable.handleDrop(e, t.id)}
+            className={sortable.rowClassName(
+              t.id,
+              'bg-white rounded-xl border border-gray-200 p-3 flex items-start justify-between gap-3',
+            )}
+          >
+            <SortableGrip
+              id={t.id}
+              index={index}
+              disabled={!!search}
+              onDragStart={sortable.handleDragStart}
+              onDragEnd={sortable.clearDragging}
+            />
+            <div className="min-w-0 flex-1">
               <p className="font-semibold text-sm text-gray-800">{t.term}</p>
               <p className="text-xs text-gray-500 line-clamp-1">{t.definition}</p>
             </div>

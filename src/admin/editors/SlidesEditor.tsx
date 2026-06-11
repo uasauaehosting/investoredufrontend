@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Save, X, ToggleLeft, ToggleRight, GripVertical } from 'lucide-react';
+import { Plus, Pencil, Trash2, Save, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
 import { ArabicSectionDivider, ArabicTextField, MediaPreview } from './siteContent/FormFields';
+import { useSortableReorder } from '../hooks/useSortableReorder';
+import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
 export interface Slide {
   id: number;
@@ -50,6 +52,13 @@ export default function SlidesEditor() {
     }
   };
   useEffect(() => { load(); }, []);
+
+  const sortable = useSortableReorder({
+    items: slides,
+    setItems: setSlides,
+    resource: 'slides',
+    onError: load,
+  });
 
   const openNew = () => setEditing({ ...empty, display_order: slides.length + 1 });
   const openEdit = (s: Slide) => setEditing(normalizeMediaFieldsDeep({ ...s }));
@@ -106,6 +115,7 @@ export default function SlidesEditor() {
         <div>
           <h2 className="text-lg font-bold text-gray-800">Hero Slides</h2>
           <p className="text-xs text-gray-400 mt-0.5">Manage homepage carousel slides</p>
+          <SortableReorderHint reordering={sortable.reordering} />
         </div>
         <button onClick={openNew} className="btn-primary flex items-center gap-1.5">
           <Plus size={15} /> Add Slide
@@ -127,7 +137,6 @@ export default function SlidesEditor() {
             <Field label="Subtitle" value={editing.subtitle ?? ''} onChange={(v) => setEditing({ ...editing, subtitle: v })} />
             <Field label="CTA Text" value={editing.cta_text ?? ''} onChange={(v) => setEditing({ ...editing, cta_text: v })} />
             <Field label="CTA Link" value={editing.cta_href ?? ''} onChange={(v) => setEditing({ ...editing, cta_href: v })} />
-            <Field label="Display Order" type="number" value={String(editing.display_order ?? 0)} onChange={(v) => setEditing({ ...editing, display_order: Number(v) })} />
             <ArabicSectionDivider />
             <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
             <ArabicTextField label="العنوان الفرعي (عربي)" value={editing.subtitleAr ?? ''} onChange={(v) => setEditing({ ...editing, subtitleAr: v })} />
@@ -148,9 +157,22 @@ export default function SlidesEditor() {
       )}
 
       <div className="space-y-2">
-        {slides.map((s) => (
-          <div key={s.id} className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 group hover:border-green-300 transition-colors">
-            <GripVertical size={16} className="text-gray-300 flex-shrink-0" />
+        {slides.map((s, index) => (
+          <div
+            key={s.id}
+            onDragOver={sortable.handleDragOver}
+            onDrop={(e) => sortable.handleDrop(e, s.id)}
+            className={sortable.rowClassName(
+              s.id,
+              'flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 group hover:border-green-300 transition-colors',
+            )}
+          >
+            <SortableGrip
+              id={s.id}
+              index={index}
+              onDragStart={sortable.handleDragStart}
+              onDragEnd={sortable.clearDragging}
+            />
             {s.image_url && <MediaPreview url={s.image_url} className="w-14 h-10 object-cover rounded-lg flex-shrink-0" />}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-gray-800 truncate">{s.title}</p>

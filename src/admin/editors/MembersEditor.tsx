@@ -4,6 +4,8 @@ import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep, normalizeMediaUrl } from '../../lib/mediaUrl';
 import { ArabicSectionDivider, ArabicTextField } from './siteContent/FormFields';
+import { useSortableReorder } from '../hooks/useSortableReorder';
+import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
 export interface Member {
   id: number;
@@ -42,6 +44,13 @@ export default function MembersEditor() {
     }
   };
   useEffect(() => { load(); }, []);
+
+  const sortable = useSortableReorder({
+    items: members,
+    setItems: setMembers,
+    resource: 'members',
+    onError: load,
+  });
 
   const openNew = () => setEditing({ ...empty });
   const openEdit = (m: Member) => setEditing(normalizeMediaFieldsDeep({ ...m }));
@@ -88,6 +97,7 @@ export default function MembersEditor() {
         <div>
           <h2 className="text-lg font-bold text-gray-800">Members</h2>
           <p className="text-xs text-gray-400 mt-0.5">Manage Arab securities authority member portals</p>
+          <SortableReorderHint reordering={sortable.reordering} />
         </div>
         <button onClick={openNew} className="btn-primary flex items-center gap-1.5">
           <Plus size={15} /> Add Member
@@ -147,8 +157,22 @@ export default function MembersEditor() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {members.map((m) => (
-          <div key={m.id} className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl p-3 group hover:border-green-300 transition-colors">
+        {members.map((m, index) => (
+          <div
+            key={m.id}
+            onDragOver={sortable.handleDragOver}
+            onDrop={(e) => sortable.handleDrop(e, m.id)}
+            className={sortable.rowClassName(
+              m.id,
+              'flex items-center gap-3 bg-white border border-gray-200 rounded-xl p-3 group hover:border-green-300 transition-colors',
+            )}
+          >
+            <SortableGrip
+              id={m.id}
+              index={index}
+              onDragStart={sortable.handleDragStart}
+              onDragEnd={sortable.clearDragging}
+            />
             <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-100 flex-shrink-0">
               {m.logo ? (
                 <img src={normalizeMediaUrl(m.logo)} alt="" className="max-w-full max-h-full object-contain" />

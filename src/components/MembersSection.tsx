@@ -15,6 +15,8 @@ function MemberCard({ member }: { member: Member }) {
   return (
     <a
       href={member.website ?? '#'}
+      target={member.website ? '_blank' : undefined}
+      rel={member.website ? 'noopener noreferrer' : undefined}
       className="group flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200 hover:border-[#009900]/40 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 bg-white"
     >
       <div className="w-full h-14 flex items-center justify-center mb-3">
@@ -53,4 +55,35 @@ export default function MembersSection() {
         setLoading(false);
       });
   }, []);
+
+  return (
+    <section className="py-14 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-1 h-7 bg-amber-500 rounded-full" />
+          <h2 className="text-2xl font-bold text-[#009900]">Member Authorities</h2>
+        </div>
+
+        {loading && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="h-28 bg-gray-100 rounded-xl animate-pulse" />
+            ))}
+          </div>
+        )}
+
+        {error && (
+          <div className="text-center py-10 text-red-500 text-sm">{error}</div>
+        )}
+
+        {!loading && !error && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {members.map((member) => (
+              <MemberCard key={member.id} member={member} />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
 }

@@ -4,6 +4,8 @@ import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
 import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
+import { useSortableReorder } from '../hooks/useSortableReorder';
+import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
 export interface PortalCategory {
   id: number;
@@ -55,6 +57,13 @@ export default function PortalCategoriesEditor() {
   };
   useEffect(() => { load(); }, []);
 
+  const sortable = useSortableReorder({
+    items: cats,
+    setItems: setCats,
+    resource: 'portals',
+    onError: load,
+  });
+
   const openNew = () => setEditing({ ...empty });
   const openEdit = (c: PortalCategory) => setEditing(normalizeMediaFieldsDeep({ ...c }));
   const cancel = () => { setEditing(null); setError(null); };
@@ -103,6 +112,7 @@ export default function PortalCategoriesEditor() {
         <div>
           <h2 className="text-lg font-bold text-gray-800">Member Portals</h2>
           <p className="text-xs text-gray-400 mt-0.5">Manage authority portals shown on /education/members-activities/portals</p>
+          <SortableReorderHint reordering={sortable.reordering} />
         </div>
         <button onClick={openNew} className="btn-primary flex items-center gap-1.5">
           <Plus size={15} /> Add Portal
@@ -176,8 +186,22 @@ export default function PortalCategoriesEditor() {
       )}
 
       <div className="space-y-3">
-        {cats.map((c) => (
-          <div key={c.id} className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-green-300 transition-colors">
+        {cats.map((c, index) => (
+          <div
+            key={c.id}
+            onDragOver={sortable.handleDragOver}
+            onDrop={(e) => sortable.handleDrop(e, c.id)}
+            className={sortable.rowClassName(
+              c.id,
+              'bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-green-300 transition-colors',
+            )}
+          >
+            <SortableGrip
+              id={c.id}
+              index={index}
+              onDragStart={sortable.handleDragStart}
+              onDragEnd={sortable.clearDragging}
+            />
             {c.image_url && <MediaPreview url={c.image_url} />}
             <div className="flex-1 min-w-0">
               <h4 className="text-sm font-bold text-gray-800 truncate">{c.title}</h4>

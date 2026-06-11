@@ -43,7 +43,7 @@ export default function NewsDetail() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <Link to="/" className="inline-flex items-center gap-2 text-[#009900] hover:text-amber-600 transition-colors">
+        <Link to="/news" className="inline-flex items-center gap-2 text-[#009900] hover:text-amber-600 transition-colors">
           <ArrowLeft size={16} />
           <span>Back to News</span>
         </Link>
