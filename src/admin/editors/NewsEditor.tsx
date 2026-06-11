@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type DragEvent } from 'react';
 import { Plus, Pencil, Trash2, Save, X, GripVertical } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
@@ -21,6 +21,7 @@ export interface NewsItem {
   fullDetail?: string | null;
   fullDetailAr?: string | null;
   pdfFile?: string | null;
+  displayOrder?: number;
   link?: string;
 }
 
@@ -43,6 +44,8 @@ export default function NewsEditor() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<NewsItem> | null>(null);
   const [saving, setSaving] = useState(false);
+  const [reordering, setReordering] = useState(false);
+  const [draggingId, setDraggingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
@@ -96,6 +99,44 @@ export default function NewsEditor() {
     }
   };
 
+  const handleDragStart = (e: DragEvent<HTMLDivElement>, id: number) => {
+    setDraggingId(id);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(id));
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = async (e: DragEvent<HTMLDivElement>, targetId: number) => {
+    e.preventDefault();
+    const sourceId = draggingId ?? Number(e.dataTransfer.getData('text/plain'));
+    setDraggingId(null);
+    if (!sourceId || sourceId === targetId) return;
+
+    const fromIndex = items.findIndex((item) => item.id === sourceId);
+    const toIndex = items.findIndex((item) => item.id === targetId);
+    if (fromIndex < 0 || toIndex < 0) return;
+
+    const reordered = [...items];
+    const [moved] = reordered.splice(fromIndex, 1);
+    reordered.splice(toIndex, 0, moved);
+
+    setItems(reordered);
+    setReordering(true);
+    try {
+      const updated = await api.put('/home/news/reorder', { ids: reordered.map((item) => item.id) });
+      setItems(normalizeMediaFieldsDeep(updated ?? reordered));
+    } catch (err) {
+      console.error('Failed to reorder news:', err);
+      load();
+    } finally {
+      setReordering(false);
+    }
+  };
+
   if (loading) return <div className="p-6 text-gray-400 text-sm animate-pulse">Loading news...</div>;
 
   return (
@@ -103,7 +144,10 @@ export default function NewsEditor() {
       <div className="flex items-center justify-between mb-5">
         <div>
           <h2 className="text-lg font-bold text-gray-800">News Items</h2>
-          <p className="text-xs text-gray-400 mt-0.5">Manage homepage news cards</p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            Manage homepage news cards. Drag the grip handle to set display order.
+            {reordering && <span className="text-[#009900] ms-2">Saving order...</span>}
+          </p>
         </div>
         <button onClick={openNew} className="btn-primary flex items-center gap-1.5">
           <Plus size={15} /> Add News
@@ -197,9 +241,27 @@ export default function NewsEditor() {
       )}
 
       <div className="space-y-2">
-        {items.map((item) => (
-          <div key={item.id} className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 group hover:border-green-300 transition-colors">
-            <GripVertical size={16} className="text-gray-300 flex-shrink-0" />
+        {items.map((item, index) => (
+          <div
+            key={item.id}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, item.id)}
+            className={`flex items-center gap-3 bg-white border rounded-xl px-4 py-3 group transition-colors ${
+              draggingId === item.id
+                ? 'opacity-50 border-green-400'
+                : 'border-gray-200 hover:border-green-300'
+            }`}
+          >
+            <div
+              draggable
+              onDragStart={(e) => handleDragStart(e, item.id)}
+              onDragEnd={() => setDraggingId(null)}
+              className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing flex-shrink-0 touch-none"
+              title="Drag to reorder"
+            >
+              <GripVertical size={16} />
+            </div>
+            <span className="text-[10px] font-semibold text-gray-400 w-4 text-center flex-shrink-0">{index + 1}</span>
             {item.image && <MediaPreview url={item.image} className="w-14 h-10 object-cover rounded-lg flex-shrink-0" />}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-gray-800 truncate">{item.title}</p>
