@@ -36,7 +36,10 @@ function NewsCard({ item }: { item: NewsItem }) {
   const [imgSrc, setImgSrc] = useState(item.image ?? 'https://images.unsplash.com/photo-1504711432869-efd597cdd042?auto=format&fit=crop&q=80&w=800');
 
   return (
-    <article className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group border border-gray-100 hover:-translate-y-0.5">
+    <Link
+      to={`/news/${item.id}`}
+      className="group block bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-0.5"
+    >
       <div className="relative h-44 overflow-hidden bg-gray-100">
         <img
           src={imgSrc}
@@ -61,14 +64,11 @@ function NewsCard({ item }: { item: NewsItem }) {
         <h3 className="text-sm font-semibold text-gray-800 leading-snug group-hover:text-[#009900] transition-colors line-clamp-3">
           {title}
         </h3>
-        <Link
-          to={`/news/${item.id}`}
-          className="inline-flex items-center gap-1 text-xs text-[#009900] font-medium mt-3 hover:text-amber-600 transition-colors"
-        >
+        <span className="inline-flex items-center gap-1 text-xs text-[#009900] font-medium mt-3 group-hover:text-amber-600 transition-colors">
           Read More <span aria-hidden className="inline-block rtl:rotate-180">→</span>
-        </Link>
+        </span>
       </div>
-    </article>
+    </Link>
   );
 }
 
