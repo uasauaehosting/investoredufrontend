@@ -7,13 +7,4 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'https://apiinvestoredu.ahwuae.com',
-        changeOrigin: true,
-        secure: true,
-      },
-    },
-  },
 });

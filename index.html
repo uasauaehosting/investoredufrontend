@@ -9,32 +9,6 @@
         }
       } catch (e) {}
     </script>
-    <script>
-      (function () {
-        var host = location.hostname;
-        if (host !== 'investoreducation.ahwuae.com' && host !== 'www.investoreducation.ahwuae.com') {
-          return;
-        }
-
-        var remoteApi = 'https://apiinvestoredu.ahwuae.com/api';
-        var originalFetch = window.fetch.bind(window);
-
-        window.fetch = function (input, init) {
-          var url = typeof input === 'string'
-            ? input
-            : input instanceof Request
-              ? input.url
-              : String(input);
-
-          if (url.indexOf(remoteApi) === 0) {
-            url = '/api' + url.slice(remoteApi.length);
-            input = input instanceof Request ? new Request(url, input) : url;
-          }
-
-          return originalFetch(input, init);
-        };
-      })();
-    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

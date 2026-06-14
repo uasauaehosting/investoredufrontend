@@ -1,25 +1,4 @@
-export function getApiUrl(): string {
-  if (typeof window !== 'undefined') {
-    const { hostname } = window.location;
-    if (
-      hostname === 'investoreducation.ahwuae.com' ||
-      hostname === 'www.investoreducation.ahwuae.com'
-    ) {
-      return '/api';
-    }
-  }
-
-  const configured = import.meta.env.VITE_API_URL;
-  if (configured) {
-    return configured.replace(/\/$/, '');
-  }
-  if (import.meta.env.PROD) {
-    return '/api';
-  }
-  return 'http://localhost:5000/api';
-}
-
-const API_URL = getApiUrl();
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 async function handleResponse(response: Response) {
   const data = await response.json();
