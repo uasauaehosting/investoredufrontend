@@ -1,0 +1,11 @@
+RewriteEngine On
+
+# Same-origin API proxy: avoids cross-origin CORS when the API subdomain is behind CDN bot checks.
+# Requires mod_proxy on the host (Hostinger Business/Premium). If proxy fails, use the direct API URL in .env.production instead.
+RewriteCond %{REQUEST_URI} ^/api(/|$) [NC]
+RewriteRule ^api(.*)$ https://apiinvestoredu.ahwuae.com/api$1 [P,L]
+
+# SPA fallback for client-side routes
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
