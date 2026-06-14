@@ -1,4 +1,14 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+function getApiUrl(): string {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL.replace(/\/$/, '');
+  }
+  if (import.meta.env.PROD) {
+    return '/api';
+  }
+  return 'http://localhost:5000/api';
+}
+
+const API_URL = getApiUrl();
 
 async function handleResponse(response: Response) {
   const data = await response.json();

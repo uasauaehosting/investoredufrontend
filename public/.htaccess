@@ -1,9 +1,8 @@
 RewriteEngine On
 
-# Same-origin API proxy: avoids cross-origin CORS when the API subdomain is behind CDN bot checks.
-# Requires mod_proxy on the host (Hostinger Business/Premium). If proxy fails, use the direct API URL in .env.production instead.
+# Same-origin API proxy via PHP (works on Hostinger shared hosting without mod_proxy).
 RewriteCond %{REQUEST_URI} ^/api(/|$) [NC]
-RewriteRule ^api(.*)$ https://apiinvestoredu.ahwuae.com/api$1 [P,L]
+RewriteRule ^api(?:/(.*))?$ api-proxy.php?__path=$1 [QSA,L]
 
 # SPA fallback for client-side routes
 RewriteCond %{REQUEST_FILENAME} !-f
