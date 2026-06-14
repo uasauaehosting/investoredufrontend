@@ -1,6 +1,17 @@
-function getApiUrl(): string {
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL.replace(/\/$/, '');
+export function getApiUrl(): string {
+  if (typeof window !== 'undefined') {
+    const { hostname } = window.location;
+    if (
+      hostname === 'investoreducation.ahwuae.com' ||
+      hostname === 'www.investoreducation.ahwuae.com'
+    ) {
+      return '/api';
+    }
+  }
+
+  const configured = import.meta.env.VITE_API_URL;
+  if (configured) {
+    return configured.replace(/\/$/, '');
   }
   if (import.meta.env.PROD) {
     return '/api';

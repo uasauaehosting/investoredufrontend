@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Upload, X, ImageIcon, Loader2 } from 'lucide-react';
+import { getApiUrl } from './api';
 import { normalizeMediaUrl } from './mediaUrl';
 
 interface ImageUploadProps {
@@ -37,7 +38,7 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
 
     try {
       const token = localStorage.getItem('uasa_token');
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const API_URL = getApiUrl();
       
       const response = await fetch(`${API_URL}/upload`, {
         method: 'POST',
