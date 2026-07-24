@@ -28,13 +28,13 @@ export default function Footer() {
   const { data: footer } = useSiteContent('footer', FALLBACK_FOOTER);
 
   return (
-    <footer className="bg-[#c8e6c9] text-gray-700 border-t border-[#009900]/25">
+    <footer className="bg-[#c8e6c9] text-black border-t border-[#009900]/25">
       <div className="bg-[#006600] py-6 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {stats.map((stat) => (
             <div key={stat.label}>
-              <div className="text-2xl font-bold text-amber-400">{stat.value}</div>
-              <div className="text-xs text-green-200 mt-0.5">{stat.label}</div>
+              <div className="text-2xl font-bold text-white">{stat.value}</div>
+              <div className="text-xs text-white mt-0.5">{stat.label}</div>
             </div>
           ))}
         </div>
@@ -43,12 +43,12 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <h4 className="font-semibold text-[#009900] uppercase tracking-wider text-xs mb-4 pb-2 border-b border-[#009900]/15">Investor Education</h4>
+            <h4 className="font-semibold text-black uppercase tracking-wider text-xs mb-4 pb-2 border-b border-black/15">Investor Education</h4>
             <ul className="space-y-2">
               {footer.educationLinks.map((link: string) => (
                 <li key={link}>
-                  <a href="#" className="text-gray-600 text-sm hover:text-[#009900] transition-colors flex items-center gap-1.5">
-                    <span className="w-1 h-1 bg-[#009900]/50 rounded-full" />{link}
+                  <a href="#" className="text-black text-sm hover:opacity-70 transition-opacity flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-black/50 rounded-full" />{link}
                   </a>
                 </li>
               ))}
@@ -56,12 +56,12 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-[#009900] uppercase tracking-wider text-xs mb-4 pb-2 border-b border-[#009900]/15">Financial Inclusion</h4>
+            <h4 className="font-semibold text-black uppercase tracking-wider text-xs mb-4 pb-2 border-b border-black/15">Financial Inclusion</h4>
             <ul className="space-y-2">
               {footer.inclusionLinks.map((link: string) => (
                 <li key={link}>
-                  <a href="#" className="text-gray-600 text-sm hover:text-[#009900] transition-colors flex items-center gap-1.5">
-                    <span className="w-1 h-1 bg-[#009900]/50 rounded-full" />{link}
+                  <a href="#" className="text-black text-sm hover:opacity-70 transition-opacity flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-black/50 rounded-full" />{link}
                   </a>
                 </li>
               ))}
@@ -69,12 +69,12 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-[#009900] uppercase tracking-wider text-xs mb-4 pb-2 border-b border-[#009900]/15">Links</h4>
+            <h4 className="font-semibold text-black uppercase tracking-wider text-xs mb-4 pb-2 border-b border-black/15">Links</h4>
             <ul className="space-y-2">
               {footer.usefulLinks.map((link: { label: string; href: string }) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-gray-600 text-sm hover:text-[#009900] transition-colors flex items-center gap-1.5 group">
-                    <ExternalLink size={10} className="text-[#009900]/50 flex-shrink-0" />{link.label}
+                  <a href={link.href} className="text-black text-sm hover:opacity-70 transition-opacity flex items-center gap-1.5 group">
+                    <ExternalLink size={10} className="text-black/50 flex-shrink-0" />{link.label}
                   </a>
                 </li>
               ))}
@@ -82,23 +82,23 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-[#009900] uppercase tracking-wider text-xs mb-4 pb-2 border-b border-[#009900]/15">Address</h4>
+            <h4 className="font-semibold text-black uppercase tracking-wider text-xs mb-4 pb-2 border-b border-black/15">Address</h4>
             <ul className="space-y-3 mb-6">
-              <li className="flex items-start gap-2.5 text-sm text-gray-600">
-                <MapPin size={14} className="text-[#009900] mt-0.5 flex-shrink-0" />
+              <li className="flex items-start gap-2.5 text-sm text-black">
+                <MapPin size={14} className="text-black mt-0.5 flex-shrink-0" />
                 <span>{footer.address}</span>
               </li>
-              <li className="flex items-center gap-2.5 text-sm text-gray-600">
-                <Phone size={14} className="text-[#009900] flex-shrink-0" />
+              <li className="flex items-center gap-2.5 text-sm text-black">
+                <Phone size={14} className="text-black flex-shrink-0" />
                 <span>{footer.phone}</span>
               </li>
-              <li className="flex items-center gap-2.5 text-sm text-gray-600">
-                <Mail size={14} className="text-[#009900] flex-shrink-0" />
+              <li className="flex items-center gap-2.5 text-sm text-black">
+                <Mail size={14} className="text-black flex-shrink-0" />
                 <span>{footer.email}</span>
               </li>
             </ul>
 
-            <h4 className="font-semibold text-[#009900] uppercase tracking-wider text-xs mb-3">Follow Us</h4>
+            <h4 className="font-semibold text-black uppercase tracking-wider text-xs mb-3">Follow Us</h4>
             <div className="flex items-center gap-3">
               {[
                 { Icon: Facebook, label: 'Facebook' },
@@ -106,7 +106,7 @@ export default function Footer() {
                 { Icon: Linkedin, label: 'LinkedIn' },
                 { Icon: Youtube, label: 'YouTube' },
               ].map(({ Icon, label }) => (
-                <a key={label} href="#" aria-label={label} className="w-8 h-8 rounded-full bg-[#009900]/10 text-[#009900] hover:bg-[#009900] hover:text-white flex items-center justify-center transition-colors">
+                <a key={label} href="#" aria-label={label} className="w-8 h-8 rounded-full bg-black/10 text-black hover:bg-black hover:text-white flex items-center justify-center transition-colors">
                   <Icon size={14} />
                 </a>
               ))}
@@ -115,13 +115,13 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-[#009900]/20 bg-[#a5d6a7]/50 py-4 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-gray-600">
+      <div className="border-t border-black/15 bg-[#a5d6a7]/50 py-4 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-black">
           <p>&copy; {new Date().getFullYear()} Union of Arab Securities Authorities. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <a href="#" className="hover:text-[#009900] transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-[#009900] transition-colors">Terms of Use</a>
-            <a href="#" className="hover:text-[#009900] transition-colors">Sitemap</a>
+            <a href="#" className="hover:opacity-70 transition-opacity">Privacy Policy</a>
+            <a href="#" className="hover:opacity-70 transition-opacity">Terms of Use</a>
+            <a href="#" className="hover:opacity-70 transition-opacity">Sitemap</a>
           </div>
         </div>
       </div>
