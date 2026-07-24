@@ -28,7 +28,7 @@ export default function Footer() {
   const { data: footer } = useSiteContent('footer', FALLBACK_FOOTER);
 
   return (
-    <footer className="bg-[#009900] text-white">
+    <footer className="bg-[#c8e6c9] text-gray-700 border-t border-[#009900]/25">
       <div className="bg-[#006600] py-6 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {stats.map((stat) => (
@@ -43,12 +43,12 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <h4 className="font-semibold text-amber-400 uppercase tracking-wider text-xs mb-4 pb-2 border-b border-white/10">Investor Education</h4>
+            <h4 className="font-semibold text-[#009900] uppercase tracking-wider text-xs mb-4 pb-2 border-b border-[#009900]/15">Investor Education</h4>
             <ul className="space-y-2">
               {footer.educationLinks.map((link: string) => (
                 <li key={link}>
-                  <a href="#" className="text-green-200 text-sm hover:text-amber-400 transition-colors flex items-center gap-1.5">
-                    <span className="w-1 h-1 bg-amber-400/60 rounded-full" />{link}
+                  <a href="#" className="text-gray-600 text-sm hover:text-[#009900] transition-colors flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-[#009900]/50 rounded-full" />{link}
                   </a>
                 </li>
               ))}
@@ -56,12 +56,12 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-amber-400 uppercase tracking-wider text-xs mb-4 pb-2 border-b border-white/10">Financial Inclusion</h4>
+            <h4 className="font-semibold text-[#009900] uppercase tracking-wider text-xs mb-4 pb-2 border-b border-[#009900]/15">Financial Inclusion</h4>
             <ul className="space-y-2">
               {footer.inclusionLinks.map((link: string) => (
                 <li key={link}>
-                  <a href="#" className="text-green-200 text-sm hover:text-amber-400 transition-colors flex items-center gap-1.5">
-                    <span className="w-1 h-1 bg-amber-400/60 rounded-full" />{link}
+                  <a href="#" className="text-gray-600 text-sm hover:text-[#009900] transition-colors flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-[#009900]/50 rounded-full" />{link}
                   </a>
                 </li>
               ))}
@@ -69,12 +69,12 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-amber-400 uppercase tracking-wider text-xs mb-4 pb-2 border-b border-white/10">Links</h4>
+            <h4 className="font-semibold text-[#009900] uppercase tracking-wider text-xs mb-4 pb-2 border-b border-[#009900]/15">Links</h4>
             <ul className="space-y-2">
               {footer.usefulLinks.map((link: { label: string; href: string }) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-green-200 text-sm hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
-                    <ExternalLink size={10} className="text-amber-400/60 flex-shrink-0" />{link.label}
+                  <a href={link.href} className="text-gray-600 text-sm hover:text-[#009900] transition-colors flex items-center gap-1.5 group">
+                    <ExternalLink size={10} className="text-[#009900]/50 flex-shrink-0" />{link.label}
                   </a>
                 </li>
               ))}
@@ -82,23 +82,23 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold text-amber-400 uppercase tracking-wider text-xs mb-4 pb-2 border-b border-white/10">Address</h4>
+            <h4 className="font-semibold text-[#009900] uppercase tracking-wider text-xs mb-4 pb-2 border-b border-[#009900]/15">Address</h4>
             <ul className="space-y-3 mb-6">
-              <li className="flex items-start gap-2.5 text-sm text-green-200">
-                <MapPin size={14} className="text-amber-400 mt-0.5 flex-shrink-0" />
+              <li className="flex items-start gap-2.5 text-sm text-gray-600">
+                <MapPin size={14} className="text-[#009900] mt-0.5 flex-shrink-0" />
                 <span>{footer.address}</span>
               </li>
-              <li className="flex items-center gap-2.5 text-sm text-green-200">
-                <Phone size={14} className="text-amber-400 flex-shrink-0" />
+              <li className="flex items-center gap-2.5 text-sm text-gray-600">
+                <Phone size={14} className="text-[#009900] flex-shrink-0" />
                 <span>{footer.phone}</span>
               </li>
-              <li className="flex items-center gap-2.5 text-sm text-green-200">
-                <Mail size={14} className="text-amber-400 flex-shrink-0" />
+              <li className="flex items-center gap-2.5 text-sm text-gray-600">
+                <Mail size={14} className="text-[#009900] flex-shrink-0" />
                 <span>{footer.email}</span>
               </li>
             </ul>
 
-            <h4 className="font-semibold text-amber-400 uppercase tracking-wider text-xs mb-3">Follow Us</h4>
+            <h4 className="font-semibold text-[#009900] uppercase tracking-wider text-xs mb-3">Follow Us</h4>
             <div className="flex items-center gap-3">
               {[
                 { Icon: Facebook, label: 'Facebook' },
@@ -106,7 +106,7 @@ export default function Footer() {
                 { Icon: Linkedin, label: 'LinkedIn' },
                 { Icon: Youtube, label: 'YouTube' },
               ].map(({ Icon, label }) => (
-                <a key={label} href="#" aria-label={label} className="w-8 h-8 rounded-full bg-white/10 hover:bg-amber-500 flex items-center justify-center transition-colors">
+                <a key={label} href="#" aria-label={label} className="w-8 h-8 rounded-full bg-[#009900]/10 text-[#009900] hover:bg-[#009900] hover:text-white flex items-center justify-center transition-colors">
                   <Icon size={14} />
                 </a>
               ))}
@@ -115,13 +115,13 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-white/10 py-4 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-green-300">
+      <div className="border-t border-[#009900]/20 bg-[#a5d6a7]/50 py-4 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-gray-600">
           <p>&copy; {new Date().getFullYear()} Union of Arab Securities Authorities. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <a href="#" className="hover:text-amber-400 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-amber-400 transition-colors">Terms of Use</a>
-            <a href="#" className="hover:text-amber-400 transition-colors">Sitemap</a>
+            <a href="#" className="hover:text-[#009900] transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-[#009900] transition-colors">Terms of Use</a>
+            <a href="#" className="hover:text-[#009900] transition-colors">Sitemap</a>
           </div>
         </div>
       </div>
