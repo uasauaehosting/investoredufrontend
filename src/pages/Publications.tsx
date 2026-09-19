@@ -13,7 +13,9 @@ import { groupPublicationsByAuthority } from '../lib/publicationGrouping';
 interface Publication {
   id: number;
   title: string;
+  title_ar?: string | null;
   description: string | null;
+  description_ar?: string | null;
   authority_name: string;
   category: PublicationCategory;
   file_url: string | null;

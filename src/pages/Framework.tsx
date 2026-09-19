@@ -3,12 +3,17 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { api } from '../lib/api';
 import { Framework, frameworkDetailPath } from '../lib/frameworks';
+import { useLanguage } from '../lib/LanguageContext';
+import { pickField } from '../lib/localizedText';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1454165804603-c3d57bc86b40?auto=format&fit=crop&q=80&w=800';
 
 function FrameworkCard({ item }: { item: Framework }) {
+  const { lang } = useLanguage();
   const [imgSrc, setImgSrc] = useState(item.imageUrl || FALLBACK_IMAGE);
+  const title = pickField(lang, item, 'title');
+  const description = pickField(lang, item, 'description');
 
   return (
     <Link
@@ -18,16 +23,16 @@ function FrameworkCard({ item }: { item: Framework }) {
       <div className="aspect-[16/10] overflow-hidden bg-gray-100">
         <img
           src={imgSrc}
-          alt={item.title}
+          alt={title}
           className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
           onError={() => setImgSrc(FALLBACK_IMAGE)}
         />
       </div>
       <div className="p-6 flex flex-col flex-1">
         <h3 className="text-lg font-bold text-[#009900] mb-3 group-hover:text-green-700 transition-colors">
-          {item.title}
+          {title}
         </h3>
-        <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3">{item.description}</p>
+        <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3">{description}</p>
         <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#009900] mt-5 group-hover:text-amber-600 transition-colors">
           Read More <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
         </span>

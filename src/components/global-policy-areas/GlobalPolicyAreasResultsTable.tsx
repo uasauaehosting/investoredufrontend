@@ -1,5 +1,7 @@
 import { Fragment, useState } from 'react';
 import { PolicyInstitutionGroup } from '../../lib/globalPolicyGrouping';
+import { useLanguage } from '../../lib/LanguageContext';
+import { pickLocalized } from '../../lib/localizedText';
 
 interface DescriptionModalProps {
   title: string;
@@ -75,6 +77,8 @@ export default function GlobalPolicyAreasResultsTable({
 }: {
   groups: PolicyInstitutionGroup[];
 }) {
+  const { lang } = useLanguage();
+
   if (groups.length === 0) {
     return <p className="text-gray-500 text-sm">No global policy areas match the selected filters.</p>;
   }
@@ -120,32 +124,36 @@ export default function GlobalPolicyAreasResultsTable({
                       <th className={thClass}>Description</th>
                       <th className={thClass}>URL / File</th>
                     </tr>
-                    {categoryGroup.items.map((item, index) => (
-                      <tr
-                        key={item.id}
-                        className={index % 2 === 0 ? 'bg-[#eef7ee]' : 'bg-white'}
-                      >
-                        <td className={`${tdClass} text-start`}>{item.title}</td>
-                        <td className={tdClass}>General</td>
-                        <td className={tdClass}>
-                          <DescriptionLink title={item.title} description={item.description} />
-                        </td>
-                        <td className={tdClass}>
-                          {item.file_url ? (
-                            <a
-                              href={item.file_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-[#009900] hover:underline font-medium"
-                            >
-                              Link
-                            </a>
-                          ) : (
-                            <span className="text-gray-400">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                    {categoryGroup.items.map((item, index) => {
+                      const title = pickLocalized(lang, item.title, item.title_ar);
+                      const description = pickLocalized(lang, item.description, item.description_ar);
+                      return (
+                        <tr
+                          key={item.id}
+                          className={index % 2 === 0 ? 'bg-[#eef7ee]' : 'bg-white'}
+                        >
+                          <td className={`${tdClass} text-start`}>{title}</td>
+                          <td className={tdClass}>General</td>
+                          <td className={tdClass}>
+                            <DescriptionLink title={title} description={description} />
+                          </td>
+                          <td className={tdClass}>
+                            {item.file_url ? (
+                              <a
+                                href={item.file_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#009900] hover:underline font-medium"
+                              >
+                                Link
+                              </a>
+                            ) : (
+                              <span className="text-gray-400">—</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </Fragment>
                 ))
               )}

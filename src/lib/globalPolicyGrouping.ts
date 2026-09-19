@@ -8,7 +8,9 @@ import {
 export interface GroupedPolicyArea {
   id: number;
   title: string;
+  title_ar?: string | null;
   description: string | null;
+  description_ar?: string | null;
   institution: string;
   category: string;
   file_url: string | null;

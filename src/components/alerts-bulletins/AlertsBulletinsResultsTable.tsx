@@ -1,6 +1,10 @@
+import { useLanguage } from '../../lib/LanguageContext';
+import { pickLocalized } from '../../lib/localizedText';
+
 export interface AlertBulletinItem {
   id: number;
   title: string;
+  titleAr?: string | null;
   type: string;
   description: string;
   authority_name: string;
@@ -32,6 +36,8 @@ export function AlertsBulletinsEmptyRow() {
 }
 
 export function AlertsBulletinsDataRows({ items }: { items: AlertBulletinItem[] }) {
+  const { lang } = useLanguage();
+
   return (
     <>
       <tr>
@@ -42,7 +48,7 @@ export function AlertsBulletinsDataRows({ items }: { items: AlertBulletinItem[] 
       </tr>
       {items.map((item, index) => (
         <tr key={item.id} className={index % 2 === 0 ? 'bg-[#eef7ee]' : 'bg-white'}>
-          <td className={`${tdClass} text-start`}>{item.title}</td>
+          <td className={`${tdClass} text-start`}>{pickLocalized(lang, item.title, item.titleAr)}</td>
           <td className={tdClass}>{item.type}</td>
           <td className={tdClass}>{formatDate(item.date_published)}</td>
           <td className={tdClass}>

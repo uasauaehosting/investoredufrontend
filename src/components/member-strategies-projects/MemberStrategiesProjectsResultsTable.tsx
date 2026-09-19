@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { MemberStrategyProjectGroup } from '../../lib/strategiesProjectsGrouping';
+import { useLanguage } from '../../lib/LanguageContext';
+import { pickLocalized } from '../../lib/localizedText';
 
 interface DescriptionModalProps {
   title: string;
@@ -80,6 +82,8 @@ export default function MemberStrategiesProjectsResultsTable({
 }: {
   groups: MemberStrategyProjectGroup[];
 }) {
+  const { lang } = useLanguage();
+
   if (groups.length === 0) {
     return (
       <p className="text-gray-500 text-sm text-center py-8">
@@ -108,31 +112,35 @@ export default function MemberStrategiesProjectsResultsTable({
                 <th className={thClass}>Description</th>
                 <th className={thClass}>URL / File</th>
               </tr>
-              {group.items.map((project, index) => (
-                <tr key={project.id} className={index % 2 === 0 ? 'bg-white' : 'bg-[#eef7ee]'}>
-                  <td className={`${tdClass} text-start`}>{project.title}</td>
-                  <td className={`${tdClass} text-center`}>
-                    {getCategoryLabel(project.type, project.categoryName)}
-                  </td>
-                  <td className={`${tdClass} text-center`}>
-                    <DescriptionLink title={project.title} description={project.description} />
-                  </td>
-                  <td className={`${tdClass} text-center`}>
-                    {project.fileUrl ? (
-                      <a
-                        href={project.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#009900] hover:underline font-medium"
-                      >
-                        Link
-                      </a>
-                    ) : (
-                      <span className="text-gray-400">—</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {group.items.map((project, index) => {
+                const title = pickLocalized(lang, project.title, project.titleAr);
+                const description = pickLocalized(lang, project.description, project.descriptionAr);
+                return (
+                  <tr key={project.id} className={index % 2 === 0 ? 'bg-white' : 'bg-[#eef7ee]'}>
+                    <td className={`${tdClass} text-start`}>{title}</td>
+                    <td className={`${tdClass} text-center`}>
+                      {getCategoryLabel(project.type, project.categoryName)}
+                    </td>
+                    <td className={`${tdClass} text-center`}>
+                      <DescriptionLink title={title} description={description} />
+                    </td>
+                    <td className={`${tdClass} text-center`}>
+                      {project.fileUrl ? (
+                        <a
+                          href={project.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#009900] hover:underline font-medium"
+                        >
+                          Link
+                        </a>
+                      ) : (
+                        <span className="text-gray-400">—</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

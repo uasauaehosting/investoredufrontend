@@ -15,7 +15,9 @@ import { groupStrategiesProjectsByMember } from '../lib/strategiesProjectsGroupi
 interface StrategyProject {
   id: number;
   title: string;
+  titleAr?: string | null;
   description: string;
+  descriptionAr?: string | null;
   memberId?: number;
   memberName?: string;
   type?: string;

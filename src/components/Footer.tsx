@@ -1,5 +1,8 @@
 import { Facebook, Twitter, Linkedin, Youtube, MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
-import { useSiteContent, useFooterStats } from '../lib/useSiteContent';
+import { useLocalizedSiteContent } from '../lib/useLocalizedSiteContent';
+import { useFooterStats } from '../lib/useSiteContent';
+import { useLanguage } from '../lib/LanguageContext';
+import { pickLocalized } from '../lib/localizedText';
 
 const FALLBACK_STATS = [
   { value: '10+', label: 'Member States' },
@@ -24,8 +27,14 @@ const FALLBACK_FOOTER = {
 };
 
 export default function Footer() {
+  const { lang } = useLanguage();
   const { stats } = useFooterStats(FALLBACK_STATS);
-  const { data: footer } = useSiteContent('footer', FALLBACK_FOOTER);
+  const { data: footer } = useLocalizedSiteContent(
+    'footer',
+    FALLBACK_FOOTER,
+    ['address', 'phone', 'email'],
+    ['educationLinks', 'inclusionLinks'],
+  );
 
   return (
     <footer className="bg-[#c8e6c9] text-black border-t border-[#009900]/25">
@@ -34,7 +43,7 @@ export default function Footer() {
           {stats.map((stat) => (
             <div key={stat.label}>
               <div className="text-2xl font-bold text-white">{stat.value}</div>
-              <div className="text-xs text-white mt-0.5">{stat.label}</div>
+              <div className="text-xs text-white mt-0.5">{pickLocalized(lang, stat.label, (stat as { labelAr?: string }).labelAr)}</div>
             </div>
           ))}
         </div>

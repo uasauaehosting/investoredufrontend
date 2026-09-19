@@ -1,5 +1,7 @@
 import { Fragment, useState } from 'react';
 import { PublicationAuthorityGroup } from '../../lib/publicationGrouping';
+import { useLanguage } from '../../lib/LanguageContext';
+import { pickLocalized } from '../../lib/localizedText';
 
 interface DescriptionModalProps {
   title: string;
@@ -72,6 +74,8 @@ export default function PublicationsResultsTable({
 }: {
   groups: PublicationAuthorityGroup[];
 }) {
+  const { lang } = useLanguage();
+
   if (groups.length === 0) {
     return <p className="text-gray-500 text-sm">No publications match the selected filters.</p>;
   }
@@ -107,35 +111,36 @@ export default function PublicationsResultsTable({
                     <th className={thClass}>Description</th>
                     <th className={thClass}>URL / File</th>
                   </tr>
-                  {categoryGroup.items.map((publication, index) => (
-                    <tr
-                      key={publication.id}
-                      className={index % 2 === 0 ? 'bg-[#eef7ee]' : 'bg-white'}
-                    >
-                      <td className={tdClass}>{publication.title}</td>
-                      <td className={tdClass}>{publication.category}</td>
-                      <td className={tdClass}>
-                        <DescriptionLink
-                          title={publication.title}
-                          description={publication.description}
-                        />
-                      </td>
-                      <td className={tdClass}>
-                        {publication.file_url ? (
-                          <a
-                            href={publication.file_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#009900] hover:underline font-medium"
-                          >
-                            Link
-                          </a>
-                        ) : (
-                          <span className="text-gray-400">—</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  {categoryGroup.items.map((publication, index) => {
+                    const title = pickLocalized(lang, publication.title, publication.title_ar);
+                    const description = pickLocalized(lang, publication.description, publication.description_ar);
+                    return (
+                      <tr
+                        key={publication.id}
+                        className={index % 2 === 0 ? 'bg-[#eef7ee]' : 'bg-white'}
+                      >
+                        <td className={tdClass}>{title}</td>
+                        <td className={tdClass}>{publication.category}</td>
+                        <td className={tdClass}>
+                          <DescriptionLink title={title} description={description} />
+                        </td>
+                        <td className={tdClass}>
+                          {publication.file_url ? (
+                            <a
+                              href={publication.file_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#009900] hover:underline font-medium"
+                            >
+                              Link
+                            </a>
+                          ) : (
+                            <span className="text-gray-400">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </Fragment>
               ))}
             </tbody>

@@ -9,13 +9,20 @@ import {
   filterBenchmarkingRecords,
   fromApiBenchmarkingRecord,
 } from '../lib/benchmarking';
-import { useSiteContent } from '../lib/useSiteContent';
+import { useLocalizedSiteContent } from '../lib/useLocalizedSiteContent';
+import { useLanguage } from '../lib/LanguageContext';
+import { pickLocalized } from '../lib/localizedText';
 
 const INTRO_FALLBACK =
   'A review of available data and measurement exercises with which UASA Members can design and evaluate Corporate Governance application in their countries (Based on the UASA Guide)';
 
 export default function MembersBenchmarking() {
-  const { data: pageContent } = useSiteContent('benchmarking', { intro: INTRO_FALLBACK });
+  const { lang } = useLanguage();
+  const { data: pageContent } = useLocalizedSiteContent(
+    'benchmarking',
+    { intro: INTRO_FALLBACK, introAr: '' },
+    ['intro'],
+  );
   const [records, setRecords] = useState<BenchmarkingRecord[]>([]);
   const [years, setYears] = useState<BenchmarkingYear[]>([...BENCHMARKING_YEARS]);
   const [loading, setLoading] = useState(true);
@@ -147,9 +154,9 @@ export default function MembersBenchmarking() {
                       key={`${record.authority}-${record.year}-${index}`}
                       className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
                     >
-                      <td className="px-4 py-3 text-gray-800 font-medium">{record.authority}</td>
+                      <td className="px-4 py-3 text-gray-800 font-medium">{pickLocalized(lang, record.authority, record.authorityNameAr)}</td>
                       <td className="px-4 py-3 text-gray-600">{record.year}</td>
-                      <td className="px-4 py-3 text-gray-800">{record.title}</td>
+                      <td className="px-4 py-3 text-gray-800">{pickLocalized(lang, record.title, record.indicatorAr)}</td>
                       <td className="px-4 py-3 text-gray-600">
                         {record.fileUrl ? (
                           <a

@@ -3,7 +3,9 @@ import { INCLUSION_MEMBER_FILTERS, matchesInclusionMember } from './inclusionMem
 export interface StrategyProjectItem {
   id: number;
   title: string;
+  titleAr?: string | null;
   description: string;
+  descriptionAr?: string | null;
   memberName?: string;
   type?: string;
   categoryName?: string | null;

@@ -4,6 +4,8 @@ import PageHeader from '../components/PageHeader';
 import { api } from '../lib/api';
 import { normalizeMediaUrl } from '../lib/mediaUrl';
 import { MEMBER_PORTALS, MemberPortal } from '../data/memberPortals';
+import { useLanguage } from '../lib/LanguageContext';
+import { pickLocalized } from '../lib/localizedText';
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800';
 
@@ -13,20 +15,11 @@ const INTRO =
 interface ApiPortal {
   id: number;
   title: string;
+  title_ar?: string | null;
   short_title: string;
+  short_title_ar?: string | null;
   image_url: string;
   link: string;
-}
-
-function toMemberPortal(p: ApiPortal): MemberPortal {
-  return {
-    id: p.id,
-    panelTitle: p.title,
-    displayTitle: p.short_title,
-    imageUrl: normalizeMediaUrl(p.image_url),
-    imageAlt: p.short_title,
-    link: p.link,
-  };
 }
 
 function PortalAccordionItem({
@@ -107,6 +100,7 @@ function PortalSkeleton() {
 }
 
 export default function Portals() {
+  const { lang } = useLanguage();
   const [portals, setPortals] = useState<MemberPortal[]>(
     MEMBER_PORTALS.map((p) => ({ ...p, imageUrl: normalizeMediaUrl(p.imageUrl) })),
   );
@@ -118,12 +112,21 @@ export default function Portals() {
       .get('/portals')
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          setPortals(data.map(toMemberPortal));
+          setPortals(
+            data.map((p: ApiPortal): MemberPortal => ({
+              id: p.id,
+              panelTitle: pickLocalized(lang, p.title, p.title_ar),
+              displayTitle: pickLocalized(lang, p.short_title, p.short_title_ar),
+              imageUrl: normalizeMediaUrl(p.image_url),
+              imageAlt: pickLocalized(lang, p.short_title, p.short_title_ar),
+              link: p.link,
+            })),
+          );
         }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [lang]);
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
