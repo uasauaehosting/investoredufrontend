@@ -45,7 +45,8 @@ export function useAuth() {
       setUser(data.admin);
       return { data, error: null };
     } catch (error: any) {
-      return { data: null, error: { message: error } };
+      const message = error?.message ?? String(error);
+      return { data: null, error: { message } };
     }
   };
 

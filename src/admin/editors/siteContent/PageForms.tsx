@@ -72,11 +72,11 @@ export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent
 
       <ArabicSectionDivider />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <ArabicTextField label="نص الشارة (عربي)" value={data.badgeAr ?? ''} onChange={(v) => set('badgeAr', v)} />
-        <ArabicTextField label="نص الزر (عربي)" value={data.ctaTextAr ?? ''} onChange={(v) => set('ctaTextAr', v)} />
+        <ArabicTextField label="نص الشارة (عربي)" value={data.badgeAr ?? ''} onChange={(v) => set('badgeAr', v)} englishValue={data.badge ?? ''} />
+        <ArabicTextField label="نص الزر (عربي)" value={data.ctaTextAr ?? ''} onChange={(v) => set('ctaTextAr', v)} englishValue={data.ctaText ?? ''} />
       </div>
-      <ArabicTextField label="العنوان (عربي)" value={data.titleAr ?? ''} onChange={(v) => set('titleAr', v)} />
-      <StringListEditor label="فقرات المقدمة (عربي)" items={data.paragraphsAr} onChange={(v) => set('paragraphsAr', v)} addLabel="إضافة فقرة" placeholder="نص عربي..." />
+      <ArabicTextField label="العنوان (عربي)" value={data.titleAr ?? ''} onChange={(v) => set('titleAr', v)} englishValue={data.title ?? ''} />
+      <StringListEditor label="فقرات المقدمة (عربي)" items={data.paragraphsAr} onChange={(v) => set('paragraphsAr', v)} addLabel="إضافة فقرة" placeholder="نص عربي..." isArabic />
 
       <SectionHeading title="Highlight Cards" description="Three feature cards shown beside the welcome text" />
       <div className="space-y-3">
@@ -132,10 +132,10 @@ export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent
             set('highlightsAr', next);
           };
           return (
-            <div key={`ar-${index}`} className={cardClass} dir="rtl">
+            <div key={`ar-${index}`} className={cardClass}>
               <span className="text-xs font-semibold text-gray-500">البطاقة {index + 1}</span>
-              <ArabicTextField label="العنوان" value={arItem.title} onChange={(v) => updateAr('title', v)} />
-              <ArabicTextAreaField label="الوصف" value={arItem.description} onChange={(v) => updateAr('description', v)} rows={2} />
+              <ArabicTextField label="العنوان" value={arItem.title} onChange={(v) => updateAr('title', v)} englishValue={item.title} />
+              <ArabicTextAreaField label="الوصف" value={arItem.description} onChange={(v) => updateAr('description', v)} rows={2} englishValue={item.description} />
             </div>
           );
         })}
@@ -205,7 +205,9 @@ export function HomePortalForm({ data, onChange }: FormProps<HomePortalContent>)
 
 export interface AboutHeroContent {
   badge: string;
+  badgeAr?: string;
   title: string;
+  titleAr?: string;
 }
 
 export function AboutHeroForm({ data, onChange }: FormProps<AboutHeroContent>) {
@@ -217,6 +219,9 @@ export function AboutHeroForm({ data, onChange }: FormProps<AboutHeroContent>) {
       <SectionHeading title="About Page Hero" description="Top banner on the About page. Body paragraphs are edited in the About section." />
       <TextField label="Badge Text" value={data.badge} onChange={(v) => set('badge', v)} placeholder="About UASA" />
       <TextField label="Page Title" value={data.title} onChange={(v) => set('title', v)} />
+      <ArabicSectionDivider />
+      <ArabicTextField label="نص الشارة (عربي)" value={data.badgeAr ?? ''} onChange={(v) => set('badgeAr', v)} englishValue={data.badge} />
+      <ArabicTextField label="عنوان الصفحة (عربي)" value={data.titleAr ?? ''} onChange={(v) => set('titleAr', v)} englishValue={data.title} />
     </div>
   );
 }
@@ -225,8 +230,11 @@ export function AboutHeroForm({ data, onChange }: FormProps<AboutHeroContent>) {
 
 export interface PrinciplesPageContent {
   introParagraphs: string[];
+  introParagraphsAr?: string[];
   objectives: string[];
+  objectivesAr?: string[];
   benefits: string[];
+  benefitsAr?: string[];
 }
 
 export function PrinciplesPageForm({ data, onChange }: FormProps<PrinciplesPageContent>) {
@@ -239,6 +247,10 @@ export function PrinciplesPageForm({ data, onChange }: FormProps<PrinciplesPageC
       <StringListEditor label="Introduction Paragraphs" items={data.introParagraphs} onChange={(v) => set('introParagraphs', v)} addLabel="Add paragraph" />
       <StringListEditor label="Objectives" items={data.objectives} onChange={(v) => set('objectives', v)} addLabel="Add objective" placeholder="Promote financial literacy..." />
       <StringListEditor label="Benefits" items={data.benefits} onChange={(v) => set('benefits', v)} addLabel="Add benefit" placeholder="Better understanding of..." />
+      <ArabicSectionDivider />
+      <StringListEditor label="فقرات المقدمة (عربي)" items={data.introParagraphsAr} onChange={(v) => set('introParagraphsAr', v)} addLabel="إضافة فقرة" placeholder="نص عربي..." isArabic />
+      <StringListEditor label="الأهداف (عربي)" items={data.objectivesAr} onChange={(v) => set('objectivesAr', v)} addLabel="إضافة هدف" placeholder="نص عربي..." isArabic />
+      <StringListEditor label="الفوائد (عربي)" items={data.benefitsAr} onChange={(v) => set('benefitsAr', v)} addLabel="إضافة فائدة" placeholder="نص عربي..." isArabic />
     </div>
   );
 }
@@ -247,7 +259,9 @@ export function PrinciplesPageForm({ data, onChange }: FormProps<PrinciplesPageC
 
 export interface FrameworkPageContent {
   introParagraphs: string[];
+  introParagraphsAr?: string[];
   practices: string[];
+  practicesAr?: string[];
   imageUrl: string;
   pdfUrl: string;
 }
@@ -263,6 +277,9 @@ export function FrameworkPageForm({ data, onChange }: FormProps<FrameworkPageCon
       <StringListEditor label="Best Practices" items={data.practices} onChange={(v) => set('practices', v)} addLabel="Add practice" />
       <ImageField label="Framework Image" value={data.imageUrl} onChange={(v) => set('imageUrl', v)} />
       <FileField label="PDF Document" value={data.pdfUrl} onChange={(v) => set('pdfUrl', v)} hint="Upload the IOSCO framework PDF" />
+      <ArabicSectionDivider />
+      <StringListEditor label="فقرات المقدمة (عربي)" items={data.introParagraphsAr} onChange={(v) => set('introParagraphsAr', v)} addLabel="إضافة فقرة" placeholder="نص عربي..." isArabic />
+      <StringListEditor label="أفضل الممارسات (عربي)" items={data.practicesAr} onChange={(v) => set('practicesAr', v)} addLabel="إضافة ممارسة" placeholder="نص عربي..." isArabic />
     </div>
   );
 }
@@ -271,6 +288,7 @@ export function FrameworkPageForm({ data, onChange }: FormProps<FrameworkPageCon
 
 export interface TheIndexContent {
   content: string;
+  contentAr?: string;
 }
 
 export function TheIndexForm({ data, onChange }: FormProps<TheIndexContent>) {
@@ -280,9 +298,17 @@ export function TheIndexForm({ data, onChange }: FormProps<TheIndexContent>) {
       <TextAreaField
         label="Page Content"
         value={data.content}
-        onChange={(v) => onChange({ content: v })}
+        onChange={(v) => onChange({ ...data, content: v })}
         rows={8}
         placeholder="Describe the financial inclusion index..."
+      />
+      <ArabicSectionDivider />
+      <ArabicTextAreaField
+        label="محتوى الصفحة (عربي)"
+        value={data.contentAr ?? ''}
+        onChange={(v) => onChange({ ...data, contentAr: v })}
+        rows={8}
+        englishValue={data.content}
       />
     </div>
   );
@@ -292,6 +318,7 @@ export function TheIndexForm({ data, onChange }: FormProps<TheIndexContent>) {
 
 export interface BenchmarkingPageContent {
   intro: string;
+  introAr?: string;
 }
 
 export function BenchmarkingPageForm({ data, onChange }: FormProps<BenchmarkingPageContent>) {
@@ -304,9 +331,17 @@ export function BenchmarkingPageForm({ data, onChange }: FormProps<BenchmarkingP
       <TextAreaField
         label="Introduction"
         value={data.intro}
-        onChange={(v) => onChange({ intro: v })}
+        onChange={(v) => onChange({ ...data, intro: v })}
         rows={4}
         placeholder="Describe the benchmarking exercise..."
+      />
+      <ArabicSectionDivider />
+      <ArabicTextAreaField
+        label="المقدمة (عربي)"
+        value={data.introAr ?? ''}
+        onChange={(v) => onChange({ ...data, introAr: v })}
+        rows={4}
+        englishValue={data.intro}
       />
     </div>
   );
@@ -316,6 +351,7 @@ export function BenchmarkingPageForm({ data, onChange }: FormProps<BenchmarkingP
 
 export interface AdditionalResourcesContent {
   intro: string;
+  introAr?: string;
   resources: { title: string; url: string; description?: string }[];
 }
 
@@ -339,6 +375,14 @@ export function AdditionalResourcesForm({ data, onChange }: FormProps<Additional
         value={data.intro}
         onChange={(v) => onChange({ ...data, intro: v })}
         rows={4}
+      />
+      <ArabicSectionDivider />
+      <ArabicTextAreaField
+        label="المقدمة (عربي)"
+        value={data.introAr ?? ''}
+        onChange={(v) => onChange({ ...data, introAr: v })}
+        rows={4}
+        englishValue={data.intro}
       />
       <div className="space-y-3">
         <p className="text-sm font-semibold text-gray-700">Resource Links</p>
@@ -386,7 +430,9 @@ export function AdditionalResourcesForm({ data, onChange }: FormProps<Additional
 
 export interface FeedbackContent {
   title: string;
+  titleAr?: string;
   subtitle: string;
+  subtitleAr?: string;
   contactEmail: string;
   contactWebsite: string;
 }
@@ -404,6 +450,9 @@ export function FeedbackForm({ data, onChange }: FormProps<FeedbackContent>) {
         <TextField label="Contact Email" value={data.contactEmail} onChange={(v) => set('contactEmail', v)} type="email" />
         <TextField label="Contact Website" value={data.contactWebsite} onChange={(v) => set('contactWebsite', v)} placeholder="https://..." />
       </div>
+      <ArabicSectionDivider />
+      <ArabicTextField label="عنوان الصفحة (عربي)" value={data.titleAr ?? ''} onChange={(v) => set('titleAr', v)} englishValue={data.title} />
+      <ArabicTextAreaField label="العنوان الفرعي (عربي)" value={data.subtitleAr ?? ''} onChange={(v) => set('subtitleAr', v)} rows={2} englishValue={data.subtitle} />
     </div>
   );
 }
@@ -412,9 +461,12 @@ export function FeedbackForm({ data, onChange }: FormProps<FeedbackContent>) {
 
 export interface FooterContent {
   educationLinks: string[];
+  educationLinksAr?: string[];
   inclusionLinks: string[];
+  inclusionLinksAr?: string[];
   usefulLinks: { label: string; href: string }[];
   address: string;
+  addressAr?: string;
   phone: string;
   email: string;
 }
@@ -480,6 +532,11 @@ export function FooterForm({ data, onChange }: FormProps<FooterContent>) {
         <TextField label="Phone" value={data.phone} onChange={(v) => set('phone', v)} />
         <TextField label="Email" value={data.email} onChange={(v) => set('email', v)} type="email" />
       </div>
+
+      <ArabicSectionDivider />
+      <StringListEditor label="روابط التعليم الاستثماري (عربي)" items={data.educationLinksAr} onChange={(v) => set('educationLinksAr', v)} addLabel="إضافة رابط" placeholder="نص عربي..." isArabic />
+      <StringListEditor label="روابط الشمول المالي (عربي)" items={data.inclusionLinksAr} onChange={(v) => set('inclusionLinksAr', v)} addLabel="إضافة رابط" placeholder="نص عربي..." isArabic />
+      <ArabicTextAreaField label="العنوان (عربي)" value={data.addressAr ?? ''} onChange={(v) => set('addressAr', v)} rows={3} englishValue={data.address} />
     </div>
   );
 }

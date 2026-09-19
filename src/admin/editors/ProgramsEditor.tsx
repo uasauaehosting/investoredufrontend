@@ -272,18 +272,20 @@ export default function ProgramsEditor() {
             label="اسم العضو (عربي)"
             value={editing.member_name_ar ?? ''}
             onChange={(v) => setEditing({ ...editing, member_name_ar: v })}
+            englishValue={editing.member_name ?? ''}
           />
 
           {PROGRAM_FILTER_GROUPS.map((group) => {
             const arFieldKey = GROUP_AR_FIELD_MAP[group.name];
             return (
-              <div key={`${group.name}-ar`} dir="rtl">
+              <div key={`${group.name}-ar`}>
                 <StringListEditor
                   label={`${group.title} (عربي)`}
                   items={editing[arFieldKey]?.length ? editing[arFieldKey] : ['']}
                   onChange={(items) => setArField(arFieldKey, items)}
                   placeholder="أدخل النص بالعربية..."
                   addLabel="إضافة عنصر"
+                  isArabic
                 />
               </div>
             );

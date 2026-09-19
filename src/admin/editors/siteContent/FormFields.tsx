@@ -76,12 +76,15 @@ export function StringListEditor({
   onChange,
   placeholder = 'Enter text...',
   addLabel = 'Add item',
+  isArabic = false,
 }: {
   label: string;
   items: string[] | undefined;
   onChange: (items: string[]) => void;
   placeholder?: string;
   addLabel?: string;
+  /** When true, applies dir="rtl" and lang="ar" to each textarea */
+  isArabic?: boolean;
 }) {
   const safeItems = Array.isArray(items) ? items : [''];
   const update = (index: number, value: string) => {
@@ -125,7 +128,8 @@ export function StringListEditor({
               value={item}
               onChange={(e) => update(index, e.target.value)}
               placeholder={placeholder}
-              className={`${inputClass} flex-1 resize-y`}
+              {...(isArabic ? { dir: 'rtl', lang: 'ar' } : {})}
+              className={`${inputClass} flex-1 resize-y${isArabic ? ' text-right' : ''}`}
             />
             <button
               type="button"
@@ -210,24 +214,41 @@ export function SectionHeading({ title, description }: { title: string; descript
 
 const arabicInputClass = `${inputClass} text-right`;
 
+/** Read-only English reference shown above the Arabic input so editors know what to translate. */
+function EnglishReference({ value }: { value: string }) {
+  if (!value?.trim()) return null;
+  return (
+    <div className="mb-1.5 px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-md" dir="ltr">
+      <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wide mb-0.5">English reference</p>
+      <p className="text-xs text-gray-600 leading-snug break-words">{value}</p>
+    </div>
+  );
+}
+
 export function ArabicTextField({
   label,
   value,
   onChange,
   placeholder,
   hint,
+  englishValue,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   hint?: string;
+  /** The corresponding English field value shown as a read-only reference for translators. */
+  englishValue?: string;
 }) {
   return (
-    <div dir="rtl">
+    <div>
+      <EnglishReference value={englishValue ?? ''} />
       <label className={labelClass}>{label}</label>
       <input
         type="text"
+        dir="rtl"
+        lang="ar"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
@@ -245,6 +266,7 @@ export function ArabicTextAreaField({
   rows = 4,
   placeholder,
   hint,
+  englishValue,
 }: {
   label: string;
   value: string;
@@ -252,12 +274,17 @@ export function ArabicTextAreaField({
   rows?: number;
   placeholder?: string;
   hint?: string;
+  /** The corresponding English field value shown as a read-only reference for translators. */
+  englishValue?: string;
 }) {
   return (
-    <div dir="rtl">
+    <div>
+      <EnglishReference value={englishValue ?? ''} />
       <label className={labelClass}>{label}</label>
       <textarea
         rows={rows}
+        dir="rtl"
+        lang="ar"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}

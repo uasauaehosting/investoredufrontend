@@ -224,13 +224,13 @@ export default function AlertsBulletinsEditor() {
             />
             <ArabicSectionDivider />
             <div className="sm:col-span-2">
-              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
+              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
             </div>
             <div className="sm:col-span-2">
-              <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} />
+              <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
             </div>
             <div className="sm:col-span-2">
-              <ArabicTextAreaField label="المحتوى (عربي)" value={editing.contentAr ?? ''} onChange={(v) => setEditing({ ...editing, contentAr: v })} rows={5} hint="HTML allowed" />
+              <ArabicTextAreaField label="المحتوى (عربي)" value={editing.contentAr ?? ''} onChange={(v) => setEditing({ ...editing, contentAr: v })} rows={5} hint="HTML allowed" englishValue={editing.content ?? ''} />
             </div>
             <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
               <input

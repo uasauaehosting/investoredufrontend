@@ -5,6 +5,7 @@ import {
   FileText, Globe, Info, Settings, ClipboardList, BarChart3, Inbox
 } from 'lucide-react';
 import { useAuth } from '../lib/useAuth';
+import { useLanguage } from '../lib/LanguageContext';
 import SlidesEditor from './editors/SlidesEditor';
 import NewsEditor from './editors/NewsEditor';
 import MembersEditor from './editors/MembersEditor';
@@ -54,6 +55,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType; desc: str
 
 export default function AdminDashboard() {
   const { session, signOut } = useAuth();
+  const { lang, toggleLang, isRtl } = useLanguage();
   const [section, setSection] = useState<Section>('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -129,9 +131,23 @@ export default function AdminDashboard() {
               </p>
             </div>
           </div>
-          <div className="hidden sm:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 text-xs text-gray-500">
-            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span>{session?.email}</span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleLang}
+              title={isRtl ? 'Switch to English (LTR)' : 'Switch to Arabic (RTL)'}
+              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                isRtl
+                  ? 'bg-[#009900] text-white border-[#009900] hover:bg-[#006600]'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-[#009900] hover:text-[#009900]'
+              }`}
+            >
+              <Globe size={13} />
+              {isRtl ? 'عربي | RTL' : 'AR | RTL'}
+            </button>
+            <div className="hidden sm:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 text-xs text-gray-500">
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span>{session?.email}</span>
+            </div>
           </div>
         </header>
 

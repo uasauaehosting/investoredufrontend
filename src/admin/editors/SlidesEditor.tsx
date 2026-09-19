@@ -138,9 +138,9 @@ export default function SlidesEditor() {
             <Field label="CTA Text" value={editing.cta_text ?? ''} onChange={(v) => setEditing({ ...editing, cta_text: v })} />
             <Field label="CTA Link" value={editing.cta_href ?? ''} onChange={(v) => setEditing({ ...editing, cta_href: v })} />
             <ArabicSectionDivider />
-            <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
-            <ArabicTextField label="العنوان الفرعي (عربي)" value={editing.subtitleAr ?? ''} onChange={(v) => setEditing({ ...editing, subtitleAr: v })} />
-            <ArabicTextField label="نص الزر (عربي)" value={editing.cta_textAr ?? ''} onChange={(v) => setEditing({ ...editing, cta_textAr: v })} />
+            <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
+            <ArabicTextField label="العنوان الفرعي (عربي)" value={editing.subtitleAr ?? ''} onChange={(v) => setEditing({ ...editing, subtitleAr: v })} englishValue={editing.subtitle ?? ''} />
+            <ArabicTextField label="نص الزر (عربي)" value={editing.cta_textAr ?? ''} onChange={(v) => setEditing({ ...editing, cta_textAr: v })} englishValue={editing.cta_text ?? ''} />
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="is_active" checked={editing.is_active ?? true} onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })} className="rounded" />

@@ -160,10 +160,10 @@ export default function BenchmarkingEditor() {
           </div>
           <ArabicSectionDivider />
           <div className="sm:col-span-2">
-            <ArabicTextField label="اسم الجهة (عربي)" value={editing.authorityNameAr ?? ''} onChange={(v) => setEditing({ ...editing, authorityNameAr: v })} />
+            <ArabicTextField label="اسم الجهة (عربي)" value={editing.authorityNameAr ?? ''} onChange={(v) => setEditing({ ...editing, authorityNameAr: v })} englishValue={editing.authority ?? ''} />
           </div>
           <div className="sm:col-span-2">
-            <ArabicTextField label="العنوان (عربي)" value={editing.indicatorAr ?? ''} onChange={(v) => setEditing({ ...editing, indicatorAr: v })} />
+            <ArabicTextField label="العنوان (عربي)" value={editing.indicatorAr ?? ''} onChange={(v) => setEditing({ ...editing, indicatorAr: v })} englishValue={editing.title ?? ''} />
           </div>
           {error && <p className="text-red-500 text-xs sm:col-span-2">{error}</p>}
           <div className="sm:col-span-2 flex gap-2">

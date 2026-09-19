@@ -43,42 +43,57 @@ export const DEFAULTS: Record<PageKey, Record<string, unknown>> = {
   } satisfies HomePortalContent,
   'about.hero': {
     badge: 'About UASA',
+    badgeAr: '',
     title: '',
+    titleAr: '',
   } satisfies AboutHeroContent,
   principles: {
     introParagraphs: [''],
+    introParagraphsAr: [''],
     objectives: [''],
+    objectivesAr: [''],
     benefits: [''],
+    benefitsAr: [''],
   } satisfies PrinciplesPageContent,
   framework: {
     introParagraphs: [''],
+    introParagraphsAr: [''],
     practices: [''],
+    practicesAr: [''],
     imageUrl: '',
     pdfUrl: '',
   } satisfies FrameworkPageContent,
   the_index: {
     content: '',
+    contentAr: '',
   } satisfies TheIndexContent,
   benchmarking: {
     intro:
       'A review of available data and measurement exercises with which UASA Members can design and evaluate Corporate Governance application in their countries (Based on the UASA Guide)',
+    introAr: '',
   } satisfies BenchmarkingPageContent,
   additional_resources: {
     intro:
       'Explore supplementary reports, guidelines, and reference materials related to the UASA Financial Inclusion Index and regional benchmarking efforts.',
+    introAr: '',
     resources: [{ title: '', url: '', description: '' }],
   } satisfies AdditionalResourcesContent,
   feedback: {
     title: 'Feedback & Inquiries',
+    titleAr: '',
     subtitle: '',
+    subtitleAr: '',
     contactEmail: '',
     contactWebsite: '',
   } satisfies FeedbackContent,
   footer: {
     educationLinks: [''],
+    educationLinksAr: [''],
     inclusionLinks: [''],
+    inclusionLinksAr: [''],
     usefulLinks: [{ label: '', href: '' }],
     address: '',
+    addressAr: '',
     phone: '',
     email: '',
   } satisfies FooterContent,

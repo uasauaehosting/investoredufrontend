@@ -164,16 +164,16 @@ export default function PortalCategoriesEditor() {
             </div>
             <ArabicSectionDivider />
             <div className="sm:col-span-2">
-              <ArabicTextField label="عنوان اللوحة (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
+              <ArabicTextField label="عنوان اللوحة (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
             </div>
             <div className="sm:col-span-2">
-              <ArabicTextField label="العنوان المختصر (عربي)" value={editing.short_titleAr ?? ''} onChange={(v) => setEditing({ ...editing, short_titleAr: v })} />
+              <ArabicTextField label="العنوان المختصر (عربي)" value={editing.short_titleAr ?? ''} onChange={(v) => setEditing({ ...editing, short_titleAr: v })} englishValue={editing.short_title ?? ''} />
             </div>
             <div className="sm:col-span-2">
-              <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} />
+              <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
             </div>
-            <ArabicTextField label="اسم الجهة (عربي)" value={editing.authority_nameAr ?? ''} onChange={(v) => setEditing({ ...editing, authority_nameAr: v })} />
-            <ArabicTextField label="الدولة (عربي)" value={editing.countryAr ?? ''} onChange={(v) => setEditing({ ...editing, countryAr: v })} />
+            <ArabicTextField label="اسم الجهة (عربي)" value={editing.authority_nameAr ?? ''} onChange={(v) => setEditing({ ...editing, authority_nameAr: v })} englishValue={editing.authority_name ?? ''} />
+            <ArabicTextField label="الدولة (عربي)" value={editing.countryAr ?? ''} onChange={(v) => setEditing({ ...editing, countryAr: v })} englishValue={editing.country ?? ''} />
           </div>
           {error && <p className="text-red-600 text-xs">{error}</p>}
           <div className="flex gap-2">

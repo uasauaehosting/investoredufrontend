@@ -143,8 +143,8 @@ export default function MembersEditor() {
               />
             </div>
             <ArabicSectionDivider />
-            <ArabicTextField label="اسم الجهة (عربي)" value={editing.nameAr ?? ''} onChange={(v) => setEditing({ ...editing, nameAr: v })} />
-            <ArabicTextField label="الدولة (عربي)" value={editing.countryAr ?? ''} onChange={(v) => setEditing({ ...editing, countryAr: v })} />
+            <ArabicTextField label="اسم الجهة (عربي)" value={editing.nameAr ?? ''} onChange={(v) => setEditing({ ...editing, nameAr: v })} englishValue={editing.name ?? ''} />
+            <ArabicTextField label="الدولة (عربي)" value={editing.countryAr ?? ''} onChange={(v) => setEditing({ ...editing, countryAr: v })} englishValue={editing.country ?? ''} />
           </div>
           {error && <p className="text-red-600 text-xs">{error}</p>}
           <div className="flex gap-2">

@@ -173,10 +173,10 @@ export default function GlobalPolicyAreasEditor() {
           />
           <ArabicSectionDivider />
           <div className="sm:col-span-2">
-            <ArabicTextField label="العنوان (عربي)" value={editing.title_ar ?? ''} onChange={(v) => setEditing({ ...editing, title_ar: v })} />
+            <ArabicTextField label="العنوان (عربي)" value={editing.title_ar ?? ''} onChange={(v) => setEditing({ ...editing, title_ar: v })} englishValue={editing.title ?? ''} />
           </div>
           <div className="sm:col-span-2">
-            <ArabicTextAreaField label="الوصف (عربي)" value={editing.description_ar ?? ''} onChange={(v) => setEditing({ ...editing, description_ar: v })} rows={3} />
+            <ArabicTextAreaField label="الوصف (عربي)" value={editing.description_ar ?? ''} onChange={(v) => setEditing({ ...editing, description_ar: v })} rows={3} englishValue={editing.description ?? ''} />
           </div>
           <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
             <input
