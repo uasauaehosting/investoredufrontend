@@ -1,11 +1,32 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 async function handleResponse(response: Response) {
-  const data = await response.json();
-  if (!response.ok) {
-    const error = (data && data.message) || response.statusText;
-    return Promise.reject(error);
+  // Safely parse the body — it may be JSON or plain text (e.g. rate-limit messages)
+  const contentType = response.headers.get('content-type') ?? '';
+  let data: unknown = null;
+  if (contentType.includes('application/json')) {
+    try {
+      data = await response.json();
+    } catch {
+      data = null;
+    }
+  } else {
+    // Plain-text body (rate-limit, proxy errors, etc.) — read as text, don't JSON.parse
+    const text = await response.text().catch(() => '');
+    data = text || null;
   }
+
+  if (!response.ok) {
+    // Extract a human-readable message regardless of body format
+    const message =
+      (data && typeof data === 'object' && (data as Record<string, unknown>).message)
+        ? String((data as Record<string, unknown>).message)
+        : typeof data === 'string' && data.trim()
+          ? data.trim()
+          : response.statusText || `HTTP ${response.status}`;
+    return Promise.reject(message);
+  }
+
   return data;
 }
 
