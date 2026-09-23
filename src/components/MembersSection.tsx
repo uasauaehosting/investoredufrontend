@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
+import { useLanguage } from '../lib/LanguageContext';
+import { t } from '../lib/translations';
 
 export interface Member {
   id: number;
@@ -19,12 +21,12 @@ function MemberCard({ member }: { member: Member }) {
       rel={member.website ? 'noopener noreferrer' : undefined}
       className="group flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200 hover:border-[#009900]/40 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 bg-white"
     >
-      <div className="w-full h-14 flex items-center justify-center mb-3">
+      <div className="w-250 h-140 flex items-center justify-center mb-3">
         {imgVisible && member.logo ? (
           <img
             src={member.logo}
             alt={`${member.name} — ${member.country}`}
-            className="max-h-12 max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+            className="max-h-120 max-w-105 object-contain group-hover:scale-105 transition-transform duration-300"
             onError={() => setImgVisible(false)}
           />
         ) : (
@@ -39,6 +41,7 @@ function MemberCard({ member }: { member: Member }) {
 }
 
 export default function MembersSection() {
+  const { lang } = useLanguage();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,11 +64,13 @@ export default function MembersSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-1 h-7 bg-amber-500 rounded-full" />
-          <h2 className="text-2xl font-bold text-[#009900]">Member Authorities</h2>
+          <h2 className="text-2xl font-bold text-[#009900]">
+            {t(lang, 'home.membersPortals', "UASA MEMBERS' INVESTOR EDUCATION PORTALS")}
+          </h2>
         </div>
 
         {loading && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
             {Array.from({ length: 12 }).map((_, i) => (
               <div key={i} className="h-28 bg-gray-100 rounded-xl animate-pulse" />
             ))}
@@ -77,7 +82,7 @@ export default function MembersSection() {
         )}
 
         {!loading && !error && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {members.map((member) => (
               <MemberCard key={member.id} member={member} />
             ))}

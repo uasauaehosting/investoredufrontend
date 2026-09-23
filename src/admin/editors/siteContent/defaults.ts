@@ -31,11 +31,16 @@ export type PageKey = (typeof PAGE_KEYS)[number]['key'];
 export const DEFAULTS: Record<PageKey, Record<string, unknown>> = {
   'home.welcome': {
     badge: 'Welcome',
+    badgeAr: '',
     title: 'Welcome to the UASA Investor Education Portal',
+    titleAr: '',
     paragraphs: [''],
+    paragraphsAr: [''],
     ctaText: 'Explore the Portal',
+    ctaTextAr: '',
     ctaHref: '#',
     highlights: [{ icon: 'TrendingUp', title: '', description: '' }],
+    highlightsAr: [{ icon: 'TrendingUp', title: '', description: '' }],
   } satisfies HomeWelcomeContent,
   'home.portal_section': {
     heroImage: '',

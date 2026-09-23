@@ -3,6 +3,8 @@ import { Code2, Download, Search, X } from 'lucide-react';
 import { api } from '../lib/api';
 import { normalizeMediaUrl } from '../lib/mediaUrl';
 import glossaryData from '../data/glossaryTerms.json';
+import { useLanguage } from '../lib/LanguageContext';
+import { t } from '../lib/translations';
 
 interface GlossaryTerm {
   english: string;
@@ -33,6 +35,7 @@ function matchesFilter(term: GlossaryTerm, filter: AlphabetFilter): boolean {
 }
 
 export default function Glossary() {
+  const { lang, isRtl } = useLanguage();
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState<AlphabetFilter>('ALL');
   const [showEmbed, setShowEmbed] = useState(false);
@@ -90,7 +93,9 @@ export default function Glossary() {
     <div className="bg-white min-h-screen pb-16">
       <div className="bg-[#009900] text-white py-8 px-4">
         <div className="max-w-[1400px] mx-auto text-center">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-wide">UASA Glossary</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-wide">
+            {t(lang, 'glossary.title', 'UASA Glossary')}
+          </h1>
         </div>
       </div>
 
@@ -101,10 +106,11 @@ export default function Glossary() {
               <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
               <input
                 type="text"
-                placeholder="Search terms..."
+                placeholder={t(lang, 'glossary.searchPlaceholder', 'Search terms...')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full ps-9 pe-9 py-2 border border-[#c0d0b0] focus:border-[#009900] focus:ring-1 focus:ring-[#009900]/30 outline-none text-sm"
+                dir={isRtl ? 'rtl' : 'ltr'}
               />
               {search && (
                 <button onClick={() => setSearch('')} className="absolute end-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -119,24 +125,26 @@ export default function Glossary() {
                 rel="noopener noreferrer"
                 className="btn-primary flex items-center gap-2 text-sm whitespace-nowrap"
               >
-                <Download size={15} /> Download PDF
+                <Download size={15} /> {t(lang, 'glossary.download', 'Download PDF')}
               </a>
               <button
                 onClick={() => setShowEmbed(!showEmbed)}
                 className="px-3 py-2 border border-[#c0d0b0] text-sm font-medium text-gray-600 hover:bg-[#f2f7e5] flex items-center gap-2"
               >
-                <Code2 size={15} /> Embed
+                <Code2 size={15} /> {t(lang, 'glossary.embed', 'Embed')}
               </button>
             </div>
           </div>
 
           {showEmbed && (
             <div className="p-3 border border-[#c0d0b0] bg-[#f2f7e5]/50">
-              <p className="text-xs text-gray-500 mb-2">Copy this code to embed the glossary:</p>
+              <p className="text-xs text-gray-500 mb-2">
+                {t(lang, 'glossary.embedInstruction', 'Copy this code to embed the glossary:')}
+              </p>
               <div className="flex gap-2">
                 <code className="flex-1 text-xs bg-white p-2 border border-[#c0d0b0] overflow-x-auto">{embedCode}</code>
                 <button onClick={copyEmbed} className="px-3 py-1.5 bg-[#009900] text-white text-xs">
-                  {copied ? 'Copied!' : 'Copy'}
+                  {copied ? t(lang, 'glossary.copied', 'Copied!') : t(lang, 'glossary.copy', 'Copy')}
                 </button>
               </div>
             </div>
@@ -158,7 +166,11 @@ export default function Glossary() {
             ))}
           </div>
 
-          <p className="text-xs text-gray-500">{filteredTerms.length} terms found</p>
+          <p className="text-xs text-gray-500">
+            {filteredTerms.length} {filteredTerms.length === 1
+              ? t(lang, 'glossary.termsFound', 'term found')
+              : t(lang, 'glossary.termsFoundPlural', 'terms found')}
+          </p>
         </div>
 
         <div className="relative border border-[#c0d0b0] overflow-hidden">
@@ -177,16 +189,16 @@ export default function Glossary() {
               <thead>
                 <tr className="bg-white">
                   <th className={`${CELL_BORDER} px-4 py-3 text-center font-bold text-[#008000] uppercase tracking-wide w-[18%]`}>
-                    Term in English
+                    {t(lang, 'glossary.colEnglish', 'Term in English')}
                   </th>
                   <th className={`${CELL_BORDER} px-4 py-3 text-center font-bold text-[#008000] uppercase tracking-wide w-[22%]`}>
-                    Term in French
+                    {t(lang, 'glossary.colFrench', 'Term in French')}
                   </th>
                   <th className={`${CELL_BORDER} px-4 py-3 text-center font-bold text-[#008000] uppercase tracking-wide w-[18%]`}>
-                    Term in Arabic
+                    {t(lang, 'glossary.colArabic', 'Term in Arabic')}
                   </th>
                   <th className={`${CELL_BORDER} px-4 py-3 text-center font-bold text-[#008000] uppercase tracking-wide`}>
-                    Explanation
+                    {t(lang, 'glossary.colExplanation', 'Explanation')}
                   </th>
                 </tr>
               </thead>
@@ -194,7 +206,7 @@ export default function Glossary() {
                 {filteredTerms.length === 0 ? (
                   <tr className="bg-white">
                     <td colSpan={4} className={`${CELL_BORDER} px-4 py-8 text-center text-gray-500`}>
-                      No terms match your search.
+                      {t(lang, 'glossary.noResults', 'No terms match your search.')}
                     </td>
                   </tr>
                 ) : (

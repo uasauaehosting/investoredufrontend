@@ -22,6 +22,32 @@ export const INCLUSION_CATEGORY_FILTERS = ['Strategy', 'Report'] as const;
 export type InclusionMemberFilter = (typeof INCLUSION_MEMBER_FILTERS)[number];
 export type InclusionCategoryFilter = (typeof INCLUSION_CATEGORY_FILTERS)[number];
 
+/** Arabic display labels for each member filter — from ar/MembersStrategies.html */
+export const INCLUSION_MEMBER_FILTER_AR: Record<InclusionMemberFilter, string> = {
+  'Jordan Securities Commission':                                                   'هيئة الأوراق المالية - الأردن',
+  'Capital Market Authority':                                                       'هيئة سوق المال',
+  "Commission d'Organisation et de Surveillance des opérations de Bourse (COSOB)": 'لجنة تنظيم عمليات البورصة ومراقبتها - الجزائر',
+  'Saudi Capital Market Authority':                                                 'هيئة السوق المالية - السعودية',
+  'Syrian Commission on Financial Markets and Securities':                          'هيئة الأوراق والأسواق المالية - سوريا',
+  'Iraqi Securities Commission':                                                    'هيئة الأوراق المالية - العراق',
+  'Financial Services Authority – Oman':                                            'هيئة الخدمات المالية - عُمان',
+  'Palestine Capital Market Authority':                                             'هيئة سوق رأس المال - فلسطين',
+  'Qatar Financial Markets Authority':                                              'هيئة قطر للأسواق المالية - قطر',
+  'Kuwait Capital Markets Authority':                                               'هيئة أسواق المال - الكويت',
+  'Capital Markets Authority of Lebanon':                                           'هيئة الأسواق المالية - لبنان',
+  'Financial Regulatory Authority – Egypt':                                         'الهيئة العامة للرقابة المالية - مصر',
+  'Autorité Marocaine du Marché des Capitaux (AMMC)':                              'الهيئة المغربية لسوق الرساميل - المغرب',
+  'Conseil du Marché Financier – Tunisia':                                          'هيئة السوق المالية - تونس',
+  'Libyan Capital Market Authority – Libya':                                        'هيئة سوق المال الليبي - ليبيا',
+  'Dubai Financial Services Authority':                                             'سلطة دبي للخدمات المالية',
+};
+
+/** Arabic display labels for category filters */
+export const INCLUSION_CATEGORY_FILTER_AR: Record<InclusionCategoryFilter, string> = {
+  'Strategy': 'استراتيجية',
+  'Report':   'تقرير',
+};
+
 const MEMBER_MATCH_KEYWORDS: Record<InclusionMemberFilter, string[]> = {
   'Jordan Securities Commission': ['jordan', 'jsc'],
   'Capital Market Authority': ['capital market authority'],

@@ -2,84 +2,116 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, Search, Globe, Facebook, Twitter, Linkedin, Youtube } from 'lucide-react';
 import { useLanguage } from '../lib/LanguageContext';
+import { t } from '../lib/translations';
+import type { Lang } from '../lib/LanguageContext';
 
 interface NavChild {
-  label: string;
+  labelKey: string;
+  labelEn: string;
   href: string;
-  children?: { label: string; href: string }[];
+  children?: { labelKey: string; labelEn: string; href: string }[];
 }
 
 interface NavItem {
-  label: string;
+  labelKey: string;
+  labelEn: string;
   href?: string;
   pathPrefix?: string;
   children?: NavChild[];
 }
 
-const navItems: NavItem[] = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  {
-    label: 'Investor Education',
-    pathPrefix: '/education',
-    children: [
-      {
-        label: 'Reading Materials',
-        href: '/education/reading-materials',
-        children: [
-          { label: 'Principles', href: '/education/reading-materials/principles' },
-          { label: 'Framework', href: '/education/reading-materials/framework' },
-          { label: 'Investment Products', href: '/education/reading-materials/products' },
-        ],
-      },
-      {
-        label: "Members' Activities",
-        href: '/education/members-activities',
-        children: [
-          { label: 'Publications', href: '/education/members-activities/publications' },
-          { label: 'Programs', href: '/education/members-activities/programs' },
-          { label: 'Portals', href: '/education/members-activities/portals' },
-        ],
-      },
-      {
-        label: 'Alerts & Bulletins',
-        href: '/education/alerts',
-      },
-    ],
-  },
-  {
-    label: 'Financial Inclusion',
-    pathPrefix: '/inclusion',
-    children: [
-      { label: "Members Strategies", href: '/inclusion/projects' },
-      { label: 'Global Policy Areas', href: '/inclusion/policies' },
-      {
-        label: 'Financial Inclusion Index',
-        href: '/inclusion/index',
-        children: [
-          { label: 'The Index', href: '/inclusion/index/the-index' },
-          { label: "Members' Benchmarking", href: '/inclusion/index/benchmarking' },
-          { label: 'Additional Resources', href: '/inclusion/index/resources' },
-        ],
-      },
-    ],
-  },
-  { label: 'Glossary', href: '/glossary' },
-  { label: 'Feedback', href: '/feedback' },
-];
+function buildNavItems(lang: Lang): NavItem[] {
+  const L = (key: string, en: string) => t(lang, key, en);
+  return [
+    { labelKey: 'nav.home', labelEn: 'Home', href: '/' },
+    { labelKey: 'nav.about', labelEn: 'About', href: '/about' },
+    {
+      labelKey: 'nav.investorEducation',
+      labelEn: 'Investor Education',
+      pathPrefix: '/education',
+      children: [
+        {
+          labelKey: 'nav.readingMaterials',
+          labelEn: 'Reading Materials',
+          href: '/education/reading-materials',
+          children: [
+            { labelKey: 'nav.principles',         labelEn: 'Principles',           href: '/education/reading-materials/principles' },
+            { labelKey: 'nav.framework',           labelEn: 'Framework',            href: '/education/reading-materials/framework' },
+            { labelKey: 'nav.investmentProducts',  labelEn: 'Investment Products',  href: '/education/reading-materials/products' },
+          ],
+        },
+        {
+          labelKey: 'nav.membersActivities',
+          labelEn: "Members' Activities",
+          href: '/education/members-activities',
+          children: [
+            { labelKey: 'nav.publications', labelEn: 'Publications', href: '/education/members-activities/publications' },
+            { labelKey: 'nav.programs',     labelEn: 'Programs',     href: '/education/members-activities/programs' },
+            { labelKey: 'nav.portals',      labelEn: 'Portals',      href: '/education/members-activities/portals' },
+          ],
+        },
+        {
+          labelKey: 'nav.alertsBulletins',
+          labelEn: 'Alerts & Bulletins',
+          href: '/education/alerts',
+        },
+      ],
+    },
+    {
+      labelKey: 'nav.financialInclusion',
+      labelEn: 'Financial Inclusion',
+      pathPrefix: '/inclusion',
+      children: [
+        { labelKey: 'nav.membersStrategies',    labelEn: 'Members Strategies',         href: '/inclusion/projects' },
+        { labelKey: 'nav.globalPolicyAreas',    labelEn: 'Global Policy Areas',        href: '/inclusion/policies' },
+        {
+          labelKey: 'nav.financialInclusionIndex',
+          labelEn: 'Financial Inclusion Index',
+          href: '/inclusion/index',
+          children: [
+            { labelKey: 'nav.theIndex',            labelEn: 'The Index',              href: '/inclusion/index/the-index' },
+            { labelKey: 'nav.membersBenchmarking', labelEn: "Members' Benchmarking",  href: '/inclusion/index/benchmarking' },
+            { labelKey: 'nav.additionalResources', labelEn: 'Additional Resources',   href: '/inclusion/index/resources' },
+          ],
+        },
+      ],
+    },
+    { labelKey: 'nav.glossary',  labelEn: 'Glossary',  href: '/glossary' },
+    { labelKey: 'nav.feedback',  labelEn: 'Feedback',  href: '/feedback' },
+  ].map((item) => ({
+    ...item,
+    // pre-resolve the display label so the JSX just reads item.label
+    label: L(item.labelKey, item.labelEn),
+    children: item.children?.map((child) => ({
+      ...child,
+      label: L(child.labelKey, child.labelEn),
+      children: child.children?.map((sub) => ({
+        ...sub,
+        label: L(sub.labelKey, sub.labelEn),
+      })),
+    })),
+  })) as unknown as NavItem[];
+}
+
+// Re-export the shape that the JSX expects (label string resolved)
+type ResolvedChild = { label: string; href: string; children?: { label: string; href: string }[] };
+type ResolvedItem  = { label: string; href?: string; pathPrefix?: string; children?: ResolvedChild[] };
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<Record<string, boolean>>({});
-  const { lang, toggleLang } = useLanguage();
+  const { lang, isRtl, toggleLang } = useLanguage();
   const location = useLocation();
+
+  // Re-build nav items whenever lang changes so labels switch language live
+  const navItems = buildNavItems(lang) as ResolvedItem[];
 
   const toggleMobileExpand = (key: string) => {
     setMobileExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const getActivePath = (item: NavItem) => item.pathPrefix ?? item.href ?? '/';
+  const getActivePath = (item: ResolvedItem) => item.pathPrefix ?? item.href ?? '/';
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -92,7 +124,9 @@ export default function Header() {
       <div className="bg-[#009900] text-white py-2 px-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center text-xs">
           <span className="hidden sm:block font-light tracking-wide text-green-200">
-            Union of Arab Securities Authorities — Investor Education Portal
+            {isRtl
+              ? 'اتحاد هيئات الأوراق المالية العربية — بوابة تعليم وتوعية المستثمرين'
+              : 'Union of Arab Securities Authorities — Investor Education Portal'}
           </span>
           <div className="flex items-center gap-4 ms-auto">
             <button
@@ -132,14 +166,16 @@ export default function Header() {
             <div className="hidden lg:block h-12 w-px bg-gray-200" />
             <div className="hidden lg:block">
               <p className="text-[#009900] font-bold text-sm leading-tight">UASA</p>
-              <p className="text-gray-500 text-xs leading-tight">Investor Education Portal</p>
+              <p className="text-gray-500 text-xs leading-tight">
+                {isRtl ? 'بوابة تعليم وتوعية المستثمرين' : 'Investor Education Portal'}
+              </p>
             </div>
           </Link>
           <div className="flex items-center gap-3">
             <div className="relative hidden sm:block">
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder={isRtl ? 'ابحث...' : 'Search...'}
                 className="border border-gray-300 rounded-full px-4 py-2 text-sm pe-9 focus:outline-none focus:ring-2 focus:ring-[#009900]/30 focus:border-[#009900] w-48 lg:w-64"
               />
               <Search size={14} className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -239,7 +275,7 @@ export default function Header() {
 
           {/* Mobile toggle */}
           <div className="md:hidden flex justify-between items-center py-3">
-            <span className="text-sm font-semibold tracking-wide">Navigation</span>
+            <span className="text-sm font-semibold tracking-wide">{isRtl ? 'القائمة' : 'Navigation'}</span>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="p-1 rounded hover:bg-[#006600] transition-colors"
