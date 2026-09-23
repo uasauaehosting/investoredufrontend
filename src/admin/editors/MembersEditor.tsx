@@ -3,7 +3,7 @@ import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep, normalizeMediaUrl } from '../../lib/mediaUrl';
-import { ArabicSectionDivider, ArabicTextField } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextField, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
@@ -108,43 +108,47 @@ export default function MembersEditor() {
         <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
           <h3 className="font-semibold text-[#009900] text-sm">{editing.id ? 'Edit Member' : 'New Member'}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Authority Name *</label>
-              <input
-                type="text"
-                value={editing.name ?? ''}
-                onChange={(e) => setEditing({ ...editing, name: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Country *</label>
-              <input
-                type="text"
-                value={editing.country ?? ''}
-                onChange={(e) => setEditing({ ...editing, country: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <ImageUpload
-                label="Logo"
-                value={editing.logo ?? ''}
-                onChange={(url) => setEditing({ ...editing, logo: url })}
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Portal URL</label>
-              <input
-                type="text"
-                value={editing.website ?? ''}
-                onChange={(e) => setEditing({ ...editing, website: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-              />
-            </div>
+            <EnglishFieldsGroup>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Authority Name *</label>
+                <input
+                  type="text"
+                  value={editing.name ?? ''}
+                  onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Country *</label>
+                <input
+                  type="text"
+                  value={editing.country ?? ''}
+                  onChange={(e) => setEditing({ ...editing, country: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <ImageUpload
+                  label="Logo"
+                  value={editing.logo ?? ''}
+                  onChange={(url) => setEditing({ ...editing, logo: url })}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">Portal URL</label>
+                <input
+                  type="text"
+                  value={editing.website ?? ''}
+                  onChange={(e) => setEditing({ ...editing, website: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
+                />
+              </div>
+            </EnglishFieldsGroup>
             <ArabicSectionDivider />
-            <ArabicTextField label="اسم الجهة (عربي)" value={editing.nameAr ?? ''} onChange={(v) => setEditing({ ...editing, nameAr: v })} englishValue={editing.name ?? ''} />
-            <ArabicTextField label="الدولة (عربي)" value={editing.countryAr ?? ''} onChange={(v) => setEditing({ ...editing, countryAr: v })} englishValue={editing.country ?? ''} />
+            <ArabicFieldsGroup>
+              <ArabicTextField label="اسم الجهة (عربي)" value={editing.nameAr ?? ''} onChange={(v) => setEditing({ ...editing, nameAr: v })} englishValue={editing.name ?? ''} />
+              <ArabicTextField label="الدولة (عربي)" value={editing.countryAr ?? ''} onChange={(v) => setEditing({ ...editing, countryAr: v })} englishValue={editing.country ?? ''} />
+            </ArabicFieldsGroup>
           </div>
           {error && <p className="text-red-600 text-xs">{error}</p>}
           <div className="flex gap-2">

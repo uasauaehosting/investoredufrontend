@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import { POLICY_CATEGORIES, POLICY_INSTITUTIONS } from '../../lib/globalPolicyFilters';
-import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
@@ -129,73 +129,35 @@ export default function GlobalPolicyAreasEditor() {
 
       {editing && (
         <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 grid sm:grid-cols-2 gap-3">
-          <input
-            className="border rounded-lg px-3 py-2 text-sm sm:col-span-2"
-            placeholder="Title"
-            value={editing.title ?? ''}
-            onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-          />
-          <select
-            className="border rounded-lg px-3 py-2 text-sm"
-            value={editing.institution ?? ''}
-            onChange={(e) => setEditing({ ...editing, institution: e.target.value })}
-          >
-            <option value="">Select institution...</option>
-            {POLICY_INSTITUTIONS.map((institution) => (
-              <option key={institution} value={institution}>
-                {institution}
-              </option>
-            ))}
-          </select>
-          <select
-            className="border rounded-lg px-3 py-2 text-sm"
-            value={editing.category ?? ''}
-            onChange={(e) => setEditing({ ...editing, category: e.target.value })}
-          >
-            <option value="">Select category...</option>
-            {POLICY_CATEGORIES.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <input
-            className="border rounded-lg px-3 py-2 text-sm sm:col-span-2"
-            placeholder="URL / File link"
-            value={editing.fileUrl ?? ''}
-            onChange={(e) => setEditing({ ...editing, fileUrl: e.target.value })}
-          />
-          <textarea
-            className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[60px]"
-            placeholder="Description"
-            value={editing.description ?? ''}
-            onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-          />
+          <EnglishFieldsGroup>
+            <input className="border rounded-lg px-3 py-2 text-sm sm:col-span-2" placeholder="Title" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
+            <select className="border rounded-lg px-3 py-2 text-sm" value={editing.institution ?? ''} onChange={(e) => setEditing({ ...editing, institution: e.target.value })}>
+              <option value="">Select institution...</option>
+              {POLICY_INSTITUTIONS.map((institution) => <option key={institution} value={institution}>{institution}</option>)}
+            </select>
+            <select className="border rounded-lg px-3 py-2 text-sm" value={editing.category ?? ''} onChange={(e) => setEditing({ ...editing, category: e.target.value })}>
+              <option value="">Select category...</option>
+              {POLICY_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
+            </select>
+            <input className="border rounded-lg px-3 py-2 text-sm sm:col-span-2" placeholder="URL / File link" value={editing.fileUrl ?? ''} onChange={(e) => setEditing({ ...editing, fileUrl: e.target.value })} />
+            <textarea className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[60px]" placeholder="Description" value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
+            <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
+              <input type="checkbox" checked={editing.isActive !== false} onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })} />
+              Active (visible on public page)
+            </label>
+          </EnglishFieldsGroup>
           <ArabicSectionDivider />
-          <div className="sm:col-span-2">
-            <ArabicTextField label="العنوان (عربي)" value={editing.title_ar ?? ''} onChange={(v) => setEditing({ ...editing, title_ar: v })} englishValue={editing.title ?? ''} />
-          </div>
-          <div className="sm:col-span-2">
-            <ArabicTextAreaField label="الوصف (عربي)" value={editing.description_ar ?? ''} onChange={(v) => setEditing({ ...editing, description_ar: v })} rows={3} englishValue={editing.description ?? ''} />
-          </div>
-          <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
-            <input
-              type="checkbox"
-              checked={editing.isActive !== false}
-              onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })}
-            />
-            Active (visible on public page)
-          </label>
+          <ArabicFieldsGroup>
+            <div className="sm:col-span-2">
+              <ArabicTextField label="العنوان (عربي)" value={editing.title_ar ?? ''} onChange={(v) => setEditing({ ...editing, title_ar: v })} englishValue={editing.title ?? ''} />
+            </div>
+            <div className="sm:col-span-2">
+              <ArabicTextAreaField label="الوصف (عربي)" value={editing.description_ar ?? ''} onChange={(v) => setEditing({ ...editing, description_ar: v })} rows={3} englishValue={editing.description ?? ''} />
+            </div>
+          </ArabicFieldsGroup>
           <div className="sm:col-span-2 flex gap-2">
-            <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5">
-              <Save size={14} /> Save
-            </button>
-            <button
-              onClick={() => setEditing(null)}
-              className="px-4 py-2 text-sm text-gray-500 flex items-center gap-1"
-            >
-              <X size={14} /> Cancel
-            </button>
+            <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5"><Save size={14} /> Save</button>
+            <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-gray-500 flex items-center gap-1"><X size={14} /> Cancel</button>
           </div>
         </div>
       )}

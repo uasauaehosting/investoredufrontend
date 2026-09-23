@@ -5,7 +5,7 @@ import {
   INCLUSION_CATEGORY_FILTERS,
   INCLUSION_MEMBER_FILTERS,
 } from '../../lib/inclusionMembers';
-import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
@@ -154,106 +154,53 @@ export default function MemberStrategiesProjectsEditor() {
       </div>
 
       {editing && (
-        <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 grid sm:grid-cols-2 gap-3">
+          <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 grid sm:grid-cols-2 gap-3">
           <h3 className="font-semibold text-[#009900] text-sm sm:col-span-2">
             {editing.id ? 'Edit Entry' : 'New Entry'}
           </h3>
-          <div className="sm:col-span-2">
-            <label htmlFor="msp-title" className="block text-sm font-semibold text-[#009900] mb-1">
-              Title
+          <EnglishFieldsGroup>
+            <div className="sm:col-span-2">
+              <label htmlFor="msp-title" className="block text-sm font-semibold text-[#009900] mb-1">Title</label>
+              <input id="msp-title" className="border rounded-lg px-3 py-2 text-sm w-full" placeholder="Title" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
+            </div>
+            <div>
+              <label htmlFor="msp-active-member" className="block text-sm font-semibold text-[#009900] mb-1">Active Member</label>
+              <input id="msp-active-member" list="msp-active-member-options" className="border rounded-lg px-3 py-2 text-sm w-full" placeholder="Select or type member authority" value={editing.authority_name ?? ''} onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })} />
+              <datalist id="msp-active-member-options">
+                {INCLUSION_MEMBER_FILTERS.map((member) => <option key={member} value={member} />)}
+              </datalist>
+            </div>
+            <div>
+              <label htmlFor="msp-category" className="block text-sm font-semibold text-[#009900] mb-1">Category</label>
+              <select id="msp-category" className="border rounded-lg px-3 py-2 text-sm w-full" value={editing.type ?? 'Strategy'} onChange={(e) => setEditing({ ...editing, type: e.target.value })}>
+                {INCLUSION_CATEGORY_FILTERS.map((category) => <option key={category} value={category}>{category}</option>)}
+              </select>
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="msp-file-url" className="block text-sm font-semibold text-[#009900] mb-1">URL / File</label>
+              <input id="msp-file-url" className="border rounded-lg px-3 py-2 text-sm w-full" placeholder="URL / File link" value={editing.fileUrl ?? ''} onChange={(e) => setEditing({ ...editing, fileUrl: e.target.value })} />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="msp-description" className="block text-sm font-semibold text-[#009900] mb-1">Description</label>
+              <textarea id="msp-description" className="border rounded-lg px-3 py-2 text-sm w-full min-h-[60px]" placeholder="Description shown in View Description modal" value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
+            </div>
+            <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
+              <input type="checkbox" checked={editing.isActive !== false} onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })} />
+              Active (visible on public page)
             </label>
-            <input
-              id="msp-title"
-              className="border rounded-lg px-3 py-2 text-sm w-full"
-              placeholder="Title"
-              value={editing.title ?? ''}
-              onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-            />
-          </div>
-          <div>
-            <label htmlFor="msp-active-member" className="block text-sm font-semibold text-[#009900] mb-1">
-              Active Member
-            </label>
-            <input
-              id="msp-active-member"
-              list="msp-active-member-options"
-              className="border rounded-lg px-3 py-2 text-sm w-full"
-              placeholder="Select or type member authority"
-              value={editing.authority_name ?? ''}
-              onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })}
-            />
-            <datalist id="msp-active-member-options">
-              {INCLUSION_MEMBER_FILTERS.map((member) => (
-                <option key={member} value={member} />
-              ))}
-            </datalist>
-          </div>
-          <div>
-            <label htmlFor="msp-category" className="block text-sm font-semibold text-[#009900] mb-1">
-              Category
-            </label>
-            <select
-              id="msp-category"
-              className="border rounded-lg px-3 py-2 text-sm w-full"
-              value={editing.type ?? 'Strategy'}
-              onChange={(e) => setEditing({ ...editing, type: e.target.value })}
-            >
-              {INCLUSION_CATEGORY_FILTERS.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="sm:col-span-2">
-            <label htmlFor="msp-file-url" className="block text-sm font-semibold text-[#009900] mb-1">
-              URL / File
-            </label>
-            <input
-              id="msp-file-url"
-              className="border rounded-lg px-3 py-2 text-sm w-full"
-              placeholder="URL / File link"
-              value={editing.fileUrl ?? ''}
-              onChange={(e) => setEditing({ ...editing, fileUrl: e.target.value })}
-            />
-          </div>
-          <div className="sm:col-span-2">
-            <label htmlFor="msp-description" className="block text-sm font-semibold text-[#009900] mb-1">
-              Description
-            </label>
-            <textarea
-              id="msp-description"
-              className="border rounded-lg px-3 py-2 text-sm w-full min-h-[60px]"
-              placeholder="Description shown in View Description modal"
-              value={editing.description ?? ''}
-              onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-            />
-          </div>
+          </EnglishFieldsGroup>
           <ArabicSectionDivider />
-          <div className="sm:col-span-2">
-            <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
-          </div>
-          <div className="sm:col-span-2">
-            <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
-          </div>
-          <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
-            <input
-              type="checkbox"
-              checked={editing.isActive !== false}
-              onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })}
-            />
-            Active (visible on public page)
-          </label>
+          <ArabicFieldsGroup>
+            <div className="sm:col-span-2">
+              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
+            </div>
+            <div className="sm:col-span-2">
+              <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
+            </div>
+          </ArabicFieldsGroup>
           <div className="sm:col-span-2 flex gap-2">
-            <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5">
-              <Save size={14} /> Save
-            </button>
-            <button
-              onClick={() => setEditing(null)}
-              className="px-4 py-2 text-sm text-gray-500 flex items-center gap-1"
-            >
-              <X size={14} /> Cancel
-            </button>
+            <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5"><Save size={14} /> Save</button>
+            <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-gray-500 flex items-center gap-1"><X size={14} /> Cancel</button>
           </div>
         </div>
       )}

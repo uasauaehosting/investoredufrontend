@@ -3,7 +3,7 @@ import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
-import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
@@ -123,57 +123,61 @@ export default function PortalCategoriesEditor() {
         <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
           <h3 className="font-semibold text-[#009900] text-sm">{editing.id ? 'Edit Portal' : 'New Portal'}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Panel Title *</label>
-              <input type="text" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-                placeholder="Full authority name shown in the accordion header"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Display Title *</label>
-              <input type="text" value={editing.short_title ?? ''} onChange={(e) => setEditing({ ...editing, short_title: e.target.value })}
-                placeholder="Short title shown when the panel is expanded"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
-              <textarea rows={3} value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none" />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Authority Name</label>
-              <input type="text" value={editing.authority_name ?? ''} onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Country</label>
-              <input type="text" value={editing.country ?? ''} onChange={(e) => setEditing({ ...editing, country: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
-            </div>
-            <div className="sm:col-span-2">
-              <ImageUpload
-                label="Image"
-                value={editing.image_url ?? ''}
-                onChange={(url) => setEditing({ ...editing, image_url: url })}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Link URL</label>
-              <input type="text" value={editing.link ?? ''} onChange={(e) => setEditing({ ...editing, link: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
-            </div>
+            <EnglishFieldsGroup>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">Panel Title *</label>
+                <input type="text" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                  placeholder="Full authority name shown in the accordion header"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">Display Title *</label>
+                <input type="text" value={editing.short_title ?? ''} onChange={(e) => setEditing({ ...editing, short_title: e.target.value })}
+                  placeholder="Short title shown when the panel is expanded"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
+                <textarea rows={3} value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Authority Name</label>
+                <input type="text" value={editing.authority_name ?? ''} onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Country</label>
+                <input type="text" value={editing.country ?? ''} onChange={(e) => setEditing({ ...editing, country: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+              </div>
+              <div className="sm:col-span-2">
+                <ImageUpload
+                  label="Image"
+                  value={editing.image_url ?? ''}
+                  onChange={(url) => setEditing({ ...editing, image_url: url })}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Link URL</label>
+                <input type="text" value={editing.link ?? ''} onChange={(e) => setEditing({ ...editing, link: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+              </div>
+            </EnglishFieldsGroup>
             <ArabicSectionDivider />
-            <div className="sm:col-span-2">
-              <ArabicTextField label="عنوان اللوحة (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
-            </div>
-            <div className="sm:col-span-2">
-              <ArabicTextField label="العنوان المختصر (عربي)" value={editing.short_titleAr ?? ''} onChange={(v) => setEditing({ ...editing, short_titleAr: v })} englishValue={editing.short_title ?? ''} />
-            </div>
-            <div className="sm:col-span-2">
-              <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
-            </div>
-            <ArabicTextField label="اسم الجهة (عربي)" value={editing.authority_nameAr ?? ''} onChange={(v) => setEditing({ ...editing, authority_nameAr: v })} englishValue={editing.authority_name ?? ''} />
-            <ArabicTextField label="الدولة (عربي)" value={editing.countryAr ?? ''} onChange={(v) => setEditing({ ...editing, countryAr: v })} englishValue={editing.country ?? ''} />
+            <ArabicFieldsGroup>
+              <div className="sm:col-span-2">
+                <ArabicTextField label="عنوان اللوحة (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
+              </div>
+              <div className="sm:col-span-2">
+                <ArabicTextField label="العنوان المختصر (عربي)" value={editing.short_titleAr ?? ''} onChange={(v) => setEditing({ ...editing, short_titleAr: v })} englishValue={editing.short_title ?? ''} />
+              </div>
+              <div className="sm:col-span-2">
+                <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
+              </div>
+              <ArabicTextField label="اسم الجهة (عربي)" value={editing.authority_nameAr ?? ''} onChange={(v) => setEditing({ ...editing, authority_nameAr: v })} englishValue={editing.authority_name ?? ''} />
+              <ArabicTextField label="الدولة (عربي)" value={editing.countryAr ?? ''} onChange={(v) => setEditing({ ...editing, countryAr: v })} englishValue={editing.country ?? ''} />
+            </ArabicFieldsGroup>
           </div>
           {error && <p className="text-red-600 text-xs">{error}</p>}
           <div className="flex gap-2">

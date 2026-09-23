@@ -7,7 +7,7 @@ import {
   ALERT_BULLETIN_YEARS,
   AlertBulletinType,
 } from '../../lib/alertBulletinFilters';
-import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
@@ -153,94 +153,92 @@ export default function AlertsBulletinsEditor() {
             {editing.id ? 'Edit Item' : 'New Item'}
           </h3>
           <div className="grid sm:grid-cols-2 gap-3">
-            <input
-              className="border rounded-lg px-3 py-2 text-sm sm:col-span-2"
-              placeholder="Title *"
-              value={editing.title ?? ''}
-              onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-            />
-            <select
-              className="border rounded-lg px-3 py-2 text-sm"
-              value={editing.type ?? 'Alert'}
-              onChange={(e) => setEditing({ ...editing, type: e.target.value as AlertBulletinType })}
-            >
-              {ALERT_BULLETIN_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-            <select
-              className="border rounded-lg px-3 py-2 text-sm"
-              value={editing.authority_name ?? ALERT_BULLETIN_AUTHORITIES[0]}
-              onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })}
-            >
-              {ALERT_BULLETIN_AUTHORITIES.map((authority) => (
-                <option key={authority} value={authority}>
-                  {authority}
-                </option>
-              ))}
-            </select>
-            <select
-              className="border rounded-lg px-3 py-2 text-sm"
-              value={editing.year ?? ALERT_BULLETIN_YEARS[0]}
-              onChange={(e) =>
-                setEditing({
-                  ...editing,
-                  year: e.target.value,
-                  date_published: toDateInput(editing.date_published ?? null, e.target.value),
-                })
-              }
-            >
-              {ALERT_BULLETIN_YEARS.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-            <input
-              type="date"
-              className="border rounded-lg px-3 py-2 text-sm"
-              value={toDateInput(editing.date_published ?? null, editing.year ?? ALERT_BULLETIN_YEARS[0])}
-              onChange={(e) => setEditing({ ...editing, date_published: e.target.value })}
-            />
-            <input
-              className="border rounded-lg px-3 py-2 text-sm sm:col-span-2"
-              placeholder="Link URL"
-              value={editing.link ?? ''}
-              onChange={(e) => setEditing({ ...editing, link: e.target.value })}
-            />
-            <textarea
-              className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[60px]"
-              placeholder="Description"
-              value={editing.description ?? ''}
-              onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-            />
-            <textarea
-              className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[80px] font-mono"
-              placeholder="Content (HTML allowed)"
-              value={editing.content ?? ''}
-              onChange={(e) => setEditing({ ...editing, content: e.target.value })}
-            />
-            <ArabicSectionDivider />
-            <div className="sm:col-span-2">
-              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
-            </div>
-            <div className="sm:col-span-2">
-              <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
-            </div>
-            <div className="sm:col-span-2">
-              <ArabicTextAreaField label="المحتوى (عربي)" value={editing.contentAr ?? ''} onChange={(v) => setEditing({ ...editing, contentAr: v })} rows={5} hint="HTML allowed" englishValue={editing.content ?? ''} />
-            </div>
-            <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
+            <EnglishFieldsGroup>
               <input
-                type="checkbox"
-                checked={editing.is_active !== false}
-                onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })}
-                className="rounded border-gray-300"
+                className="border rounded-lg px-3 py-2 text-sm sm:col-span-2"
+                placeholder="Title *"
+                value={editing.title ?? ''}
+                onChange={(e) => setEditing({ ...editing, title: e.target.value })}
               />
-              Active (visible on site)
-            </label>
+              <select
+                className="border rounded-lg px-3 py-2 text-sm"
+                value={editing.type ?? 'Alert'}
+                onChange={(e) => setEditing({ ...editing, type: e.target.value as AlertBulletinType })}
+              >
+                {ALERT_BULLETIN_TYPES.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+              <select
+                className="border rounded-lg px-3 py-2 text-sm"
+                value={editing.authority_name ?? ALERT_BULLETIN_AUTHORITIES[0]}
+                onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })}
+              >
+                {ALERT_BULLETIN_AUTHORITIES.map((authority) => (
+                  <option key={authority} value={authority}>{authority}</option>
+                ))}
+              </select>
+              <select
+                className="border rounded-lg px-3 py-2 text-sm"
+                value={editing.year ?? ALERT_BULLETIN_YEARS[0]}
+                onChange={(e) =>
+                  setEditing({
+                    ...editing,
+                    year: e.target.value,
+                    date_published: toDateInput(editing.date_published ?? null, e.target.value),
+                  })
+                }
+              >
+                {ALERT_BULLETIN_YEARS.map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+              <input
+                type="date"
+                className="border rounded-lg px-3 py-2 text-sm"
+                value={toDateInput(editing.date_published ?? null, editing.year ?? ALERT_BULLETIN_YEARS[0])}
+                onChange={(e) => setEditing({ ...editing, date_published: e.target.value })}
+              />
+              <input
+                className="border rounded-lg px-3 py-2 text-sm sm:col-span-2"
+                placeholder="Link URL"
+                value={editing.link ?? ''}
+                onChange={(e) => setEditing({ ...editing, link: e.target.value })}
+              />
+              <textarea
+                className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[60px]"
+                placeholder="Description"
+                value={editing.description ?? ''}
+                onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+              />
+              <textarea
+                className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[80px] font-mono"
+                placeholder="Content (HTML allowed)"
+                value={editing.content ?? ''}
+                onChange={(e) => setEditing({ ...editing, content: e.target.value })}
+              />
+              <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
+                <input
+                  type="checkbox"
+                  checked={editing.is_active !== false}
+                  onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })}
+                  className="rounded border-gray-300"
+                />
+                Active (visible on site)
+              </label>
+            </EnglishFieldsGroup>
+            <ArabicSectionDivider />
+            <ArabicFieldsGroup>
+              <div className="sm:col-span-2">
+                <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
+              </div>
+              <div className="sm:col-span-2">
+                <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
+              </div>
+              <div className="sm:col-span-2">
+                <ArabicTextAreaField label="المحتوى (عربي)" value={editing.contentAr ?? ''} onChange={(v) => setEditing({ ...editing, contentAr: v })} rows={5} hint="HTML allowed" englishValue={editing.content ?? ''} />
+              </div>
+            </ArabicFieldsGroup>
           </div>
           {error && <p className="text-red-600 text-xs">{error}</p>}
           <div className="flex gap-2">

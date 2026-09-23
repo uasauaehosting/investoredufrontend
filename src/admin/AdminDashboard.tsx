@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../lib/useAuth';
 import { useLanguage } from '../lib/LanguageContext';
+import { AdminLangProvider, useAdminLang, type AdminLangMode } from './context/AdminLangContext';
 import SlidesEditor from './editors/SlidesEditor';
 import NewsEditor from './editors/NewsEditor';
 import MembersEditor from './editors/MembersEditor';
@@ -54,8 +55,17 @@ const navItems: { id: Section; label: string; icon: React.ElementType; desc: str
 ];
 
 export default function AdminDashboard() {
+  return (
+    <AdminLangProvider>
+      <AdminDashboardInner />
+    </AdminLangProvider>
+  );
+}
+
+function AdminDashboardInner() {
   const { session, signOut } = useAuth();
   const { lang, toggleLang, isRtl } = useLanguage();
+  const { mode, setMode } = useAdminLang();
   const [section, setSection] = useState<Section>('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -132,17 +142,20 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {/* Content language mode — controls which form fields are shown in editors */}
+            <AdminLangToggle mode={mode} setMode={setMode} />
+            {/* Public site RTL preview toggle */}
             <button
               onClick={toggleLang}
-              title={isRtl ? 'Switch to English (LTR)' : 'Switch to Arabic (RTL)'}
-              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+              title={isRtl ? 'Switch public site to English (LTR)' : 'Switch public site to Arabic (RTL)'}
+              className={`hidden sm:flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
                 isRtl
                   ? 'bg-[#009900] text-white border-[#009900] hover:bg-[#006600]'
                   : 'bg-white text-gray-600 border-gray-200 hover:border-[#009900] hover:text-[#009900]'
               }`}
             >
               <Globe size={13} />
-              {isRtl ? 'عربي | RTL' : 'AR | RTL'}
+              {isRtl ? 'RTL' : 'LTR'}
             </button>
             <div className="hidden sm:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 text-xs text-gray-500">
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
@@ -173,6 +186,37 @@ export default function AdminDashboard() {
           {section === 'feedback-inbox' && <FeedbackInboxEditor />}
         </main>
       </div>
+    </div>
+  );
+}
+
+/** Segmented 3-button toggle: English / Arabic / Both */
+function AdminLangToggle({ mode, setMode }: { mode: AdminLangMode; setMode: (m: AdminLangMode) => void }) {
+  const options: { value: AdminLangMode; label: string; title: string }[] = [
+    { value: 'en',   label: 'EN',   title: 'Show English fields only (LTR)' },
+    { value: 'ar',   label: 'AR',   title: 'Show Arabic fields only (RTL)'  },
+    { value: 'both', label: 'Both', title: 'Show both English and Arabic fields' },
+  ];
+
+  return (
+    <div
+      className="flex items-center rounded-full border border-gray-200 bg-white overflow-hidden text-xs font-semibold"
+      title="Content language — controls which form fields are shown in editors"
+    >
+      {options.map(({ value, label, title }, i) => (
+        <button
+          key={value}
+          onClick={() => setMode(value)}
+          title={title}
+          className={`px-3 py-1.5 transition-colors ${
+            mode === value
+              ? 'bg-[#009900] text-white'
+              : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+          } ${i > 0 ? 'border-s border-gray-200' : ''}`}
+        >
+          {label}
+        </button>
+      ))}
     </div>
   );
 }

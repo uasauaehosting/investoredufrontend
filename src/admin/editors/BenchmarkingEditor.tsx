@@ -9,7 +9,7 @@ import {
   fromApiBenchmarkingRecord,
   toApiBenchmarkingPayload,
 } from '../../lib/benchmarking';
-import { ArabicSectionDivider, ArabicTextField } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextField, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
@@ -114,65 +114,38 @@ export default function BenchmarkingEditor() {
 
       {editing && (
         <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 grid sm:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Authority *</label>
-            <select
-              className="w-full border rounded-lg px-3 py-2 text-sm"
-              value={editing.authority}
-              onChange={(e) => setEditing({ ...editing, authority: e.target.value })}
-            >
-              {BENCHMARKING_AUTHORITIES.filter((a) => a !== 'All Authorities').map((a) => (
-                <option key={a} value={a}>{a}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Year *</label>
-            <select
-              className="w-full border rounded-lg px-3 py-2 text-sm"
-              value={editing.year}
-              onChange={(e) => setEditing({ ...editing, year: e.target.value })}
-            >
-              {YEARS.map((y) => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
-          </div>
-          <input
-            className="border rounded-lg px-3 py-2 text-sm sm:col-span-2"
-            placeholder="Title *"
-            value={editing.title}
-            onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-          />
-          <textarea
-            className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[60px]"
-            placeholder="Details (shown when no file is attached)"
-            value={editing.description ?? ''}
-            onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-          />
-          <div className="sm:col-span-2">
-            <FileUpload
-              label="Document"
-              value={editing.fileUrl ?? ''}
-              onChange={(url) => setEditing({ ...editing, fileUrl: url })}
-              hint="Optional PDF or document link"
-            />
-          </div>
+          <EnglishFieldsGroup>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Authority *</label>
+              <select className="w-full border rounded-lg px-3 py-2 text-sm" value={editing.authority} onChange={(e) => setEditing({ ...editing, authority: e.target.value })}>
+                {BENCHMARKING_AUTHORITIES.filter((a) => a !== 'All Authorities').map((a) => <option key={a} value={a}>{a}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Year *</label>
+              <select className="w-full border rounded-lg px-3 py-2 text-sm" value={editing.year} onChange={(e) => setEditing({ ...editing, year: e.target.value })}>
+                {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+              </select>
+            </div>
+            <input className="border rounded-lg px-3 py-2 text-sm sm:col-span-2" placeholder="Title *" value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
+            <textarea className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[60px]" placeholder="Details (shown when no file is attached)" value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
+            <div className="sm:col-span-2">
+              <FileUpload label="Document" value={editing.fileUrl ?? ''} onChange={(url) => setEditing({ ...editing, fileUrl: url })} hint="Optional PDF or document link" />
+            </div>
+          </EnglishFieldsGroup>
           <ArabicSectionDivider />
-          <div className="sm:col-span-2">
-            <ArabicTextField label="اسم الجهة (عربي)" value={editing.authorityNameAr ?? ''} onChange={(v) => setEditing({ ...editing, authorityNameAr: v })} englishValue={editing.authority ?? ''} />
-          </div>
-          <div className="sm:col-span-2">
-            <ArabicTextField label="العنوان (عربي)" value={editing.indicatorAr ?? ''} onChange={(v) => setEditing({ ...editing, indicatorAr: v })} englishValue={editing.title ?? ''} />
-          </div>
+          <ArabicFieldsGroup>
+            <div className="sm:col-span-2">
+              <ArabicTextField label="اسم الجهة (عربي)" value={editing.authorityNameAr ?? ''} onChange={(v) => setEditing({ ...editing, authorityNameAr: v })} englishValue={editing.authority ?? ''} />
+            </div>
+            <div className="sm:col-span-2">
+              <ArabicTextField label="العنوان (عربي)" value={editing.indicatorAr ?? ''} onChange={(v) => setEditing({ ...editing, indicatorAr: v })} englishValue={editing.title ?? ''} />
+            </div>
+          </ArabicFieldsGroup>
           {error && <p className="text-red-500 text-xs sm:col-span-2">{error}</p>}
           <div className="sm:col-span-2 flex gap-2">
-            <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5">
-              <Save size={14} /> {saving ? 'Saving...' : 'Save'}
-            </button>
-            <button onClick={() => { setEditing(null); setError(null); }} className="px-4 py-2 text-sm text-gray-500 flex items-center gap-1">
-              <X size={14} /> Cancel
-            </button>
+            <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5"><Save size={14} /> {saving ? 'Saving...' : 'Save'}</button>
+            <button onClick={() => { setEditing(null); setError(null); }} className="px-4 py-2 text-sm text-gray-500 flex items-center gap-1"><X size={14} /> Cancel</button>
           </div>
         </div>
       )}

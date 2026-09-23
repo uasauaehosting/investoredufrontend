@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X, Search } from 'lucide-react';
 import { api } from '../../lib/api';
-import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
@@ -105,12 +105,16 @@ export default function GlossaryEditor() {
 
       {editing && (
         <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 space-y-3">
-          <input className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="English term" value={editing.term ?? ''} onChange={(e) => setEditing({ ...editing, term: e.target.value })} />
-          <input className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="French term" value={editing.frenchTerm ?? ''} onChange={(e) => setEditing({ ...editing, frenchTerm: e.target.value })} />
-          <textarea className="w-full border rounded-lg px-3 py-2 text-sm min-h-[80px]" placeholder="Definition" value={editing.definition ?? ''} onChange={(e) => setEditing({ ...editing, definition: e.target.value })} />
+          <EnglishFieldsGroup>
+            <input className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="English term" value={editing.term ?? ''} onChange={(e) => setEditing({ ...editing, term: e.target.value })} />
+            <input className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="French term" value={editing.frenchTerm ?? ''} onChange={(e) => setEditing({ ...editing, frenchTerm: e.target.value })} />
+            <textarea className="w-full border rounded-lg px-3 py-2 text-sm min-h-[80px]" placeholder="Definition" value={editing.definition ?? ''} onChange={(e) => setEditing({ ...editing, definition: e.target.value })} />
+          </EnglishFieldsGroup>
           <ArabicSectionDivider />
-          <ArabicTextField label="المصطلح (عربي)" value={editing.arabicTerm ?? ''} onChange={(v) => setEditing({ ...editing, arabicTerm: v })} />
-          <ArabicTextAreaField label="التعريف (عربي)" value={editing.arabicDefinition ?? ''} onChange={(v) => setEditing({ ...editing, arabicDefinition: v })} rows={4} />
+          <ArabicFieldsGroup>
+            <ArabicTextField label="المصطلح (عربي)" value={editing.arabicTerm ?? ''} onChange={(v) => setEditing({ ...editing, arabicTerm: v })} />
+            <ArabicTextAreaField label="التعريف (عربي)" value={editing.arabicDefinition ?? ''} onChange={(v) => setEditing({ ...editing, arabicDefinition: v })} rows={4} />
+          </ArabicFieldsGroup>
           <div className="flex gap-2">
             <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5"><Save size={14} /> Save</button>
             <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-gray-500 flex items-center gap-1"><X size={14} /> Cancel</button>

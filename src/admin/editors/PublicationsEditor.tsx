@@ -3,7 +3,7 @@ import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
 import FileUpload from '../../lib/FileUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
-import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
@@ -104,25 +104,29 @@ export default function PublicationsEditor() {
 
       {editing && (
         <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 grid sm:grid-cols-2 gap-3">
-          <input className="border rounded-lg px-3 py-2 text-sm sm:col-span-2" placeholder="Title" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
-          <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Authority" value={editing.authority_name ?? ''} onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })} />
-          <select className="border rounded-lg px-3 py-2 text-sm" value={editing.category ?? 'General'} onChange={(e) => setEditing({ ...editing, category: e.target.value })}>
-            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <FileUpload
-            label="Publication File"
-            value={editing.file_url ?? ''}
-            onChange={(url) => setEditing({ ...editing, file_url: url })}
-            hint="Upload a PDF or document for this publication"
-          />
-          <textarea className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[60px]" placeholder="Description" value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
+          <EnglishFieldsGroup>
+            <input className="border rounded-lg px-3 py-2 text-sm sm:col-span-2" placeholder="Title" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
+            <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Authority" value={editing.authority_name ?? ''} onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })} />
+            <select className="border rounded-lg px-3 py-2 text-sm" value={editing.category ?? 'General'} onChange={(e) => setEditing({ ...editing, category: e.target.value })}>
+              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <FileUpload
+              label="Publication File"
+              value={editing.file_url ?? ''}
+              onChange={(url) => setEditing({ ...editing, file_url: url })}
+              hint="Upload a PDF or document for this publication"
+            />
+            <textarea className="border rounded-lg px-3 py-2 text-sm sm:col-span-2 min-h-[60px]" placeholder="Description" value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
+          </EnglishFieldsGroup>
           <ArabicSectionDivider />
-          <div className="sm:col-span-2">
-            <ArabicTextField label="العنوان (عربي)" value={editing.title_ar ?? ''} onChange={(v) => setEditing({ ...editing, title_ar: v })} englishValue={editing.title ?? ''} />
-          </div>
-          <div className="sm:col-span-2">
-            <ArabicTextAreaField label="الوصف (عربي)" value={editing.description_ar ?? ''} onChange={(v) => setEditing({ ...editing, description_ar: v })} rows={3} englishValue={editing.description ?? ''} />
-          </div>
+          <ArabicFieldsGroup>
+            <div className="sm:col-span-2">
+              <ArabicTextField label="العنوان (عربي)" value={editing.title_ar ?? ''} onChange={(v) => setEditing({ ...editing, title_ar: v })} englishValue={editing.title ?? ''} />
+            </div>
+            <div className="sm:col-span-2">
+              <ArabicTextAreaField label="الوصف (عربي)" value={editing.description_ar ?? ''} onChange={(v) => setEditing({ ...editing, description_ar: v })} rows={3} englishValue={editing.description ?? ''} />
+            </div>
+          </ArabicFieldsGroup>
           <div className="sm:col-span-2 flex gap-2">
             <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5"><Save size={14} /> Save</button>
             <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-gray-500 flex items-center gap-1"><X size={14} /> Cancel</button>

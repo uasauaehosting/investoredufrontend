@@ -5,7 +5,7 @@ import {
   PROGRAM_FILTER_GROUPS,
   PROGRAM_MEMBERS,
 } from '../../lib/programFilters';
-import { ArabicSectionDivider, ArabicTextField, StringListEditor } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextField, StringListEditor, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
@@ -220,76 +220,79 @@ export default function ProgramsEditor() {
 
       {editing && (
         <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 space-y-5">
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Member Authority</label>
-              <select
-                className="w-full border rounded-lg px-3 py-2 text-sm"
-                value={editing.member_name}
-                onChange={(e) => setEditing({ ...editing, member_name: e.target.value })}
-              >
-                <option value="">Select member...</option>
-                {PROGRAM_MEMBERS.map((member) => (
-                  <option key={member} value={member}>{member}</option>
-                ))}
-              </select>
-            </div>
-            <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
-              <input
-                type="checkbox"
-                checked={editing.is_active}
-                onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })}
-              />
-              Active (visible on public Programs page)
-            </label>
-          </div>
-
-          {PROGRAM_FILTER_GROUPS.map((group) => {
-            const fieldKey = GROUP_FIELD_MAP[group.name];
-            const selected = editing[fieldKey] ?? [];
-            return (
-              <div key={group.name}>
-                <p className="text-sm font-bold text-[#009900] mb-2">{group.title}</p>
-                <div className="grid sm:grid-cols-2 gap-1.5 max-h-40 overflow-y-auto border border-gray-100 rounded-lg p-3 bg-gray-50">
-                  {group.options.map((option) => (
-                    <label key={option.value} className="flex items-start gap-2 text-xs text-gray-600 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="mt-0.5 shrink-0"
-                        checked={selected.includes(option.label)}
-                        onChange={() => setField(fieldKey, toggleLabel(selected, option.label))}
-                      />
-                      <span>{option.label}</span>
-                    </label>
+          <EnglishFieldsGroup>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">Member Authority</label>
+                <select
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                  value={editing.member_name}
+                  onChange={(e) => setEditing({ ...editing, member_name: e.target.value })}
+                >
+                  <option value="">Select member...</option>
+                  {PROGRAM_MEMBERS.map((member) => (
+                    <option key={member} value={member}>{member}</option>
                   ))}
-                </div>
+                </select>
               </div>
-            );
-          })}
+              <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
+                <input
+                  type="checkbox"
+                  checked={editing.is_active}
+                  onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })}
+                />
+                Active (visible on public Programs page)
+              </label>
+            </div>
+
+            {PROGRAM_FILTER_GROUPS.map((group) => {
+              const fieldKey = GROUP_FIELD_MAP[group.name];
+              const selected = editing[fieldKey] ?? [];
+              return (
+                <div key={group.name}>
+                  <p className="text-sm font-bold text-[#009900] mb-2">{group.title}</p>
+                  <div className="grid sm:grid-cols-2 gap-1.5 max-h-40 overflow-y-auto border border-gray-100 rounded-lg p-3 bg-gray-50">
+                    {group.options.map((option) => (
+                      <label key={option.value} className="flex items-start gap-2 text-xs text-gray-600 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="mt-0.5 shrink-0"
+                          checked={selected.includes(option.label)}
+                          onChange={() => setField(fieldKey, toggleLabel(selected, option.label))}
+                        />
+                        <span>{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </EnglishFieldsGroup>
 
           <ArabicSectionDivider />
-          <ArabicTextField
-            label="اسم العضو (عربي)"
-            value={editing.member_name_ar ?? ''}
-            onChange={(v) => setEditing({ ...editing, member_name_ar: v })}
-            englishValue={editing.member_name ?? ''}
-          />
-
-          {PROGRAM_FILTER_GROUPS.map((group) => {
-            const arFieldKey = GROUP_AR_FIELD_MAP[group.name];
-            return (
-              <div key={`${group.name}-ar`}>
-                <StringListEditor
-                  label={`${group.title} (عربي)`}
-                  items={editing[arFieldKey]?.length ? editing[arFieldKey] : ['']}
-                  onChange={(items) => setArField(arFieldKey, items)}
-                  placeholder="أدخل النص بالعربية..."
-                  addLabel="إضافة عنصر"
-                  isArabic
-                />
-              </div>
-            );
-          })}
+          <ArabicFieldsGroup>
+            <ArabicTextField
+              label="اسم العضو (عربي)"
+              value={editing.member_name_ar ?? ''}
+              onChange={(v) => setEditing({ ...editing, member_name_ar: v })}
+              englishValue={editing.member_name ?? ''}
+            />
+            {PROGRAM_FILTER_GROUPS.map((group) => {
+              const arFieldKey = GROUP_AR_FIELD_MAP[group.name];
+              return (
+                <div key={`${group.name}-ar`}>
+                  <StringListEditor
+                    label={`${group.title} (عربي)`}
+                    items={editing[arFieldKey]?.length ? editing[arFieldKey] : ['']}
+                    onChange={(items) => setArField(arFieldKey, items)}
+                    placeholder="أدخل النص بالعربية..."
+                    addLabel="إضافة عنصر"
+                    isArabic
+                  />
+                </div>
+              );
+            })}
+          </ArabicFieldsGroup>
 
           <div className="flex gap-2 pt-1">
             <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5">

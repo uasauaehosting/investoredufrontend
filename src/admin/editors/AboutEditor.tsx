@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
-import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
@@ -100,11 +100,15 @@ export default function AboutEditor() {
 
       {editing && (
         <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 space-y-4">
-          <input className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Title" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
-          <textarea className="w-full border rounded-lg px-3 py-2 text-sm min-h-[120px]" placeholder="Content paragraph" value={editing.content ?? ''} onChange={(e) => setEditing({ ...editing, content: e.target.value })} />
+          <EnglishFieldsGroup>
+            <input className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Title" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
+            <textarea className="w-full border rounded-lg px-3 py-2 text-sm min-h-[120px]" placeholder="Content paragraph" value={editing.content ?? ''} onChange={(e) => setEditing({ ...editing, content: e.target.value })} />
+          </EnglishFieldsGroup>
           <ArabicSectionDivider />
-          <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
-          <ArabicTextAreaField label="المحتوى (عربي)" value={editing.contentAr ?? ''} onChange={(v) => setEditing({ ...editing, contentAr: v })} rows={6} englishValue={editing.content ?? ''} />
+          <ArabicFieldsGroup>
+            <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
+            <ArabicTextAreaField label="المحتوى (عربي)" value={editing.contentAr ?? ''} onChange={(v) => setEditing({ ...editing, contentAr: v })} rows={6} englishValue={editing.content ?? ''} />
+          </ArabicFieldsGroup>
           <div className="flex gap-2">
             <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5"><Save size={14} /> Save</button>
             <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"><X size={14} /> Cancel</button>

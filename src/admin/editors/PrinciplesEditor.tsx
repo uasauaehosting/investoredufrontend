@@ -4,7 +4,7 @@ import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
 import RichHtmlEditor from '../components/RichHtmlEditor';
-import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { Principle } from '../../lib/principles';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
@@ -132,80 +132,84 @@ export default function PrinciplesEditor() {
             {editing.id ? 'Edit Principle' : 'New Principle'}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Title *</label>
-              <input
-                type="text"
-                value={editing.title ?? ''}
-                onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-                placeholder="Principle name"
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Short Description (shown on list) *
-              </label>
-              <textarea
-                rows={3}
-                value={editing.description ?? ''}
-                onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none"
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <ImageUpload
-                label="Image"
-                value={editing.imageUrl ?? ''}
-                onChange={(url) => setEditing({ ...editing, imageUrl: url })}
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <RichHtmlEditor
-                label="Full Content (detail page — HTML allowed)"
-                value={editing.content ?? ''}
-                onChange={(content) => setEditing({ ...editing, content })}
-                placeholder="Detailed principle content here..."
-                hint="Use Visual mode to paste formatted text, or switch to HTML to paste raw markup."
-              />
-            </div>
-            <ArabicSectionDivider />
-            <div className="sm:col-span-2">
-              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
-            </div>
-            <div className="sm:col-span-2">
-              <ArabicTextAreaField label="الوصف المختصر (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
-            </div>
-            <div className="sm:col-span-2">
-              <RichHtmlEditor
-                label="المحتوى الكامل (عربي)"
-                value={editing.contentAr ?? ''}
-                onChange={(contentAr) => setEditing({ ...editing, contentAr })}
-                dir="rtl"
-                placeholder="المحتوى التفصيلي للمبدأ..."
-                hint="يمكنك لصق النص المنسق أو التبديل إلى HTML للصق التنسيق مباشرة."
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
-              <input
-                type="date"
-                value={editing.date ?? today()}
-                onChange={(e) => setEditing({ ...editing, date: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-              />
-            </div>
-            <div className="flex items-end">
-              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+            <EnglishFieldsGroup>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">Title *</label>
                 <input
-                  type="checkbox"
-                  checked={editing.isActive !== false}
-                  onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })}
-                  className="rounded border-gray-300"
+                  type="text"
+                  value={editing.title ?? ''}
+                  onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
+                  placeholder="Principle name"
                 />
-                Active (visible on site)
-              </label>
-            </div>
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">
+                  Short Description (shown on list) *
+                </label>
+                <textarea
+                  rows={3}
+                  value={editing.description ?? ''}
+                  onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <ImageUpload
+                  label="Image"
+                  value={editing.imageUrl ?? ''}
+                  onChange={(url) => setEditing({ ...editing, imageUrl: url })}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <RichHtmlEditor
+                  label="Full Content (detail page — HTML allowed)"
+                  value={editing.content ?? ''}
+                  onChange={(content) => setEditing({ ...editing, content })}
+                  placeholder="Detailed principle content here..."
+                  hint="Use Visual mode to paste formatted text, or switch to HTML to paste raw markup."
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
+                <input
+                  type="date"
+                  value={editing.date ?? today()}
+                  onChange={(e) => setEditing({ ...editing, date: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
+                />
+              </div>
+              <div className="flex items-end">
+                <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editing.isActive !== false}
+                    onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })}
+                    className="rounded border-gray-300"
+                  />
+                  Active (visible on site)
+                </label>
+              </div>
+            </EnglishFieldsGroup>
+            <ArabicSectionDivider />
+            <ArabicFieldsGroup>
+              <div className="sm:col-span-2">
+                <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
+              </div>
+              <div className="sm:col-span-2">
+                <ArabicTextAreaField label="الوصف المختصر (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
+              </div>
+              <div className="sm:col-span-2">
+                <RichHtmlEditor
+                  label="المحتوى الكامل (عربي)"
+                  value={editing.contentAr ?? ''}
+                  onChange={(contentAr) => setEditing({ ...editing, contentAr })}
+                  dir="rtl"
+                  placeholder="المحتوى التفصيلي للمبدأ..."
+                  hint="يمكنك لصق النص المنسق أو التبديل إلى HTML للصق التنسيق مباشرة."
+                />
+              </div>
+            </ArabicFieldsGroup>
           </div>
           {error && <p className="text-red-600 text-xs">{error}</p>}
           <div className="flex gap-2">

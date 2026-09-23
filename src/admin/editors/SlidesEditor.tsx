@@ -3,7 +3,7 @@ import { Plus, Pencil, Trash2, Save, X, ToggleLeft, ToggleRight } from 'lucide-r
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
-import { ArabicSectionDivider, ArabicTextField, MediaPreview } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextField, MediaPreview, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
@@ -126,21 +126,25 @@ export default function SlidesEditor() {
         <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
           <h3 className="font-semibold text-[#009900] text-sm">{editing.id ? 'Edit Slide' : 'New Slide'}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="sm:col-span-2">
-              <ImageUpload 
-                value={editing.image_url ?? ''} 
-                onChange={(url) => setEditing({ ...editing, image_url: url })}
-                label="Slide Background Image"
-              />
-            </div>
-            <Field label="Title *" value={editing.title ?? ''} onChange={(v) => setEditing({ ...editing, title: v })} />
-            <Field label="Subtitle" value={editing.subtitle ?? ''} onChange={(v) => setEditing({ ...editing, subtitle: v })} />
-            <Field label="CTA Text" value={editing.cta_text ?? ''} onChange={(v) => setEditing({ ...editing, cta_text: v })} />
-            <Field label="CTA Link" value={editing.cta_href ?? ''} onChange={(v) => setEditing({ ...editing, cta_href: v })} />
+            <EnglishFieldsGroup>
+              <div className="sm:col-span-2">
+                <ImageUpload
+                  value={editing.image_url ?? ''}
+                  onChange={(url) => setEditing({ ...editing, image_url: url })}
+                  label="Slide Background Image"
+                />
+              </div>
+              <Field label="Title *" value={editing.title ?? ''} onChange={(v) => setEditing({ ...editing, title: v })} />
+              <Field label="Subtitle" value={editing.subtitle ?? ''} onChange={(v) => setEditing({ ...editing, subtitle: v })} />
+              <Field label="CTA Text" value={editing.cta_text ?? ''} onChange={(v) => setEditing({ ...editing, cta_text: v })} />
+              <Field label="CTA Link" value={editing.cta_href ?? ''} onChange={(v) => setEditing({ ...editing, cta_href: v })} />
+            </EnglishFieldsGroup>
             <ArabicSectionDivider />
-            <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
-            <ArabicTextField label="العنوان الفرعي (عربي)" value={editing.subtitleAr ?? ''} onChange={(v) => setEditing({ ...editing, subtitleAr: v })} englishValue={editing.subtitle ?? ''} />
-            <ArabicTextField label="نص الزر (عربي)" value={editing.cta_textAr ?? ''} onChange={(v) => setEditing({ ...editing, cta_textAr: v })} englishValue={editing.cta_text ?? ''} />
+            <ArabicFieldsGroup>
+              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
+              <ArabicTextField label="العنوان الفرعي (عربي)" value={editing.subtitleAr ?? ''} onChange={(v) => setEditing({ ...editing, subtitleAr: v })} englishValue={editing.subtitle ?? ''} />
+              <ArabicTextField label="نص الزر (عربي)" value={editing.cta_textAr ?? ''} onChange={(v) => setEditing({ ...editing, cta_textAr: v })} englishValue={editing.cta_text ?? ''} />
+            </ArabicFieldsGroup>
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="is_active" checked={editing.is_active ?? true} onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })} className="rounded" />

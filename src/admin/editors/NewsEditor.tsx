@@ -5,7 +5,7 @@ import ImageUpload from '../../lib/ImageUpload';
 import FileUpload from '../../lib/FileUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
 import RichHtmlEditor from '../components/RichHtmlEditor';
-import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 
@@ -125,77 +125,81 @@ export default function NewsEditor() {
         <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
           <h3 className="font-semibold text-[#009900] text-sm">{editing.id ? 'Edit News Item' : 'New News Item'}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Title *</label>
-              <input type="text" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Category</label>
-              <select value={editing.category ?? 'News'} onChange={(e) => setEditing({ ...editing, category: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]">
-                {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Published Date</label>
-              <input type="date" value={editing.date ?? ''} onChange={(e) => setEditing({ ...editing, date: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
-            </div>
-            <div className="sm:col-span-2">
-              <ImageUpload 
-                value={editing.image ?? ''} 
-                onChange={(url) => setEditing({ ...editing, image: url })}
-                label="News Header Image"
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Link URL</label>
-              <input type="text" value={editing.link ?? ''} onChange={(e) => setEditing({ ...editing, link: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Summary / Excerpt</label>
-              <textarea rows={3} value={editing.excerpt ?? ''} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none" />
-            </div>
-            <div className="sm:col-span-2">
-              <RichHtmlEditor
-                label="Full Description (detail page)"
-                value={editing.fullDetail ?? ''}
-                onChange={(fullDetail) => setEditing({ ...editing, fullDetail })}
-                placeholder="Full news article content..."
-                hint="Shown on the news detail page. Use Visual mode for formatted text or HTML for raw markup."
-                minHeight={280}
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <FileUpload
-                label="Document / PDF"
-                value={editing.pdfFile ?? ''}
-                onChange={(url) => setEditing({ ...editing, pdfFile: url })}
-                accept=".pdf,.doc,.docx,.xls,.xlsx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                hint="Optional. When uploaded, a Download button appears on the news card and detail page."
-              />
-            </div>
+            <EnglishFieldsGroup>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">Title *</label>
+                <input type="text" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Category</label>
+                <select value={editing.category ?? 'News'} onChange={(e) => setEditing({ ...editing, category: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]">
+                  {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Published Date</label>
+                <input type="date" value={editing.date ?? ''} onChange={(e) => setEditing({ ...editing, date: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+              </div>
+              <div className="sm:col-span-2">
+                <ImageUpload
+                  value={editing.image ?? ''}
+                  onChange={(url) => setEditing({ ...editing, image: url })}
+                  label="News Header Image"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">Link URL</label>
+                <input type="text" value={editing.link ?? ''} onChange={(e) => setEditing({ ...editing, link: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">Summary / Excerpt</label>
+                <textarea rows={3} value={editing.excerpt ?? ''} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none" />
+              </div>
+              <div className="sm:col-span-2">
+                <RichHtmlEditor
+                  label="Full Description (detail page)"
+                  value={editing.fullDetail ?? ''}
+                  onChange={(fullDetail) => setEditing({ ...editing, fullDetail })}
+                  placeholder="Full news article content..."
+                  hint="Shown on the news detail page. Use Visual mode for formatted text or HTML for raw markup."
+                  minHeight={280}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <FileUpload
+                  label="Document / PDF"
+                  value={editing.pdfFile ?? ''}
+                  onChange={(url) => setEditing({ ...editing, pdfFile: url })}
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  hint="Optional. When uploaded, a Download button appears on the news card and detail page."
+                />
+              </div>
+            </EnglishFieldsGroup>
             <ArabicSectionDivider />
-            <div className="sm:col-span-2">
-              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
-            </div>
-            <div className="sm:col-span-2">
-              <ArabicTextAreaField label="الملخص (عربي)" value={editing.excerptAr ?? ''} onChange={(v) => setEditing({ ...editing, excerptAr: v })} rows={3} englishValue={editing.excerpt ?? ''} />
-            </div>
-            <div className="sm:col-span-2">
-              <RichHtmlEditor
-                label="الوصف الكامل (عربي)"
-                value={editing.fullDetailAr ?? ''}
-                onChange={(fullDetailAr) => setEditing({ ...editing, fullDetailAr })}
-                dir="rtl"
-                placeholder="المحتوى الكامل للخبر..."
-                hint="يُعرض في صفحة تفاصيل الخبر."
-                minHeight={280}
-              />
-            </div>
+            <ArabicFieldsGroup>
+              <div className="sm:col-span-2">
+                <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
+              </div>
+              <div className="sm:col-span-2">
+                <ArabicTextAreaField label="الملخص (عربي)" value={editing.excerptAr ?? ''} onChange={(v) => setEditing({ ...editing, excerptAr: v })} rows={3} englishValue={editing.excerpt ?? ''} />
+              </div>
+              <div className="sm:col-span-2">
+                <RichHtmlEditor
+                  label="الوصف الكامل (عربي)"
+                  value={editing.fullDetailAr ?? ''}
+                  onChange={(fullDetailAr) => setEditing({ ...editing, fullDetailAr })}
+                  dir="rtl"
+                  placeholder="المحتوى الكامل للخبر..."
+                  hint="يُعرض في صفحة تفاصيل الخبر."
+                  minHeight={280}
+                />
+              </div>
+            </ArabicFieldsGroup>
           </div>
           {error && <p className="text-red-600 text-xs">{error}</p>}
           <div className="flex gap-2">

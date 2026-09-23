@@ -5,6 +5,7 @@ import FileUpload from '../../../lib/FileUpload';
 import { normalizeMediaUrl } from '../../../lib/mediaUrl';
 import { useLocalSortableList } from '../../hooks/useLocalSortableList';
 import { SortableGrip } from '../../components/SortableControls';
+import { useAdminLang } from '../../context/AdminLangContext';
 
 const inputClass =
   'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]';
@@ -296,10 +297,33 @@ export function ArabicTextAreaField({
 }
 
 export function ArabicSectionDivider() {
+  const { showAr } = useAdminLang();
+  if (!showAr) return null;
   return (
     <div className="sm:col-span-2 pt-2 border-t border-green-200">
       <p className="text-xs font-semibold text-[#009900]">العربية — Arabic Content</p>
       <p className="text-[10px] text-gray-400 mt-0.5">Shown when visitors switch to Arabic (RTL)</p>
     </div>
   );
+}
+
+/**
+ * Wraps the English (LTR) content fields inside an editor form.
+ * Hidden when the admin lang mode is set to "Arabic only".
+ */
+export function EnglishFieldsGroup({ children, className }: { children: React.ReactNode; className?: string }) {
+  const { showEn } = useAdminLang();
+  if (!showEn) return null;
+  return <>{children}</>;
+}
+
+/**
+ * Wraps the Arabic (RTL) content fields inside an editor form.
+ * Hidden when the admin lang mode is set to "English only".
+ * Renders with a subtle RTL indicator strip.
+ */
+export function ArabicFieldsGroup({ children, className }: { children: React.ReactNode; className?: string }) {
+  const { showAr } = useAdminLang();
+  if (!showAr) return null;
+  return <>{children}</>;
 }
