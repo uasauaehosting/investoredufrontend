@@ -1,22 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { api } from '../lib/api';
 import { EducationItem, getSectionMeta, isValidSection } from '../lib/educationSections';
 import { useLanguage } from '../lib/LanguageContext';
 import { pickField, pickLocalized } from '../lib/localizedText';
+import { t } from '../lib/translations';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800';
 
 export default function EducationItemDetail() {
-  const { lang } = useLanguage();
+  const { lang, isRtl } = useLanguage();
   const { section, id } = useParams<{ section: string; id: string }>();
-  const meta = section ? getSectionMeta(section) : null;
+  const meta  = section ? getSectionMeta(section) : null;
   const valid = section && isValidSection(section) && meta;
-  const [item, setItem] = useState<EducationItem | null>(null);
+  const [item,    setItem]    = useState<EducationItem | null>(null);
   const [loading, setLoading] = useState(true);
-  const [imgSrc, setImgSrc] = useState(FALLBACK_IMAGE);
+  const [imgSrc,  setImgSrc]  = useState(FALLBACK_IMAGE);
 
   useEffect(() => {
     if (!valid || !id || !section) return;
@@ -24,39 +25,35 @@ export default function EducationItemDetail() {
     api
       .get(`/investor-education/content/${id}`)
       .then((data: EducationItem) => {
-        if (data.section !== section) {
-          setItem(null);
-        } else {
-          setItem(data);
-          if (data.imageUrl) setImgSrc(data.imageUrl);
-        }
+        if (data.section !== section) { setItem(null); }
+        else { setItem(data); if (data.imageUrl) setImgSrc(data.imageUrl); }
       })
       .catch(() => setItem(null))
       .finally(() => setLoading(false));
   }, [id, section, valid]);
 
-  if (!valid || !meta) {
-    return <Navigate to="/" replace />;
-  }
+  if (!valid || !meta) return <Navigate to="/" replace />;
+
+  const sectionTitle = pickLocalized(lang, meta.title, meta.titleAr);
 
   if (loading) {
-    return <div className="py-24 text-center text-gray-400">Loading...</div>;
+    return <div className="py-24 text-center text-gray-400">{t(lang, 'educationDetail.loading', 'Loading...')}</div>;
   }
 
   if (!item) {
     return (
       <div className="py-24 text-center">
-        <p className="text-gray-500 mb-4">Content not found.</p>
+        <p className="text-gray-500 mb-4">{t(lang, 'educationDetail.notFound', 'Content not found.')}</p>
         <Link to={meta.listPath} className="text-[#009900] hover:text-amber-600 font-medium">
-          Back to {pickLocalized(lang, meta.title, meta.titleAr)}
+          {t(lang, 'educationDetail.backTo', 'Back to')} {sectionTitle}
         </Link>
       </div>
     );
   }
 
-  const title = pickField(lang, item, 'title');
+  const title       = pickField(lang, item, 'title');
   const description = pickField(lang, item, 'description');
-  const content = pickLocalized(lang, item.content, item.contentAr);
+  const content     = pickLocalized(lang, item.content, item.contentAr);
 
   return (
     <div className="bg-gray-50 min-h-screen py-12">
@@ -65,8 +62,8 @@ export default function EducationItemDetail() {
           to={meta.listPath}
           className="inline-flex items-center gap-2 text-[#009900] hover:text-amber-600 mb-8 transition-colors"
         >
-          <ArrowLeft size={16} />
-          Back to {pickLocalized(lang, meta.title, meta.titleAr)}
+          {isRtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
+          {t(lang, 'educationDetail.backTo', 'Back to')} {sectionTitle}
         </Link>
 
         <article className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
@@ -76,10 +73,8 @@ export default function EducationItemDetail() {
             className="w-full h-72 sm:h-96 object-cover"
             onError={() => setImgSrc(FALLBACK_IMAGE)}
           />
-          <div className="p-8 sm:p-12">
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#009900] mb-6 leading-tight">
-              {title}
-            </h1>
+          <div className="p-8 sm:p-12" dir={isRtl ? 'rtl' : 'ltr'}>
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#009900] mb-6 leading-tight">{title}</h1>
             <p className="text-gray-600 text-lg leading-relaxed mb-8 border-b border-gray-100 pb-8">
               {description}
             </p>

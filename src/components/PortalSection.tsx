@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSiteContent } from '../lib/useSiteContent';
+import { useLanguage } from '../lib/LanguageContext';
+import { t } from '../lib/translations';
 
 interface PortalCard {
   title: string;
+  titleAr?: string;
   href: string;
   image_url: string;
 }
@@ -11,14 +14,31 @@ interface PortalCard {
 const FALLBACK = {
   heroImage: '/images/portal-hero.png',
   cards: [
-    { title: 'Investor Education', href: '/education/reading-materials/principles', image_url: 'https://images.pexels.com/photos/7948059/pexels-photo-7948059.jpeg?auto=compress&cs=tinysrgb&w=800' },
-    { title: 'Financial Inclusion', href: '/inclusion/projects', image_url: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=800' },
-    { title: 'Glossary', href: '/glossary', image_url: 'https://images.pexels.com/photos/4158/apple-iphone-smartphone-desk.jpg?auto=compress&cs=tinysrgb&w=800' },
+    {
+      title:    'Investor Education',
+      titleAr:  'تعليم المستثمر',
+      href:     '/education/reading-materials/principles',
+      image_url: 'https://images.pexels.com/photos/7948059/pexels-photo-7948059.jpeg?auto=compress&cs=tinysrgb&w=800',
+    },
+    {
+      title:    'Financial Inclusion',
+      titleAr:  'الشمول المالي',
+      href:     '/inclusion/projects',
+      image_url: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=800',
+    },
+    {
+      title:    'Glossary',
+      titleAr:  'قاموس المصطلحات المالية',
+      href:     '/glossary',
+      image_url: 'https://images.pexels.com/photos/4158/apple-iphone-smartphone-desk.jpg?auto=compress&cs=tinysrgb&w=800',
+    },
   ],
 };
 
 function PortalCardItem({ card }: { card: PortalCard }) {
+  const { lang } = useLanguage();
   const [imgSrc, setImgSrc] = useState(card.image_url);
+  const label = lang === 'ar' && card.titleAr ? card.titleAr : card.title;
 
   return (
     <Link
@@ -28,7 +48,7 @@ function PortalCardItem({ card }: { card: PortalCard }) {
       <div className="aspect-[4/3] overflow-hidden bg-gray-100">
         <img
           src={imgSrc}
-          alt={card.title}
+          alt={label}
           className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
           onError={() =>
             setImgSrc('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800')
@@ -36,13 +56,14 @@ function PortalCardItem({ card }: { card: PortalCard }) {
         />
       </div>
       <p className="py-4 px-3 text-center text-sm font-bold uppercase tracking-wide text-[#009900]">
-        {card.title}
+        {label}
       </p>
     </Link>
   );
 }
 
 export default function PortalSection() {
+  const { lang } = useLanguage();
   const { data } = useSiteContent('home.portal_section', FALLBACK);
 
   return (
@@ -54,7 +75,7 @@ export default function PortalSection() {
           height: 'clamp(120px, 18vw, 180px)',
         }}
         role="img"
-        aria-label="UASA Investor Education Portal"
+        aria-label={t(lang, 'site.tagline', 'UASA Investor Education Portal')}
       />
 
       <div
@@ -66,7 +87,7 @@ export default function PortalSection() {
       >
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
-            {data.cards.map((card) => (
+            {(data.cards as PortalCard[]).map((card) => (
               <PortalCardItem key={card.title} card={card} />
             ))}
           </div>

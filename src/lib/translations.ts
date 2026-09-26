@@ -163,3 +163,230 @@ export function arText(key: string): string {
 }
 
 export const AR_STRINGS = ar;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// The block below is appended — do NOT edit the ar map initialisation above.
+// We extend AR_STRINGS after the fact so all keys remain in one place.
+// ─────────────────────────────────────────────────────────────────────────────
+Object.assign(ar, {
+
+  // ── Investment Products / Literature ──────────────────────────────────────
+  'investmentProducts.badge':      'مواد توعوية',
+  'investmentProducts.title':      'مواد علمية / المنتجات الاستثمارية',
+  'investmentProducts.library':    'مكتبة المنتجات الاستثمارية',
+  'investmentProducts.backTo':     'العودة إلى مواد القراءة',
+  'investmentProducts.readMore':   'اقرأ المزيد',
+  'investmentProducts.empty':      'لم يتم نشر أي منتجات استثمارية بعد.',
+
+  // ── Publications page ──────────────────────────────────────────────────────
+  'publications.title':            'إصدارات',
+  'publications.sectionTitle':     'أنشطة الأعضاء',
+  'publications.authorityLabel':   'الهيئات',
+  'publications.authorityAll':     'جميع الهيئات',
+  'publications.categoryLabel':    'الفئات',
+  'publications.categoryAll':      'جميع الفئات',
+  'publications.ctrlHint':         'لاختيار أكثر من هيئة، الرجاء الضغط على Ctrl',
+  'publications.ctrlHintCat':      'لاختيار أكثر من فئة، الرجاء الضغط على Ctrl',
+  'publications.submit':           'موافق',
+  'publications.loading':          'جارٍ التحميل...',
+  'publications.resultsTitle':     'الإصدارات',
+  'publications.error':            'تعذّر تحميل الإصدارات. الرجاء المحاولة مرة أخرى.',
+
+  // ── Programs page ──────────────────────────────────────────────────────────
+  'programs.title':                'برامج',
+  'programs.selectMember':         'حدد عضو',
+  'programs.submit':               'موافق',
+  'programs.loading':              'جارٍ التحميل...',
+  'programs.selectFirst':          'الرجاء اختيار عضو.',
+  'programs.resultsTitle':         'النتائج',
+  'programs.found':                'برنامج',
+  'programs.foundPlural':          'برامج',
+  'programs.error':                'تعذّر تحميل البرامج. الرجاء المحاولة مرة أخرى.',
+  'programs.for':                  'للعضو',
+
+  // ── Alerts & Bulletins ─────────────────────────────────────────────────────
+  'alerts.sectionTitle':           'التنبيهات والنشرات',
+  'alerts.allYears':               'جميع السنوات',
+  'alerts.allAuthorities':         'جميع الهيئات',
+  'alerts.authorityCol':           'الهيئات',
+  'alerts.loading':                'جارٍ التحميل...',
+  'alerts.empty':                  'لم يتم العثور على المحتوى!',
+  'alerts.error':                  'تعذّر تحميل التنبيهات والنشرات.',
+
+  // ── Global Policy Areas ────────────────────────────────────────────────────
+  'globalPolicy.title':            'السياسات الدولية',
+  'globalPolicy.institutionLabel': 'المنظمة / المؤسسة',
+  'globalPolicy.institutionAll':   'جميع المنظمات / المؤسسات',
+  'globalPolicy.categoryLabel':    'الفئة',
+  'globalPolicy.categoryAll':      'جميع الفئات',
+  'globalPolicy.ctrlHint':         'لاختيار أكثر من منظمة / مؤسسة، الرجاء الضغط على Ctrl',
+  'globalPolicy.ctrlHintCat':      'لاختيار أكثر من فئة، الرجاء الضغط على Ctrl',
+  'globalPolicy.submit':           'موافق',
+  'globalPolicy.loading':          'جارٍ التحميل...',
+  'globalPolicy.resultsTitle':     'السياسات الدولية',
+  'globalPolicy.error':            'تعذّر تحميل السياسات الدولية.',
+
+  // ── Financial Inclusion hub ────────────────────────────────────────────────
+  'inclusion.title':               'الشمول المالي',
+  'inclusion.subtitle':            'تعزيز الشمول المالي في العالم العربي',
+  'inclusion.desc':                'تطوير خدمات مالية ميسّرة ومستدامة ومسؤولة لجميع شرائح المجتمع في الدول الأعضاء.',
+  'inclusion.strategies':          'الاستراتيجيات والمشاريع',
+  'inclusion.strategiesDesc':      'المبادرات الإقليمية الرامية إلى توسيع الوصول المالي والتحول الرقمي.',
+  'inclusion.globalPolicy':        'السياسات الدولية',
+  'inclusion.globalPolicyDesc':    'مواءمة الأسواق العربية مع معايير G20 ومنظمة OECD للشمول المالي.',
+  'inclusion.benchmarking':        'مؤشر القياس',
+  'inclusion.benchmarkingDesc':    'رصد التقدم المحرز من خلال مؤشر الشمول المالي للاتحاد.',
+  'inclusion.bridgingTitle':       'ردم الفجوة من خلال الابتكار',
+  'inclusion.point1':              'تعزيز الثقافة المالية للشباب والمرأة',
+  'inclusion.point2':              'دعم شركات التكنولوجيا المالية وأنظمة الدفع الرقمي',
+  'inclusion.point3':              'إرساء أطر حماية المستهلك',
+  'inclusion.point4':              'القياس الإقليمي وصنع السياسات القائمة على البيانات',
+  'inclusion.downloadReport':      'تنزيل التقرير الإقليمي',
+  'inclusion.viewDetails':         'عرض التفاصيل',
+
+  // ── Financial Inclusion Index / TheIndex ──────────────────────────────────
+  'theIndex.badge':                'مؤشر الشمول المالي',
+  'theIndex.title':                'مؤشر الشمول المالي',
+  'theIndex.sectionTitle':         'مؤشر',
+  'theIndex.description':          'دليل إرشادي حول مؤشر الشمول المالي الذي سيتم تطويره بناءً على مؤشر الإدماج المالي لأعضاء الاتحاد لتتبع التقدم المحرز في الشمول المالي في دولهم.',
+
+  // ── Members Benchmarking ───────────────────────────────────────────────────
+  'benchmarking.badge':            'مؤشر الشمول المالي',
+  'benchmarking.title':            'تقييم أعضاء الاتحاد',
+  'benchmarking.intro':            'مراجعة البيانات المتاحة وعمليات القياس التي يمكن لأعضاء الاتحاد تصميم وتقييم تطبيق حوكمة الشركات في بلدانهم (استناداً إلى دليل الاتحاد)',
+  'benchmarking.yearLabel':        'السنة',
+  'benchmarking.allYears':         'جميع السنوات',
+  'benchmarking.allAuthorities':   'جميع الهيئات',
+  'benchmarking.authorityCol':     'الهيئات',
+  'benchmarking.yearCol':          'السنة',
+  'benchmarking.titleCol':         'العنوان',
+  'benchmarking.detailsCol':       'التفاصيل',
+  'benchmarking.view':             'عرض',
+  'benchmarking.noContent':        'لم يتم العثور على المحتوى!',
+  'benchmarking.loading':          'جارٍ تحميل بيانات التقييم...',
+  'benchmarking.ctrlHint':         'اضغط Ctrl (ويندوز) أو Cmd (ماك) لتحديد سنوات متعددة',
+
+  // ── Additional Resources ───────────────────────────────────────────────────
+  'additionalResources.badge':     'مؤشر الشمول المالي',
+  'additionalResources.title':     'مواد إضافية',
+  'additionalResources.intro':     'استكشف التقارير التكميلية والمبادئ التوجيهية والمواد المرجعية المتعلقة بمؤشر الشمول المالي للاتحاد وجهود القياس الإقليمية.',
+  'additionalResources.empty':     'لم يتم العثور على المحتوى!',
+
+  // ── Feedback page ──────────────────────────────────────────────────────────
+  'feedback.title':                'تواصل معنا',
+  'feedback.subtitle':             'رأيك يهمنا. ساعدنا في تحسين البوابة أو تواصل معنا باستفساراتك.',
+  'feedback.formTitle':            'أرسل لنا رسالة',
+  'feedback.namePlaceholder':      'الاسم الكامل',
+  'feedback.emailPlaceholder':     'البريد الإلكتروني',
+  'feedback.subjectLabel':         'الموضوع',
+  'feedback.subjectPlaceholder':   'استفسار عام',
+  'feedback.messagePlaceholder':   'كيف يمكننا مساعدتك؟',
+  'feedback.sending':              'جارٍ الإرسال...',
+  'feedback.sendBtn':              'إرسال',
+  'feedback.success':              'شكراً! تم إرسال رسالتك بنجاح.',
+  'feedback.error':                'عذراً، حدث خطأ ما. الرجاء المحاولة مرة أخرى.',
+  'feedback.contactTitle':         'معلومات الاتصال',
+  'feedback.emailLabel':           'راسلنا',
+  'feedback.websiteLabel':         'الموقع الإلكتروني',
+  'feedback.nameLabel':            'الاسم',
+  'feedback.orgLabel':             'جهة العمل',
+  'feedback.countryLabel':         'البلد',
+  'feedback.contentLabel':         'المحتوى',
+
+  // ── Detail pages (Principle / Framework) ─────────────────────────────────
+  'detail.loading':                'جارٍ التحميل...',
+  'detail.principleNotFound':      'لم يتم العثور على المبدأ.',
+  'detail.frameworkNotFound':      'لم يتم العثور على الإطار العام.',
+  'detail.backToPrinciples':       'العودة إلى المبادئ',
+  'detail.backToFramework':        'العودة إلى الإطار العام',
+  'detail.principlesBadge':        'المبادئ',
+  'detail.frameworkBadge':         'الإطار العام',
+
+  // ── Generic shared ─────────────────────────────────────────────────────────
+  'generic.submit':                'موافق',
+  'generic.loading':               'جارٍ التحميل...',
+  'generic.noContent':             'لم يتم العثور على المحتوى!',
+  'generic.ctrlHint':              'لاختيار أكثر من خيار، الرجاء الضغط على Ctrl',
+  'generic.all':                   'الكل',
+  'generic.results':               'نتيجة',
+  'generic.resultsPlural':         'نتائج',
+  'generic.view':                  'عرض',
+  'generic.error':                 'تعذّر التحميل. الرجاء المحاولة مرة أخرى.',
+});
+
+// ── Additional strings for pages / result tables identified in audit ──────────
+Object.assign(ar, {
+
+  // ── InvestorEducation hub page ───────────────────────────────────────────────
+  'education.badge':       'مركز التعلم',
+  'education.hero.title':  'تمكين المستثمرين من خلال التعليم',
+  'education.hero.desc':   'استكشف ثروة من الموارد المصممة لمساعدتك على التنقل في أسواق المال العربية بثقة ووضوح.',
+  'education.learnMore':   'اعرف أكثر',
+  'education.didYouKnow':  'هل تعلم؟',
+  'education.callout.title': 'التعليم هو أفضل استثمار يمكنك القيام به.',
+  'education.callout.desc':  'تتمركز بوابة الاتحاد الجهود التعليمية لأكثر من 16 هيئة للأوراق المالية العربية، مما يوفر لك مرجعاً موحداً لمبادئ الاستثمار وإدارة المخاطر.',
+  'education.bullet1':     'موارد متعددة اللغات بالعربية والإنجليزية',
+  'education.bullet2':     'أطر مالية منسقة من قبل خبراء',
+
+  // ── News section (homepage & NewsList) ────────────────────────────────────
+  'news.sectionTitle':     'أحدث الأخبار',
+  'news.sectionSubtitle':  'ابق على اطلاع بأحدث أخبار تعليم المستثمرين في الأسواق العربية',
+  'news.viewAll':          'عرض جميع الأخبار',
+  'news.readMore':         'اقرأ المزيد',
+  'news.download':         'تنزيل',
+  'news.allNewsTitle':     'جميع الأخبار',
+  'news.backToHome':       'العودة إلى الرئيسية',
+  'news.empty':            'لا توجد أخبار حتى الآن.',
+  'news.error':            'تعذّر تحميل الأخبار.',
+  'news.loading':          'جارٍ التحميل...',
+  'news.notFound':         'الخبر غير موجود.',
+  'news.backToNews':       'العودة إلى الأخبار',
+  'news.downloadDoc':      'تنزيل المستند',
+
+  // ── EducationSectionList ──────────────────────────────────────────────────
+  'educationList.readMore':  'اقرأ المزيد',
+  'educationList.empty':     'لا توجد محتويات حتى الآن.',
+  'educationList.error':     'تعذّر تحميل المحتوى.',
+  'educationList.backTo':    'العودة إلى',
+
+  // ── EducationItemDetail ───────────────────────────────────────────────────
+  'educationDetail.loading':  'جارٍ التحميل...',
+  'educationDetail.notFound': 'المحتوى غير موجود.',
+  'educationDetail.backTo':   'العودة إلى',
+
+  // ── InvestmentProductDetail ───────────────────────────────────────────────
+  'investProduct.loading':   'جارٍ التحميل...',
+  'investProduct.notFound':  'المنتج الاستثماري غير موجود.',
+  'investProduct.backLink':  'العودة إلى المواد العلمية / المنتجات الاستثمارية',
+  'investProduct.badge':     'مواد علمية / المنتجات الاستثمارية',
+
+  // ── Result table shared strings ───────────────────────────────────────────
+  'table.title':            'العنوان',
+  'table.type':             'النوع',
+  'table.category':         'الفئة',
+  'table.description':      'الوصف',
+  'table.urlFile':          'الرابط / الملف',
+  'table.date':             'التاريخ',
+  'table.link':             'الرابط',
+  'table.noDesc':           'لا يوجد وصف متاح.',
+  'table.viewDesc':         'عرض الوصف',
+  'table.close':            'إغلاق',
+  'table.noContent':        'لم يتم العثور على المحتوى!',
+  'table.general':          'عام',
+  'table.num':              '#',
+  'table.programElement':   'عنصر البرنامج',
+
+  // ── Programs result table section headings ────────────────────────────────
+  'programs.section.generalInfo':         'معلومات عامة',
+  'programs.section.educationMaterials':  'مواد تعليم المستثمرين',
+  'programs.section.specificMaterials':   'المواد والمناهج المحددة',
+  'programs.section.assistingGroups':     'مساعدة مجموعات معينة',
+  'programs.section.evaluation':          'التقييم والبحوث',
+  'programs.section.successfulPrograms':  'البرامج الناجحة',
+
+  // ── Empty / no match strings ──────────────────────────────────────────────
+  'noMatch.strategies':   'لا توجد موارد تطابق الفلاتر المحددة. جرّب تعديل اختيارك.',
+  'noMatch.publications': 'لا توجد إصدارات تطابق الفلاتر المحددة.',
+  'noMatch.programs':     'لا توجد برامج تطابق الفلاتر المحددة.',
+  'noMatch.globalPolicy': 'لا توجد سياسات دولية تطابق الفلاتر المحددة.',
+});

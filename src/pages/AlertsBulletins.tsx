@@ -7,6 +7,8 @@ import {
 } from '../components/alerts-bulletins/AlertsBulletinsResultsTable';
 import { api } from '../lib/api';
 import { ALERT_BULLETIN_AUTHORITIES, ALERT_BULLETIN_YEARS } from '../lib/alertBulletinFilters';
+import { useLanguage } from '../lib/LanguageContext';
+import { t } from '../lib/translations';
 
 function getSelectedYears(select: HTMLSelectElement): string[] {
   return Array.from(select.selectedOptions)
@@ -20,6 +22,7 @@ function filterByYears(items: AlertBulletinItem[], years: string[]): AlertBullet
 }
 
 export default function AlertsBulletins() {
+  const { lang, isRtl } = useLanguage();
   const [selectedAuthority, setSelectedAuthority] = useState('All Authorities');
   const [items, setItems] = useState<AlertBulletinItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,25 +31,20 @@ export default function AlertsBulletins() {
   const fetchItems = useCallback(async (authority: string, years: string[]) => {
     setLoading(true);
     setError(null);
-
     try {
       const params = new URLSearchParams({ is_active: 'true' });
-      if (authority && authority !== 'All Authorities') {
-        params.set('authority', authority);
-      }
+      if (authority && authority !== 'All Authorities') params.set('authority', authority);
       const data = await api.get(`/alerts-bulletins?${params.toString()}`);
       setItems(filterByYears(data ?? [], years));
     } catch {
-      setError('Failed to load alerts and bulletins. Please try again.');
+      setError(t(lang, 'alerts.error', 'Failed to load alerts and bulletins. Please try again.'));
       setItems([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [lang]);
 
-  useEffect(() => {
-    fetchItems('All Authorities', []);
-  }, [fetchItems]);
+  useEffect(() => { fetchItems('All Authorities', []); }, [fetchItems]);
 
   const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const years = getSelectedYears(event.currentTarget);
@@ -64,19 +62,22 @@ export default function AlertsBulletins() {
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
       <PageHeader
-        title="Alerts & Bulletins"
+        title={t(lang, 'alerts.title', 'Alerts & Bulletins')}
         items={[
-          { label: 'Home', href: '/' },
-          { label: 'Investor Education', href: '/education/reading-materials' },
-          { label: 'Alerts & Bulletins' },
+          { label: t(lang, 'bc.home', 'Home'), href: '/' },
+          { label: t(lang, 'nav.investorEducation', 'Investor Education'), href: '/education/reading-materials' },
+          { label: t(lang, 'alerts.title', 'Alerts & Bulletins') },
         ]}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10">
-          <h2 className="text-xl font-bold text-[#009900] mb-4">Alerts & Bulletins</h2>
+          <h2 className="text-xl font-bold text-[#009900] mb-4" dir={isRtl ? 'rtl' : 'ltr'}>
+            {t(lang, 'alerts.sectionTitle', 'Alerts & Bulletins')}
+          </h2>
           <hr className="border-gray-300 mb-6" />
 
+          {/* Year filter */}
           <select
             id="alerts-year"
             name="year"
@@ -85,11 +86,9 @@ export default function AlertsBulletins() {
             onChange={handleYearChange}
             className="w-full max-w-xs rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20 mb-8"
           >
-            <option value="All Years">All Years</option>
+            <option value="All Years">{t(lang, 'alerts.allYears', 'All Years')}</option>
             {ALERT_BULLETIN_YEARS.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
+              <option key={year} value={year}>{year}</option>
             ))}
           </select>
 
@@ -102,25 +101,22 @@ export default function AlertsBulletins() {
                     align="left"
                     scope="col"
                     className="border border-[#ccc] bg-white px-4 py-3 text-start text-sm font-bold text-gray-900"
+                    dir={isRtl ? 'rtl' : 'ltr'}
                   >
-                    Authority
+                    {t(lang, 'alerts.authorityCol', 'Authority')}
                   </th>
-                  <th
-                    colSpan={2}
-                    scope="col"
-                    className="border border-[#ccc] bg-white px-4 py-3 text-sm"
-                  >
+                  <th colSpan={2} scope="col" className="border border-[#ccc] bg-white px-4 py-3 text-sm">
                     <select
                       name="authority"
                       value={selectedAuthority}
                       onChange={handleAuthorityChange}
                       className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                     >
-                      <option value="All Authorities">All Authorities</option>
+                      <option value="All Authorities">
+                        {t(lang, 'alerts.allAuthorities', 'All Authorities')}
+                      </option>
                       {ALERT_BULLETIN_AUTHORITIES.map((authority) => (
-                        <option key={authority} value={authority}>
-                          {authority}
-                        </option>
+                        <option key={authority} value={authority}>{authority}</option>
                       ))}
                     </select>
                   </th>
@@ -129,19 +125,13 @@ export default function AlertsBulletins() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td
-                      colSpan={4}
-                      className="border border-[#ccc] px-4 py-6 text-center text-sm text-gray-500"
-                    >
-                      Loading...
+                    <td colSpan={4} className="border border-[#ccc] px-4 py-6 text-center text-sm text-gray-500">
+                      {t(lang, 'alerts.loading', 'Loading...')}
                     </td>
                   </tr>
                 ) : error ? (
                   <tr>
-                    <td
-                      colSpan={4}
-                      className="border border-[#ccc] px-4 py-6 text-center text-sm text-red-600"
-                    >
+                    <td colSpan={4} className="border border-[#ccc] px-4 py-6 text-center text-sm text-red-600">
                       {error}
                     </td>
                   </tr>
@@ -154,9 +144,7 @@ export default function AlertsBulletins() {
             </table>
           </div>
 
-          <div className="clearfix mt-6" aria-hidden="true">
-            &nbsp;
-          </div>
+          <div className="clearfix mt-6" aria-hidden="true">&nbsp;</div>
         </section>
       </div>
     </div>

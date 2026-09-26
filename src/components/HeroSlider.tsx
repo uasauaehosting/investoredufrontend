@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../lib/api';
+import { useLanguage } from '../lib/LanguageContext';
+import { t } from '../lib/translations';
 
 export interface Slide {
   id: number;
@@ -13,6 +15,7 @@ export interface Slide {
 }
 
 export default function HeroSlider() {
+  const { lang } = useLanguage();
   const [slides, setSlides] = useState<Slide[]>([]);
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
@@ -90,7 +93,7 @@ export default function HeroSlider() {
               className={`rounded-full transition-all duration-300 ${
                 i === current ? 'w-6 h-2.5 bg-amber-400' : 'w-2.5 h-2.5 bg-gray-400/60 hover:bg-gray-500/80'
               }`}
-              aria-label={`Go to slide ${i + 1}`}
+              aria-label={`${t(lang, 'bc.home', 'Go to slide')} ${i + 1}`}
             />
           ))}
         </div>

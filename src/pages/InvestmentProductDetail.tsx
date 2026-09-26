@@ -1,21 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { api } from '../lib/api';
 import { InvestmentProduct, INVESTMENT_PRODUCTS_LIST_PATH } from '../lib/investmentProducts';
 import { normalizeInvestmentProductContent } from '../lib/investmentProductContent';
 import { useLanguage } from '../lib/LanguageContext';
 import { pickField } from '../lib/localizedText';
+import { t } from '../lib/translations';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1454165804603-c3d57bc86b40?auto=format&fit=crop&q=80&w=1200';
 
 export default function InvestmentProductDetail() {
   const { id } = useParams<{ id: string }>();
-  const { lang } = useLanguage();
-  const [item, setItem] = useState<InvestmentProduct | null>(null);
+  const { lang, isRtl } = useLanguage();
+  const [item,    setItem]    = useState<InvestmentProduct | null>(null);
   const [loading, setLoading] = useState(true);
-  const [imgSrc, setImgSrc] = useState(FALLBACK_IMAGE);
+  const [imgSrc,  setImgSrc]  = useState(FALLBACK_IMAGE);
 
   useEffect(() => {
     if (!id) return;
@@ -31,21 +32,21 @@ export default function InvestmentProductDetail() {
   }, [id]);
 
   if (loading) {
-    return <div className="py-24 text-center text-gray-400">Loading...</div>;
+    return <div className="py-24 text-center text-gray-400">{t(lang, 'investProduct.loading', 'Loading...')}</div>;
   }
 
   if (!item) {
     return (
       <div className="py-24 text-center">
-        <p className="text-gray-500 mb-4">Investment product not found.</p>
+        <p className="text-gray-500 mb-4">{t(lang, 'investProduct.notFound', 'Investment product not found.')}</p>
         <Link to={INVESTMENT_PRODUCTS_LIST_PATH} className="text-[#009900] hover:text-amber-600 font-medium">
-          Back to Investment Products/ Literature
+          {t(lang, 'investProduct.backLink', 'Back to Investment Products / Literature')}
         </Link>
       </div>
     );
   }
 
-  const title = pickField(lang, item, 'title');
+  const title      = pickField(lang, item, 'title');
   const rawContent = pickField(lang, item, 'content');
   const contentHtml = normalizeInvestmentProductContent(rawContent);
 
@@ -57,12 +58,15 @@ export default function InvestmentProductDetail() {
             to={INVESTMENT_PRODUCTS_LIST_PATH}
             className="inline-flex items-center gap-2 text-green-200 hover:text-white text-sm mb-6 transition-colors"
           >
-            <ArrowLeft size={16} /> Back to Investment Products/ Literature
+            {isRtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
+            {t(lang, 'investProduct.backLink', 'Back to Investment Products / Literature')}
           </Link>
           <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full mb-4 tracking-widest uppercase">
-            Investment Products/ Literature
+            {t(lang, 'investProduct.badge', 'Investment Products / Literature')}
           </span>
-          <h1 className="text-3xl sm:text-4xl font-bold leading-tight">{title}</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold leading-tight" dir={isRtl ? 'rtl' : 'ltr'}>
+            {title}
+          </h1>
         </div>
       </div>
 
@@ -77,7 +81,7 @@ export default function InvestmentProductDetail() {
                 onError={() => setImgSrc(FALLBACK_IMAGE)}
               />
             </div>
-            <div className="p-8 sm:p-12 lg:p-14">
+            <div className="p-8 sm:p-12 lg:p-14" dir={isRtl ? 'rtl' : 'ltr'}>
               {contentHtml ? (
                 <div
                   className="prose prose-blue max-w-none text-gray-600 leading-relaxed"

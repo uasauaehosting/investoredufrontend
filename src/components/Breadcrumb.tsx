@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Home, ChevronRight } from 'lucide-react';
+import { useLanguage } from '../lib/LanguageContext';
 
 export interface BreadcrumbItem {
   label: string;
@@ -12,10 +13,11 @@ interface BreadcrumbProps {
 }
 
 export default function Breadcrumb({ items, variant = 'standalone' }: BreadcrumbProps) {
+  const { isRtl } = useLanguage();
   const isEmbedded = variant === 'embedded';
 
   return (
-    <nav aria-label="Breadcrumb" className={isEmbedded ? undefined : 'py-5'}>
+    <nav aria-label="Breadcrumb" className={isEmbedded ? undefined : 'py-5'} dir={isRtl ? 'rtl' : 'ltr'}>
       <ol
         className={
           isEmbedded
@@ -25,15 +27,15 @@ export default function Breadcrumb({ items, variant = 'standalone' }: Breadcrumb
       >
         {items.map((item, index) => {
           const isFirst = index === 0;
-          const isLast = index === items.length - 1;
-          const isLink = Boolean(item.href) && !isLast;
+          const isLast  = index === items.length - 1;
+          const isLink  = Boolean(item.href) && !isLast;
 
           return (
             <li key={index} className="flex items-center">
               {index > 0 && (
                 <ChevronRight
                   size={13}
-                  className="mx-1 shrink-0 text-gray-300 rtl:rotate-180"
+                  className={`mx-1 shrink-0 text-gray-300 ${isRtl ? 'rotate-180' : ''}`}
                   aria-hidden="true"
                 />
               )}

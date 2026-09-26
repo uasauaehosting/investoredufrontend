@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../lib/api';
-import { Calendar, Tag, ArrowLeft, Download } from 'lucide-react';
+import { Calendar, Tag, ArrowLeft, ArrowRight, Download } from 'lucide-react';
 import { normalizeMediaUrl } from '../lib/mediaUrl';
 import { useLanguage } from '../lib/LanguageContext';
 import { pickField, pickLocalized } from '../lib/localizedText';
+import { t } from '../lib/translations';
 
 interface NewsItem {
   id: number;
@@ -21,9 +22,9 @@ interface NewsItem {
 }
 
 export default function NewsDetail() {
-  const { lang } = useLanguage();
+  const { lang, isRtl } = useLanguage();
   const { id } = useParams();
-  const [item, setItem] = useState<NewsItem | null>(null);
+  const [item,    setItem]    = useState<NewsItem | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,19 +34,20 @@ export default function NewsDetail() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <div className="py-20 text-center">Loading...</div>;
-  if (!item) return <div className="py-20 text-center">News not found.</div>;
+  if (loading) return <div className="py-20 text-center">{t(lang, 'news.loading', 'Loading...')}</div>;
+  if (!item)   return <div className="py-20 text-center">{t(lang, 'news.notFound', 'News not found.')}</div>;
 
-  const title = pickField(lang, item, 'title');
-  const body = pickLocalized(lang, item.fullDetail || item.excerpt, item.fullDetailAr || item.excerptAr);
+  const title       = pickField(lang, item, 'title');
+  const body        = pickLocalized(lang, item.fullDetail || item.excerpt, item.fullDetailAr || item.excerptAr);
   const documentUrl = item.pdfFile ? normalizeMediaUrl(item.pdfFile) : '';
+  const dateLocale  = lang === 'ar' ? 'ar-AE' : 'en-US';
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8" dir={isRtl ? 'rtl' : 'ltr'}>
         <Link to="/news" className="inline-flex items-center gap-2 text-[#009900] hover:text-amber-600 transition-colors">
-          <ArrowLeft size={16} />
-          <span>Back to News</span>
+          {isRtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
+          <span>{t(lang, 'news.backToNews', 'Back to News')}</span>
         </Link>
         {documentUrl && (
           <a
@@ -56,7 +58,7 @@ export default function NewsDetail() {
             className="inline-flex items-center gap-2 text-sm font-medium text-white bg-[#009900] hover:bg-green-700 rounded-full px-4 py-2 transition-colors"
           >
             <Download size={16} />
-            Download Document
+            {t(lang, 'news.downloadDoc', 'Download Document')}
           </a>
         )}
       </div>
@@ -65,7 +67,7 @@ export default function NewsDetail() {
         {item.image && (
           <img src={item.image} alt={title} className="w-full h-80 object-cover" />
         )}
-        <div className="p-8 sm:p-12">
+        <div className="p-8 sm:p-12" dir={isRtl ? 'rtl' : 'ltr'}>
           <div className="flex flex-wrap gap-4 mb-6">
             <span className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 bg-green-50 text-green-700 rounded-full">
               <Tag size={12} />
@@ -73,13 +75,11 @@ export default function NewsDetail() {
             </span>
             <span className="flex items-center gap-1.5 text-xs text-gray-400">
               <Calendar size={12} />
-              {new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              {new Date(item.date).toLocaleDateString(dateLocale, { year: 'numeric', month: 'long', day: 'numeric' })}
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#009900] mb-8 leading-tight">
-            {title}
-          </h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#009900] mb-8 leading-tight">{title}</h1>
 
           <div className="prose prose-blue max-w-none text-gray-600 leading-relaxed space-y-6">
             {body ? (

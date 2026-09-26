@@ -18,11 +18,11 @@ const FALLBACK_FOOTER = {
   inclusionLinks: ['Financial Literacy', 'Digital Finance', 'Microfinance', 'Women Empowerment', 'Youth Financial Education'],
   inclusionLinksAr: ['استراتيجيات وبرامج الأعضاء', 'السياسات الدولية', 'مؤشر الشمول المالي', 'تقييم أعضاء الاتحاد', 'مواد إضافية'],
   usefulLinks: [
-    { label: 'UASA Official Website', href: '#' },
-    { label: 'IOSCO', href: '#' },
-    { label: 'World Federation of Exchanges', href: '#' },
-    { label: 'Arab Monetary Fund', href: '#' },
-    { label: 'Securities Commission Resources', href: '#' },
+    { label: 'UASA Official Website',           labelAr: 'الموقع الرسمي للاتحاد',                href: '#' },
+    { label: 'IOSCO',                            labelAr: 'المنظمة الدولية لهيئات الأوراق المالية (IOSCO)', href: '#' },
+    { label: 'World Federation of Exchanges',    labelAr: 'الاتحاد العالمي للبورصات',             href: '#' },
+    { label: 'Arab Monetary Fund',               labelAr: 'صندوق النقد العربي',                   href: '#' },
+    { label: 'Securities Commission Resources',  labelAr: 'موارد هيئات الأوراق المالية',          href: '#' },
   ],
   address: 'Union of Arab Securities Authorities, Abu Dhabi, UAE',
   addressAr: 'الراشدية، أم الرمول دبي، صندوق بريد 117555 دبي، إ.ع.م',
@@ -40,18 +40,33 @@ export default function Footer() {
     ['educationLinks', 'inclusionLinks'],
   );
 
-  // Resolve Arabic-aware link arrays from the footer data
-  const educationLinks: string[] = lang === 'ar' && Array.isArray(footer.educationLinksAr) && (footer.educationLinksAr as string[]).length
-    ? (footer.educationLinksAr as string[])
-    : (footer.educationLinks as string[]);
+  // Resolve Arabic-aware link arrays from the footer data.
+  // useSiteContent merges CMS data over fallback with spread, which can overwrite
+  // the *Ar arrays. Always fall back to FALLBACK_FOOTER when the CMS version is empty.
+  const educationLinks: string[] =
+    lang === 'ar'
+      ? (
+          (Array.isArray(footer.educationLinksAr) && (footer.educationLinksAr as string[]).length
+            ? (footer.educationLinksAr as string[])
+            : null) ??
+          FALLBACK_FOOTER.educationLinksAr
+        )
+      : (footer.educationLinks as string[]);
 
-  const inclusionLinks: string[] = lang === 'ar' && Array.isArray(footer.inclusionLinksAr) && (footer.inclusionLinksAr as string[]).length
-    ? (footer.inclusionLinksAr as string[])
-    : (footer.inclusionLinks as string[]);
+  const inclusionLinks: string[] =
+    lang === 'ar'
+      ? (
+          (Array.isArray(footer.inclusionLinksAr) && (footer.inclusionLinksAr as string[]).length
+            ? (footer.inclusionLinksAr as string[])
+            : null) ??
+          FALLBACK_FOOTER.inclusionLinksAr
+        )
+      : (footer.inclusionLinks as string[]);
 
-  const addressDisplay = lang === 'ar' && (footer.addressAr as string | undefined)?.trim()
-    ? (footer.addressAr as string)
-    : (footer.address as string);
+  const addressDisplay =
+    lang === 'ar'
+      ? (((footer.addressAr as string | undefined)?.trim()) || FALLBACK_FOOTER.addressAr)
+      : (footer.address as string);
 
   return (
     <footer className="bg-[#c8e6c9] text-black border-t border-[#009900]/25">
@@ -109,13 +124,20 @@ export default function Footer() {
               {t(lang, 'footer.links', 'Links')}
             </h4>
             <ul className="space-y-2">
-              {(footer.usefulLinks as { label: string; href: string }[]).map((link) => (
-                <li key={link.label}>
-                  <a href={link.href} className="text-black text-sm hover:opacity-70 transition-opacity flex items-center gap-1.5 group">
-                    <ExternalLink size={10} className="text-black/50 flex-shrink-0" />{link.label}
-                  </a>
-                </li>
-              ))}
+              {(footer.usefulLinks as { label: string; labelAr?: string; href: string }[]).map((link, i) => {
+                // When CMS overwrites usefulLinks it drops labelAr — restore from FALLBACK by index
+                const fallbackLabelAr = FALLBACK_FOOTER.usefulLinks[i]?.labelAr;
+                const label = lang === 'ar'
+                  ? (link.labelAr || fallbackLabelAr || link.label)
+                  : link.label;
+                return (
+                  <li key={link.label}>
+                    <a href={link.href} className="text-black text-sm hover:opacity-70 transition-opacity flex items-center gap-1.5 group">
+                      <ExternalLink size={10} className="text-black/50 flex-shrink-0" />{label}
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 

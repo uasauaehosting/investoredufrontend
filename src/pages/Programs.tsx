@@ -3,6 +3,8 @@ import PageHeader from '../components/PageHeader';
 import ProgramsResultsTable from '../components/programs/ProgramsResultsTable';
 import { api } from '../lib/api';
 import { PROGRAM_FILTER_GROUPS, PROGRAM_MEMBERS, getLabelsFromSelect } from '../lib/programFilters';
+import { useLanguage } from '../lib/LanguageContext';
+import { t } from '../lib/translations';
 
 interface Program {
   id: number;
@@ -21,9 +23,7 @@ function parseProgramArray(value: unknown): string[] {
     try {
       const parsed = JSON.parse(value);
       return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   }
   return [];
 }
@@ -39,22 +39,20 @@ function filterPrograms(
   filters: Record<string, string[]>,
 ): Program[] {
   return programs.filter((program) => {
-    if (member && member !== 'Select Member' && program.member_name !== member) {
-      return false;
-    }
-
+    if (member && member !== 'Select Member' && program.member_name !== member) return false;
     return (
-      matchesCategory(parseProgramArray(program.general_info), filters.generalInfo) &&
-      matchesCategory(parseProgramArray(program.education_materials), filters.educationMaterials) &&
-      matchesCategory(parseProgramArray(program.specific_materials), filters.specificMaterials) &&
-      matchesCategory(parseProgramArray(program.assisting_groups), filters.assistingGroups) &&
-      matchesCategory(parseProgramArray(program.evaluation), filters.evaluation) &&
-      matchesCategory(parseProgramArray(program.successful_programs), filters.successfulPrograms)
+      matchesCategory(parseProgramArray(program.general_info),        filters.generalInfo) &&
+      matchesCategory(parseProgramArray(program.education_materials),  filters.educationMaterials) &&
+      matchesCategory(parseProgramArray(program.specific_materials),   filters.specificMaterials) &&
+      matchesCategory(parseProgramArray(program.assisting_groups),     filters.assistingGroups) &&
+      matchesCategory(parseProgramArray(program.evaluation),           filters.evaluation) &&
+      matchesCategory(parseProgramArray(program.successful_programs),  filters.successfulPrograms)
     );
   });
 }
 
 export default function Programs() {
+  const { lang, isRtl } = useLanguage();
   const [results, setResults] = useState<Program[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -66,10 +64,10 @@ export default function Programs() {
     event.preventDefault();
     const form = event.currentTarget;
     const memberSelect = form.elements.namedItem('member') as HTMLSelectElement;
-
     const member = memberSelect.value;
+
     if (!member || member === 'Select Member') {
-      setMessage('Please select a member.');
+      setMessage(t(lang, 'programs.selectFirst', 'Please select a member.'));
       setSubmitted(false);
       setResults([]);
       return;
@@ -92,17 +90,16 @@ export default function Programs() {
       const response = await api.get('/programs');
       const programs: Program[] = (response?.data ?? response ?? []).map((program: Program) => ({
         ...program,
-        general_info: parseProgramArray(program.general_info),
+        general_info:        parseProgramArray(program.general_info),
         education_materials: parseProgramArray(program.education_materials),
-        specific_materials: parseProgramArray(program.specific_materials),
-        assisting_groups: parseProgramArray(program.assisting_groups),
-        evaluation: parseProgramArray(program.evaluation),
+        specific_materials:  parseProgramArray(program.specific_materials),
+        assisting_groups:    parseProgramArray(program.assisting_groups),
+        evaluation:          parseProgramArray(program.evaluation),
         successful_programs: parseProgramArray(program.successful_programs),
       }));
-
       setResults(filterPrograms(programs, member, filters));
     } catch {
-      setError('Failed to load programs. Please try again.');
+      setError(t(lang, 'programs.error', 'Failed to load programs. Please try again.'));
       setResults([]);
     } finally {
       setLoading(false);
@@ -112,23 +109,23 @@ export default function Programs() {
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
       <PageHeader
-        title="Programs"
+        title={t(lang, 'programs.title', 'Programs')}
         items={[
-          { label: 'Home', href: '/' },
-          { label: 'Investor Education' },
-          { label: "Members' Activities", href: '/education/members-activities' },
-          { label: 'Programs' },
+          { label: t(lang, 'bc.home', 'Home'), href: '/' },
+          { label: t(lang, 'nav.investorEducation', 'Investor Education') },
+          { label: t(lang, 'nav.membersActivities', "Members' Activities"), href: '/education/members-activities' },
+          { label: t(lang, 'programs.title', 'Programs') },
         ]}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10 mb-10">
-
           <form onSubmit={handleSubmit}>
-            <div className="space-y-6">
+            <div className="space-y-6" dir={isRtl ? 'rtl' : 'ltr'}>
+              {/* Member select */}
               <div>
                 <label htmlFor="member" className="sr-only">
-                  Select Member
+                  {t(lang, 'programs.selectMember', 'Select Member')}
                 </label>
                 <select
                   id="member"
@@ -136,15 +133,16 @@ export default function Programs() {
                   defaultValue="Select Member"
                   className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                 >
-                  <option value="Select Member">Select Member</option>
+                  <option value="Select Member">
+                    {t(lang, 'programs.selectMember', 'Select Member')}
+                  </option>
                   {PROGRAM_MEMBERS.map((member) => (
-                    <option key={member} value={member}>
-                      {member}
-                    </option>
+                    <option key={member} value={member}>{member}</option>
                   ))}
                 </select>
               </div>
 
+              {/* Dynamic filter groups */}
               {PROGRAM_FILTER_GROUPS.map((group) => (
                 <div key={group.name}>
                   <label htmlFor={group.name} className="block text-sm font-bold text-[#009900] mb-2">
@@ -160,9 +158,7 @@ export default function Programs() {
                     style={{ height: group.options.length > 4 ? '120px' : '100px' }}
                   >
                     {group.options.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
+                      <option key={option.value} value={option.value}>{option.label}</option>
                     ))}
                   </select>
                 </div>
@@ -175,25 +171,31 @@ export default function Programs() {
                 disabled={loading}
                 className="inline-flex items-center justify-center rounded-lg bg-[#009900] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#006600] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? 'Loading...' : 'Submit'}
+                {loading
+                  ? t(lang, 'programs.loading', 'Loading...')
+                  : t(lang, 'programs.submit', 'Submit')}
               </button>
               {message && <p className="mt-4 text-sm text-red-600">{message}</p>}
-              {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+              {error   && <p className="mt-4 text-sm text-red-600">{error}</p>}
             </div>
           </form>
 
           {submitted && !loading && !error && (
-            <div className="mt-10 border-t border-gray-100 pt-8">
+            <div className="mt-10 border-t border-gray-100 pt-8" dir={isRtl ? 'rtl' : 'ltr'}>
               <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-                <h3 className="text-lg font-bold text-[#009900]">Results</h3>
+                <h3 className="text-lg font-bold text-[#009900]">
+                  {t(lang, 'programs.resultsTitle', 'Results')}
+                </h3>
                 <p className="text-sm text-gray-500">
-                  {results.length} program{results.length === 1 ? '' : 's'} found
+                  {results.length}{' '}
+                  {results.length === 1
+                    ? t(lang, 'programs.found', 'program found')
+                    : t(lang, 'programs.foundPlural', 'programs found')}
                   {selectedMember && selectedMember !== 'Select Member' && (
-                    <> for {selectedMember}</>
+                    <> {t(lang, 'programs.for', 'for')} {selectedMember}</>
                   )}
                 </p>
               </div>
-
               <ProgramsResultsTable programs={results} />
             </div>
           )}

@@ -9,6 +9,8 @@ import {
   PolicyCategory,
   PolicyInstitution,
 } from '../lib/globalPolicyFilters';
+import { useLanguage } from '../lib/LanguageContext';
+import { t } from '../lib/translations';
 
 interface GlobalPolicyArea {
   id: number;
@@ -24,12 +26,8 @@ interface GlobalPolicyArea {
 
 function buildQueryParams(institutions: PolicyInstitution[], categories: PolicyCategory[]): string {
   const params = new URLSearchParams();
-  if (institutions.length > 0) {
-    params.set('institutions', institutions.join(','));
-  }
-  if (categories.length > 0) {
-    params.set('categories', categories.join(','));
-  }
+  if (institutions.length > 0) params.set('institutions', institutions.join(','));
+  if (categories.length > 0)   params.set('categories',   categories.join(','));
   const query = params.toString();
   return query ? `?${query}` : '';
 }
@@ -41,12 +39,13 @@ function getMultiSelectValues(select: HTMLSelectElement): string[] {
 }
 
 export default function GlobalPolicyAreas() {
+  const { lang, isRtl } = useLanguage();
   const [selectedInstitutions, setSelectedInstitutions] = useState<PolicyInstitution[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<PolicyCategory[]>([]);
-  const [policyAreas, setPolicyAreas] = useState<GlobalPolicyArea[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedCategories,   setSelectedCategories]   = useState<PolicyCategory[]>([]);
+  const [policyAreas,          setPolicyAreas]           = useState<GlobalPolicyArea[]>([]);
+  const [loading,  setLoading]  = useState(false);
+  const [submitted,setSubmitted]= useState(false);
+  const [error,    setError]    = useState<string | null>(null);
 
   const groupedPolicyAreas = useMemo(
     () => groupGlobalPolicyAreas(policyAreas, selectedInstitutions),
@@ -60,31 +59,26 @@ export default function GlobalPolicyAreas() {
     setLoading(true);
     setError(null);
     setSubmitted(true);
-
     try {
       const data = await api.get(`/global-policy-areas${buildQueryParams(institutions, categories)}`);
       setPolicyAreas(data ?? []);
     } catch {
-      setError('Failed to load global policy areas. Please try again.');
+      setError(t(lang, 'globalPolicy.error', 'Failed to load global policy areas. Please try again.'));
       setPolicyAreas([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchPolicyAreas([], []);
-  }, []);
+  useEffect(() => { fetchPolicyAreas([], []); }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const institutionSelect = form.elements.namedItem('institution') as HTMLSelectElement;
-    const categorySelect = form.elements.namedItem('category') as HTMLSelectElement;
-
+    const categorySelect    = form.elements.namedItem('category')    as HTMLSelectElement;
     const institutions = getMultiSelectValues(institutionSelect) as PolicyInstitution[];
-    const categories = getMultiSelectValues(categorySelect) as PolicyCategory[];
-
+    const categories   = getMultiSelectValues(categorySelect)   as PolicyCategory[];
     setSelectedInstitutions(institutions);
     setSelectedCategories(categories);
     await fetchPolicyAreas(institutions, categories);
@@ -93,21 +87,22 @@ export default function GlobalPolicyAreas() {
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
       <PageHeader
-        title="Global Policy Areas"
+        title={t(lang, 'globalPolicy.title', 'Global Policy Areas')}
         items={[
-          { label: 'Home', href: '/' },
-          { label: 'Financial Inclusion' },
-          { label: 'Global Policy Areas' },
+          { label: t(lang, 'bc.home', 'Home'), href: '/' },
+          { label: t(lang, 'nav.financialInclusion', 'Financial Inclusion') },
+          { label: t(lang, 'globalPolicy.title', 'Global Policy Areas') },
         ]}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10 mb-10">
           <form onSubmit={handleSubmit}>
-            <div className="space-y-6">
+            <div className="space-y-6" dir={isRtl ? 'rtl' : 'ltr'}>
+              {/* Institution filter */}
               <div>
                 <label htmlFor="institution" className="block text-sm font-bold text-[#009900] mb-2">
-                  Institution
+                  {t(lang, 'globalPolicy.institutionLabel', 'Institution')}
                 </label>
                 <select
                   id="institution"
@@ -117,21 +112,22 @@ export default function GlobalPolicyAreas() {
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                   style={{ height: '90px' }}
                 >
-                  <option value="All">All</option>
+                  <option value="All">
+                    {t(lang, 'globalPolicy.institutionAll', 'All')}
+                  </option>
                   {POLICY_INSTITUTIONS.map((institution) => (
-                    <option key={institution} value={institution}>
-                      {institution}
-                    </option>
+                    <option key={institution} value={institution}>{institution}</option>
                   ))}
                 </select>
                 <p className="mt-2 text-sm text-green-700">
-                  Note: Press Ctrl key to choose multiple option
+                  {t(lang, 'globalPolicy.ctrlHint', 'Note: Press Ctrl key to choose multiple options')}
                 </p>
               </div>
 
+              {/* Category filter */}
               <div>
                 <label htmlFor="category" className="block text-sm font-bold text-[#009900] mb-2">
-                  Category
+                  {t(lang, 'globalPolicy.categoryLabel', 'Category')}
                 </label>
                 <select
                   id="category"
@@ -141,15 +137,15 @@ export default function GlobalPolicyAreas() {
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                   style={{ height: '100px' }}
                 >
-                  <option value="All">All</option>
+                  <option value="All">
+                    {t(lang, 'globalPolicy.categoryAll', 'All')}
+                  </option>
                   {POLICY_CATEGORIES.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
+                    <option key={category} value={category}>{category}</option>
                   ))}
                 </select>
                 <p className="mt-2 text-sm text-green-700">
-                  Note: Press Ctrl key to choose multiple option
+                  {t(lang, 'globalPolicy.ctrlHintCat', 'Note: Press Ctrl key to choose multiple options')}
                 </p>
               </div>
             </div>
@@ -160,18 +156,24 @@ export default function GlobalPolicyAreas() {
                 disabled={loading}
                 className="inline-flex items-center justify-center rounded-lg bg-[#009900] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#006600] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? 'Loading...' : 'Submit'}
+                {loading
+                  ? t(lang, 'globalPolicy.loading', 'Loading...')
+                  : t(lang, 'globalPolicy.submit', 'Submit')}
               </button>
               {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
             </div>
           </form>
 
           {submitted && !error && (
-            <div className="mt-10 border-t border-gray-200 pt-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Global Policy Areas</h2>
+            <div className="mt-10 border-t border-gray-200 pt-8" dir={isRtl ? 'rtl' : 'ltr'}>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
+                {t(lang, 'globalPolicy.resultsTitle', 'Global Policy Areas')}
+              </h2>
               <hr className="border-gray-300 mb-8" />
               {loading ? (
-                <p className="text-sm text-gray-500">Loading global policy areas...</p>
+                <p className="text-sm text-gray-500">
+                  {t(lang, 'globalPolicy.loading', 'Loading...')}
+                </p>
               ) : (
                 <GlobalPolicyAreasResultsTable groups={groupedPolicyAreas} />
               )}

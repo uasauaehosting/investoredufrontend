@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Breadcrumb, { BreadcrumbItem } from './Breadcrumb';
+import { useLanguage } from '../lib/LanguageContext';
 
 interface PageHeaderProps {
   title: string;
@@ -9,9 +10,14 @@ interface PageHeaderProps {
 }
 
 export default function PageHeader({ title, items, backLink }: PageHeaderProps) {
+  const { isRtl } = useLanguage();
+
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div
+        className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8"
+        dir={isRtl ? 'rtl' : 'ltr'}
+      >
         <Breadcrumb items={items} variant="embedded" />
 
         {backLink && (
@@ -19,7 +25,7 @@ export default function PageHeader({ title, items, backLink }: PageHeaderProps) 
             to={backLink.to}
             className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#009900] mt-4 transition-colors"
           >
-            <ArrowLeft size={15} className="rtl:rotate-180" />
+            {isRtl ? <ArrowRight size={15} /> : <ArrowLeft size={15} />}
             {backLink.label}
           </Link>
         )}
