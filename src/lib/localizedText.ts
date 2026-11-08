@@ -11,13 +11,14 @@ export function pickLocalized(
 }
 
 /** Pick localized value from an object using `field` (en) and `fieldAr` (ar). */
-export function pickField<T extends Record<string, unknown>>(
+export function pickField<T extends object>(
   lang: Lang,
   obj: T,
   field: string,
 ): string {
-  const en = obj[field] as string | undefined;
-  const ar = obj[`${field}Ar`] as string | undefined;
+  const rec = obj as Record<string, unknown>;
+  const en = rec[field] as string | undefined;
+  const ar = rec[`${field}Ar`] as string | undefined;
   return pickLocalized(lang, en, ar);
 }
 

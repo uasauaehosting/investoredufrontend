@@ -90,27 +90,27 @@ export default function SiteContentEditor() {
   const renderForm = () => {
     switch (activeKey) {
       case 'home.welcome':
-        return <HomeWelcomeForm data={formData as never} onChange={handleChange} />;
+        return <HomeWelcomeForm data={formData as never} onChange={handleChange as never} />;
       case 'home.portal_section':
-        return <HomePortalForm data={formData as never} onChange={handleChange} />;
+        return <HomePortalForm data={formData as never} onChange={handleChange as never} />;
       case 'about.hero':
-        return <AboutHeroForm data={formData as never} onChange={handleChange} />;
+        return <AboutHeroForm data={formData as never} onChange={handleChange as never} />;
       case 'principles':
-        return <PrinciplesPageForm data={formData as never} onChange={handleChange} />;
+        return <PrinciplesPageForm data={formData as never} onChange={handleChange as never} />;
       case 'framework':
-        return <FrameworkPageForm data={formData as never} onChange={handleChange} />;
+        return <FrameworkPageForm data={formData as never} onChange={handleChange as never} />;
       case 'the_index':
-        return <TheIndexForm data={formData as never} onChange={handleChange} />;
+        return <TheIndexForm data={formData as never} onChange={handleChange as never} />;
       case 'benchmarking':
-        return <BenchmarkingPageForm data={formData as never} onChange={handleChange} />;
+        return <BenchmarkingPageForm data={formData as never} onChange={handleChange as never} />;
       case 'additional_resources':
-        return <AdditionalResourcesForm data={formData as never} onChange={handleChange} />;
+        return <AdditionalResourcesForm data={formData as never} onChange={handleChange as never} />;
       case 'feedback':
-        return <FeedbackForm data={formData as never} onChange={handleChange} />;
+        return <FeedbackForm data={formData as never} onChange={handleChange as never} />;
       case 'footer':
-        return <FooterForm data={formData as never} onChange={handleChange} />;
+        return <FooterForm data={formData as never} onChange={handleChange as never} />;
       case 'glossary_meta':
-        return <GlossaryMetaForm data={formData as never} onChange={handleChange} />;
+        return <GlossaryMetaForm data={formData as never} onChange={handleChange as never} />;
       default:
         return null;
     }

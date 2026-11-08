@@ -311,7 +311,7 @@ export function ArabicSectionDivider() {
  * Wraps the English (LTR) content fields inside an editor form.
  * Hidden when the admin lang mode is set to "Arabic only".
  */
-export function EnglishFieldsGroup({ children, className }: { children: React.ReactNode; className?: string }) {
+export function EnglishFieldsGroup({ children, className: _className }: { children: React.ReactNode; className?: string }) {
   const { showEn } = useAdminLang();
   if (!showEn) return null;
   return <>{children}</>;
@@ -322,7 +322,7 @@ export function EnglishFieldsGroup({ children, className }: { children: React.Re
  * Hidden when the admin lang mode is set to "English only".
  * Renders with a subtle RTL indicator strip.
  */
-export function ArabicFieldsGroup({ children, className }: { children: React.ReactNode; className?: string }) {
+export function ArabicFieldsGroup({ children, className: _className }: { children: React.ReactNode; className?: string }) {
   const { showAr } = useAdminLang();
   if (!showAr) return null;
   return <>{children}</>;

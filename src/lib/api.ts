@@ -1,9 +1,9 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-async function handleResponse(response: Response) {
+async function handleResponse(response: Response): Promise<any> {
   // Safely parse the body — it may be JSON or plain text (e.g. rate-limit messages)
   const contentType = response.headers.get('content-type') ?? '';
-  let data: unknown = null;
+  let data: any = null;
   if (contentType.includes('application/json')) {
     try {
       data = await response.json();

@@ -41,7 +41,7 @@ function getMultiSelectValues(select: HTMLSelectElement): string[] {
 export default function Publications() {
   const { lang, isRtl } = useLanguage();
   const [selectedAuthorities, setSelectedAuthorities] = useState<PublicationAuthority[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<PublicationCategory[]>([]);
+  const [_selectedCategories, setSelectedCategories] = useState<PublicationCategory[]>([]);
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);

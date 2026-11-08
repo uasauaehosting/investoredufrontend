@@ -64,7 +64,7 @@ export default function AdminDashboard() {
 
 function AdminDashboardInner() {
   const { session, signOut } = useAuth();
-  const { lang, toggleLang, isRtl } = useLanguage();
+  const { toggleLang, isRtl } = useLanguage();
   const { mode, setMode } = useAdminLang();
   const [section, setSection] = useState<Section>('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);

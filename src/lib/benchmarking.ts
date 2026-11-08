@@ -138,7 +138,7 @@ export function filterBenchmarkingRecords(
   const activeYears = selectedYears.filter((year) => year !== 'All Years');
 
   return records.filter((record) => {
-    const yearMatch = useAllYears || activeYears.includes(record.year as BenchmarkingYear);
+    const yearMatch = useAllYears || activeYears.some((y) => y === record.year);
     const authorityMatch = matchesBenchmarkingAuthority(record.authority, selectedAuthority);
     return yearMatch && authorityMatch;
   });

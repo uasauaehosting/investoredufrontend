@@ -8,7 +8,7 @@ export function useSiteContent<T>(key: string, fallback: T): { data: T; loading:
   useEffect(() => {
     api
       .get(`/site-content/${key}`)
-      .then((content) => setData({ ...fallback, ...content }))
+      .then((content) => setData({ ...fallback, ...(content as object) }))
       .catch(() => setData(fallback))
       .finally(() => setLoading(false));
   }, [key]);

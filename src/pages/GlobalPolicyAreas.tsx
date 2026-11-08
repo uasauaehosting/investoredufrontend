@@ -41,7 +41,7 @@ function getMultiSelectValues(select: HTMLSelectElement): string[] {
 export default function GlobalPolicyAreas() {
   const { lang, isRtl } = useLanguage();
   const [selectedInstitutions, setSelectedInstitutions] = useState<PolicyInstitution[]>([]);
-  const [selectedCategories,   setSelectedCategories]   = useState<PolicyCategory[]>([]);
+  const [_selectedCategories,   setSelectedCategories]   = useState<PolicyCategory[]>([]);
   const [policyAreas,          setPolicyAreas]           = useState<GlobalPolicyArea[]>([]);
   const [loading,  setLoading]  = useState(false);
   const [submitted,setSubmitted]= useState(false);

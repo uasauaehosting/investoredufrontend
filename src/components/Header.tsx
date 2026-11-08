@@ -105,7 +105,7 @@ export default function Header() {
   const location = useLocation();
 
   // Re-build nav items whenever lang changes so labels switch language live
-  const navItems = buildNavItems(lang) as ResolvedItem[];
+  const navItems = buildNavItems(lang) as unknown as ResolvedItem[];
 
   const toggleMobileExpand = (key: string) => {
     setMobileExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
