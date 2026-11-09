@@ -4,6 +4,7 @@ import { useLocalizedSiteContent } from '../lib/useLocalizedSiteContent';
 import { useLanguage } from '../lib/LanguageContext';
 import { pickField } from '../lib/localizedText';
 import { t } from '../lib/translations';
+import { normalizeMediaUrl } from '../lib/mediaUrl';
 
 // English fallback paragraphs
 const FALLBACK_PARAGRAPHS_EN = [
@@ -13,7 +14,7 @@ const FALLBACK_PARAGRAPHS_EN = [
   "Investor education and awareness helps not only to protect investors, but it also contributes to the development of capital markets by enhancing investors' confidence as it complements the work on regulations, supervision and enforcement. Some regulators have used investor education as an important means to increase participation in the capital markets. Normally, regulators play a key role in investor education and in raising investor awareness. However, both public and private sectors could also play a supporting role in this regard.",
 ];
 
-// Arabic fallback paragraphs — extracted from ar/About.html
+// Arabic fallback paragraphs
 const FALLBACK_PARAGRAPHS_AR = [
   'تأسس اتحاد هيئات الأوراق المالية العربية عام 2007 وهو مؤسسة لا تهدف للربح تتمتع بالشخصية الاعتبارية المستقلة، مقرّه دولة الإمارات العربية المتحدة، ويضم في عضويته هيئات الأوراق المالية والجهات الرقابية على الأسواق. يهدف الاتحاد إلى الارتقاء بالمستوى التشريعي والتنظيمي لأسواق الأوراق المالية العربية بما يحقق العدالة والكفاءة والشفافية، ويهدف أيضا إلى توحيد الجهود للوصول إلى مستويات فعالة للرقابة على المعاملات في أسواق الأوراق المالية العربية. كما يسعى الاتحاد إلى تعزيز التعاون والتنسيق المشترك بين أعضائه لتحقيق أقصى قدر من الانسجام والتوافق فيما يتعلق بالقوانين والأنظمة ذات العلاقة، فضلاً عن تذليل الصعوبات التي تعترض الاستثمار في أسواق الأوراق المالية العربية، وتوسيع قاعدته وتنويع أدواته وتعميق ثقافة الاستثمار.',
   'يحظى موضوع رفع مستوى الوعي والتعليم للمستثمرين في الدول العربية، خصوصاً الصغار منهم، باهتمام بالغ نظرا لدوره في رفع مستوى ثقافة الاستثمار وتعزيز كفاءة الأسواق، هو من أولويات الاتحاد ويمثل أحد محاور خطته الاستراتيجية 2016 - 2017 من خلال إنشاء بوابة إلكترونية خاصة بتوعية وتعليم المستثمرين تحتوي على مبادرات الاتحاد والأعضاء على حد سواء في هذا المجال.',
@@ -27,10 +28,16 @@ const HERO_FALLBACK = {
   titleAr: 'اتحاد هيئات الأوراق المالية العربية: بوابة تعليم وتوعية المستثمرين',
 };
 
+interface Section {
+  content: string;
+  contentAr?: string;
+  imageUrl?: string;
+}
+
 export default function About() {
   const { lang } = useLanguage();
   const { data: hero } = useLocalizedSiteContent('about.hero', HERO_FALLBACK, ['badge', 'title']);
-  const [paragraphs, setParagraphs] = useState<string[]>([]);
+  const [sections, setSections] = useState<Section[]>([]);
 
   // Derive static fallback based on current language
   const fallbackParagraphs =
@@ -39,26 +46,21 @@ export default function About() {
   useEffect(() => {
     api
       .get('/about/sections')
-      .then((sections) => {
-        if (Array.isArray(sections) && sections.length > 0) {
-          setParagraphs(
-            sections.map((s: { content: string; contentAr?: string }) =>
-              pickField(lang, { content: s.content, contentAr: s.contentAr }, 'content'),
-            ),
-          );
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setSections(data);
         } else {
-          // API returned empty — use static fallback for chosen language
-          setParagraphs([]);
+          setSections([]);
         }
       })
-      .catch(() => setParagraphs([]));
+      .catch(() => setSections([]));
   }, [lang]);
 
-  // Use API paragraphs if loaded, otherwise fall back to static translations
-  const displayParagraphs = paragraphs.length > 0 ? paragraphs : fallbackParagraphs;
+  const isRtl = lang === 'ar';
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
+      {/* Hero banner */}
       <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-4xl">
@@ -73,18 +75,51 @@ export default function About() {
         </div>
       </div>
 
+      {/* Content card */}
       <div className="max-w-7xl mx-auto px-4 -mt-12 relative z-10">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-12 lg:p-16">
-          <div className="max-w-4xl mx-auto space-y-8">
-            {displayParagraphs.map((text, index) => (
-              <p
-                key={index}
-                className="text-gray-600 text-base sm:text-lg leading-relaxed"
-                dir={lang === 'ar' ? 'rtl' : 'ltr'}
-              >
-                {text}
-              </p>
-            ))}
+          <div className="max-w-4xl mx-auto space-y-12">
+            {sections.length > 0
+              ? sections.map((section, index) => {
+                  const text = pickField(lang, { content: section.content, contentAr: section.contentAr }, 'content');
+                  const imageUrl = normalizeMediaUrl(section.imageUrl);
+
+                  return (
+                    <div
+                      key={index}
+                      className={`flex flex-col ${imageUrl ? 'gap-6' : ''}`}
+                      dir={isRtl ? 'rtl' : 'ltr'}
+                    >
+                      {/* Image — full-width above the text when present */}
+                      {imageUrl && (
+                        <div className="w-full rounded-2xl overflow-hidden shadow-md">
+                          <img
+                            src={imageUrl}
+                            alt=""
+                            className="w-full h-64 sm:h-80 object-cover"
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                          />
+                        </div>
+                      )}
+
+                      {/* Rich HTML content */}
+                      <div
+                        className="prose prose-gray max-w-none text-gray-600 text-base sm:text-lg leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: text }}
+                      />
+                    </div>
+                  );
+                })
+              : /* Static text fallback (no imageUrl, plain text) */
+                fallbackParagraphs.map((text, index) => (
+                  <p
+                    key={index}
+                    className="text-gray-600 text-base sm:text-lg leading-relaxed"
+                    dir={isRtl ? 'rtl' : 'ltr'}
+                  >
+                    {text}
+                  </p>
+                ))}
           </div>
         </div>
       </div>

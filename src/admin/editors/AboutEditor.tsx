@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api } from '../../lib/api';
-import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
+import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, EnglishFieldsGroup, ArabicFieldsGroup, ImageField, MediaPreview } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
+import RichHtmlEditor from '../components/RichHtmlEditor';
 
 interface AboutSection {
   id: number;
@@ -11,6 +12,7 @@ interface AboutSection {
   titleAr?: string | null;
   content: string;
   contentAr?: string | null;
+  imageUrl?: string | null;
   order: number;
   isActive: boolean;
 }
@@ -20,6 +22,7 @@ const empty = (): Omit<AboutSection, 'id'> => ({
   titleAr: '',
   content: '',
   contentAr: '',
+  imageUrl: '',
   order: 0,
   isActive: true,
 });
@@ -58,6 +61,7 @@ export default function AboutEditor() {
         ...editing,
         titleAr: editing.titleAr?.trim() || null,
         contentAr: editing.contentAr?.trim() || null,
+        imageUrl: editing.imageUrl?.trim() || null,
       };
       if (editing.id) {
         await api.put(`/about/sections/${editing.id}`, payload);
@@ -101,14 +105,50 @@ export default function AboutEditor() {
       {editing && (
         <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 space-y-4">
           <EnglishFieldsGroup>
-            <input className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Title" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
-            <textarea className="w-full border rounded-lg px-3 py-2 text-sm min-h-[120px]" placeholder="Content paragraph" value={editing.content ?? ''} onChange={(e) => setEditing({ ...editing, content: e.target.value })} />
+            {/* Title */}
+            <input
+              className="w-full border rounded-lg px-3 py-2 text-sm"
+              placeholder="Title"
+              value={editing.title ?? ''}
+              onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+            />
+
+            {/* Content — WYSIWYG */}
+            <RichHtmlEditor
+              label="Content"
+              value={editing.content ?? ''}
+              onChange={(v) => setEditing({ ...editing, content: v })}
+              placeholder="Section content…"
+              minHeight={180}
+            />
+
+            {/* Image */}
+            <ImageField
+              label="Section Image (optional)"
+              value={editing.imageUrl ?? ''}
+              onChange={(v) => setEditing({ ...editing, imageUrl: v })}
+            />
           </EnglishFieldsGroup>
+
           <ArabicSectionDivider />
+
           <ArabicFieldsGroup>
-            <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
-            <ArabicTextAreaField label="المحتوى (عربي)" value={editing.contentAr ?? ''} onChange={(v) => setEditing({ ...editing, contentAr: v })} rows={6} englishValue={editing.content ?? ''} />
+            <ArabicTextField
+              label="العنوان (عربي)"
+              value={editing.titleAr ?? ''}
+              onChange={(v) => setEditing({ ...editing, titleAr: v })}
+              englishValue={editing.title ?? ''}
+            />
+            <RichHtmlEditor
+              label="المحتوى (عربي)"
+              value={editing.contentAr ?? ''}
+              onChange={(v) => setEditing({ ...editing, contentAr: v })}
+              placeholder="المحتوى بالعربية…"
+              dir="rtl"
+              minHeight={180}
+            />
           </ArabicFieldsGroup>
+
           <div className="flex gap-2">
             <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5"><Save size={14} /> Save</button>
             <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"><X size={14} /> Cancel</button>
@@ -133,9 +173,13 @@ export default function AboutEditor() {
               onDragStart={sortable.handleDragStart}
               onDragEnd={sortable.clearDragging}
             />
+            <MediaPreview url={s.imageUrl} alt={s.title} />
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm text-gray-800">{s.title}</p>
-              <p className="text-xs text-gray-500 mt-1 line-clamp-2">{s.content}</p>
+              <p
+                className="text-xs text-gray-500 mt-1 line-clamp-2"
+                dangerouslySetInnerHTML={{ __html: s.content }}
+              />
             </div>
             <div className="flex gap-1 shrink-0">
               <button onClick={() => setEditing(s)} className="p-2 text-gray-400 hover:text-[#009900]"><Pencil size={15} /></button>
