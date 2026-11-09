@@ -78,7 +78,7 @@ export default function MembersSection() {
           style={{ backgroundImage: `url(${headerImage})` }}
         />
         {/* Green gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#004d00]/85 via-[#006600]/70 to-[#004d00]/85" />
+        {/* <div className="absolute inset-0 bg-gradient-to-r from-[#004d00]/85 via-[#006600]/70 to-[#004d00]/85" /> */}
         {/* Dot-grid pattern */}
         <div
           className="absolute inset-0 opacity-15"

@@ -109,7 +109,7 @@ export default function PortalSection() {
         />
 
         {/* Blue-tinted overlay matching the screenshot */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#003366]/80 via-[#005599]/60 to-[#003366]/80" />
+        {/* <div className="absolute inset-0 bg-gradient-to-r from-[#003366]/80 via-[#005599]/60 to-[#003366]/80" /> */}
 
         {/* Subtle pattern overlay */}
         <div
