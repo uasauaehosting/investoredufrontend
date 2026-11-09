@@ -92,8 +92,11 @@ export default function NewsSection() {
   useEffect(() => {
     api.get('/home/news')
       .then((data) => { setNews(data.slice(0, 6) ?? []); setLoading(false); })
-      .catch(() => { setError(t(lang, 'news.error', 'Failed to load news.')); setLoading(false); });
-  }, [lang]);
+      .catch(() => { setError(t('en', 'news.error', 'Failed to load news.')); setLoading(false); });
+  // lang is intentionally excluded — news data is language-agnostic from the API;
+  // individual cards resolve Arabic fields at render time via pickLocalized().
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section className="py-14 bg-gray-50">

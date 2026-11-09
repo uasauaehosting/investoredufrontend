@@ -1,6 +1,7 @@
 import type {
   HomeWelcomeContent,
   HomePortalContent,
+  HomeMembersHeaderContent,
   AboutHeroContent,
   PrinciplesPageContent,
   FrameworkPageContent,
@@ -13,8 +14,9 @@ import type {
 } from './PageForms';
 
 export const PAGE_KEYS = [
-  { key: 'home.welcome', label: 'Home — Welcome Section' },
-  { key: 'home.portal_section', label: 'Home — Portal Cards' },
+  { key: 'home.welcome',         label: 'Home — Welcome Section' },
+  { key: 'home.portal_section',  label: 'Home — Portal Banner & Cards' },
+  { key: 'home.members_header',  label: 'Home — Members Section Banner' },
   { key: 'about.hero', label: 'About — Hero' },
   { key: 'principles', label: 'Principles Page' },
   { key: 'framework', label: 'Framework Page' },
@@ -44,8 +46,13 @@ export const DEFAULTS: Record<PageKey, Record<string, unknown>> = {
   } satisfies HomeWelcomeContent,
   'home.portal_section': {
     heroImage: '',
+    heroTitle: 'UASA INVESTOR EDUCATION PORTAL',
+    heroTitleAr: 'بوابة اتحاد هيئات الأوراق المالية العربية لتعليم وتوعية المستثمرين',
     cards: [{ title: '', href: '', image_url: '' }],
   } satisfies HomePortalContent,
+  'home.members_header': {
+    headerImage: '',
+  } satisfies HomeMembersHeaderContent,
   'about.hero': {
     badge: 'About UASA',
     badgeAr: '',

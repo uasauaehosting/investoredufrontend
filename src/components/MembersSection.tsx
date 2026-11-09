@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { useLanguage } from '../lib/LanguageContext';
 import { t } from '../lib/translations';
+import { useSiteContent } from '../lib/useSiteContent';
+
+const MEMBERS_HEADER_FALLBACK = {
+  headerImage: 'https://images.pexels.com/photos/1105766/pexels-photo-1105766.jpeg?auto=compress&cs=tinysrgb&w=1600',
+};
 
 export interface Member {
   id: number;
@@ -21,12 +26,12 @@ function MemberCard({ member }: { member: Member }) {
       rel={member.website ? 'noopener noreferrer' : undefined}
       className="group flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200 hover:border-[#009900]/40 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 bg-white"
     >
-      <div className="w-250 h-140 flex items-center justify-center mb-3">
+      <div className="w-full h-28 flex items-center justify-center mb-3">
         {imgVisible && member.logo ? (
           <img
             src={member.logo}
             alt={`${member.name} — ${member.country}`}
-            className="max-h-120 max-w-105 object-contain group-hover:scale-105 transition-transform duration-300"
+            className="max-h-24 max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
             onError={() => setImgVisible(false)}
           />
         ) : (
@@ -41,10 +46,13 @@ function MemberCard({ member }: { member: Member }) {
 }
 
 export default function MembersSection() {
-  const { lang } = useLanguage();
+  const { lang, isRtl } = useLanguage();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { data: headerData } = useSiteContent('home.members_header', MEMBERS_HEADER_FALLBACK);
+
+  const headerImage = (headerData.headerImage as string) || MEMBERS_HEADER_FALLBACK.headerImage;
 
   useEffect(() => {
     api.get('/home/members')
@@ -60,15 +68,38 @@ export default function MembersSection() {
   }, []);
 
   return (
-    <section className="py-14 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-1 h-7 bg-amber-500 rounded-full" />
-          <h2 className="text-2xl font-bold text-[#009900]">
+    <section className="bg-white">
+      {/* ── Full-width heading banner with dynamic background image ── */}
+      <div className="relative w-full aspect-[21/5] overflow-hidden">
+        {/* Dynamic background */}
+        <div
+          className="absolute inset-0 bg-no-repeat bg-cover bg-center"
+          style={{ backgroundImage: `url(${headerImage})` }}
+        />
+        {/* Green gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#004d00]/85 via-[#006600]/70 to-[#004d00]/85" />
+        {/* Dot-grid pattern */}
+        <div
+          className="absolute inset-0 opacity-15"
+          style={{
+            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)`,
+            backgroundSize: '24px 24px',
+          }}
+        />
+        {/* Title */}
+        <div className="relative h-full flex items-center justify-center px-6">
+          <h2
+            dir={isRtl ? 'rtl' : 'ltr'}
+            className="text-white text-center font-extrabold uppercase tracking-widest drop-shadow-lg"
+            style={{ fontSize: 'clamp(0.95rem, 2.6vw, 1.6rem)', letterSpacing: '0.1em' }}
+          >
             {t(lang, 'home.membersPortals', "UASA MEMBERS' INVESTOR EDUCATION PORTALS")}
           </h2>
         </div>
+      </div>
 
+      {/* ── Members grid ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         {loading && (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
             {Array.from({ length: 12 }).map((_, i) => (

@@ -18,11 +18,11 @@ const FALLBACK_FOOTER = {
   inclusionLinks: ['Financial Literacy', 'Digital Finance', 'Microfinance', 'Women Empowerment', 'Youth Financial Education'],
   inclusionLinksAr: ['استراتيجيات وبرامج الأعضاء', 'السياسات الدولية', 'مؤشر الشمول المالي', 'تقييم أعضاء الاتحاد', 'مواد إضافية'],
   usefulLinks: [
-    { label: 'UASA Official Website',           labelAr: 'الموقع الرسمي للاتحاد',                href: '#' },
-    { label: 'IOSCO',                            labelAr: 'المنظمة الدولية لهيئات الأوراق المالية (IOSCO)', href: '#' },
-    { label: 'World Federation of Exchanges',    labelAr: 'الاتحاد العالمي للبورصات',             href: '#' },
-    { label: 'Arab Monetary Fund',               labelAr: 'صندوق النقد العربي',                   href: '#' },
-    { label: 'Securities Commission Resources',  labelAr: 'موارد هيئات الأوراق المالية',          href: '#' },
+    { label: 'UASA Official Website',           labelAr: 'الموقع الرسمي للاتحاد',                href: 'https://www.uasa.ae' },
+    { label: 'IOSCO',                            labelAr: 'المنظمة الدولية لهيئات الأوراق المالية (IOSCO)', href: 'https://www.iosco.org' },
+    { label: 'World Federation of Exchanges',    labelAr: 'الاتحاد العالمي للبورصات',             href: 'https://www.world-exchanges.org' },
+    { label: 'Arab Monetary Fund',               labelAr: 'صندوق النقد العربي',                   href: 'https://www.amf.org.ae' },
+    { label: 'Securities Commission Resources',  labelAr: 'موارد هيئات الأوراق المالية',          href: 'https://www.iosco.org/library' },
   ],
   address: 'Union of Arab Securities Authorities, Abu Dhabi, UAE',
   addressAr: 'الراشدية، أم الرمول دبي، صندوق بريد 117555 دبي، إ.ع.م',
@@ -132,7 +132,12 @@ export default function Footer() {
                   : link.label;
                 return (
                   <li key={link.label}>
-                    <a href={link.href} className="text-black text-sm hover:opacity-70 transition-opacity flex items-center gap-1.5 group">
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-black text-sm hover:opacity-70 transition-opacity flex items-center gap-1.5 group"
+                    >
                       <ExternalLink size={10} className="text-black/50 flex-shrink-0" />{label}
                     </a>
                   </li>
@@ -166,12 +171,19 @@ export default function Footer() {
             </h4>
             <div className="flex items-center gap-3">
               {[
-                { Icon: Facebook, label: 'Facebook' },
-                { Icon: Twitter, label: 'Twitter' },
-                { Icon: Linkedin, label: 'LinkedIn' },
-                { Icon: Youtube, label: 'YouTube' },
-              ].map(({ Icon, label }) => (
-                <a key={label} href="#" aria-label={label} className="w-8 h-8 rounded-full bg-black/10 text-black hover:bg-black hover:text-white flex items-center justify-center transition-colors">
+                { Icon: Facebook, label: 'Facebook',  href: 'https://www.facebook.com/uasa.ae' },
+                { Icon: Twitter,  label: 'Twitter',   href: 'https://twitter.com/uasa_ae' },
+                { Icon: Linkedin, label: 'LinkedIn',  href: 'https://www.linkedin.com/company/uasa-ae' },
+                { Icon: Youtube,  label: 'YouTube',   href: 'https://www.youtube.com/@uasa_ae' },
+              ].map(({ Icon, label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="w-8 h-8 rounded-full bg-black/10 text-black hover:bg-black hover:text-white flex items-center justify-center transition-colors"
+                >
                   <Icon size={14} />
                 </a>
               ))}
@@ -189,13 +201,13 @@ export default function Footer() {
               : `© ${new Date().getFullYear()} Union of Arab Securities Authorities. All rights reserved.`}
           </p>
           <div className="flex items-center gap-4">
-            <a href="#" className="hover:opacity-70 transition-opacity">
+            <a href="/privacy-policy" className="hover:opacity-70 transition-opacity">
               {t(lang, 'footer.privacy', 'Privacy Policy')}
             </a>
-            <a href="#" className="hover:opacity-70 transition-opacity">
+            <a href="/terms-of-use" className="hover:opacity-70 transition-opacity">
               {t(lang, 'footer.terms', 'Terms of Use')}
             </a>
-            <a href="#" className="hover:opacity-70 transition-opacity">
+            <a href="/sitemap" className="hover:opacity-70 transition-opacity">
               {t(lang, 'footer.sitemap', 'Sitemap')}
             </a>
           </div>

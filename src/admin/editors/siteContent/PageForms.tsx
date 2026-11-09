@@ -158,6 +158,8 @@ export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent
 
 export interface HomePortalContent {
   heroImage: string;
+  heroTitle?: string;
+  heroTitleAr?: string;
   cards: { title: string; href: string; image_url: string }[];
 }
 
@@ -175,8 +177,27 @@ export function HomePortalForm({ data, onChange }: FormProps<HomePortalContent>)
 
   return (
     <div className="space-y-6">
-      <SectionHeading title="Portal Section" description="Banner and navigation cards below the hero slider" />
-      <ImageField label="Banner Image" value={data.heroImage ?? ''} onChange={(v) => set('heroImage', v)} />
+      <SectionHeading title="Portal Section" description="Banner image, title and navigation cards below the hero slider" />
+
+      <ImageField label="Banner Background Image" value={data.heroImage ?? ''} onChange={(v) => set('heroImage', v)} />
+
+      <EnglishFieldsGroup>
+        <TextField
+          label="Banner Title"
+          value={data.heroTitle ?? ''}
+          onChange={(v) => set('heroTitle', v)}
+          placeholder="UASA INVESTOR EDUCATION PORTAL"
+        />
+      </EnglishFieldsGroup>
+      <ArabicSectionDivider />
+      <ArabicFieldsGroup>
+        <ArabicTextField
+          label="عنوان البانر (عربي)"
+          value={data.heroTitleAr ?? ''}
+          onChange={(v) => set('heroTitleAr', v)}
+          englishValue={data.heroTitle ?? ''}
+        />
+      </ArabicFieldsGroup>
 
       <SectionHeading title="Portal Cards" description="Clickable cards linking to main sections" />
       <div className="space-y-3">
@@ -557,6 +578,31 @@ export function GlossaryMetaForm({ data, onChange }: FormProps<GlossaryMetaConte
       <SectionHeading title="Glossary Page Settings" description="PDF download and background image. Terms are edited in the Glossary section." />
       <FileField label="PDF Download" value={data.pdfUrl} onChange={(v) => set('pdfUrl', v)} hint="Glossary PDF available for download on the page" />
       <ImageField label="Background Image" value={data.backgroundImage} onChange={(v) => set('backgroundImage', v)} />
+    </div>
+  );
+}
+
+// ─── Home Members Section Header ────────────────────────────────────────────
+
+export interface HomeMembersHeaderContent {
+  headerImage: string;
+}
+
+export function HomeMembersHeaderForm({ data, onChange }: FormProps<HomeMembersHeaderContent>) {
+  return (
+    <div className="space-y-6">
+      <SectionHeading
+        title="Members Section Banner"
+        description="Background image behind the 'UASA Members' Investor Education Portals' heading on the home page"
+      />
+      <ImageField
+        label="Banner Background Image"
+        value={data.headerImage ?? ''}
+        onChange={(v) => onChange({ ...data, headerImage: v })}
+      />
+      <p className="text-[11px] text-gray-400 leading-relaxed">
+        Recommended: wide landscape photo (1600 × 400px or similar). A green overlay is applied automatically so any photo works.
+      </p>
     </div>
   );
 }

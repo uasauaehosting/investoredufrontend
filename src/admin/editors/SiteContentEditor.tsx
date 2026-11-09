@@ -6,6 +6,7 @@ import { PAGE_KEYS, mergeWithDefaults, type PageKey } from './siteContent/defaul
 import {
   HomeWelcomeForm,
   HomePortalForm,
+  HomeMembersHeaderForm,
   AboutHeroForm,
   PrinciplesPageForm,
   FrameworkPageForm,
@@ -93,6 +94,8 @@ export default function SiteContentEditor() {
         return <HomeWelcomeForm data={formData as never} onChange={handleChange as never} />;
       case 'home.portal_section':
         return <HomePortalForm data={formData as never} onChange={handleChange as never} />;
+      case 'home.members_header':
+        return <HomeMembersHeaderForm data={formData as never} onChange={handleChange as never} />;
       case 'about.hero':
         return <AboutHeroForm data={formData as never} onChange={handleChange as never} />;
       case 'principles':

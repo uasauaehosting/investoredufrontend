@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, ChevronDown, Search, Globe, Facebook, Twitter, Linkedin, Youtube } from 'lucide-react';
 import { useLanguage } from '../lib/LanguageContext';
 import { t } from '../lib/translations';
@@ -101,8 +101,18 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<Record<string, boolean>>({});
+  const [searchQuery, setSearchQuery] = useState('');
   const { lang, isRtl, toggleLang } = useLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    navigate(`/search?q=${encodeURIComponent(q)}`);
+    setSearchQuery('');
+  };
 
   // Re-build nav items whenever lang changes so labels switch language live
   const navItems = buildNavItems(lang) as unknown as ResolvedItem[];
@@ -137,16 +147,16 @@ export default function Header() {
               <span>{lang === 'en' ? 'العربية' : 'English'}</span>
             </button>
             <div className="flex items-center gap-2.5">
-              <a href="#" aria-label="Facebook" className="text-green-200 hover:text-amber-400 transition-colors">
+              <a href="https://www.facebook.com/uasa.ae" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-green-200 hover:text-amber-400 transition-colors">
                 <Facebook size={13} />
               </a>
-              <a href="#" aria-label="Twitter" className="text-green-200 hover:text-amber-400 transition-colors">
+              <a href="https://twitter.com/uasa_ae" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="text-green-200 hover:text-amber-400 transition-colors">
                 <Twitter size={13} />
               </a>
-              <a href="#" aria-label="LinkedIn" className="text-green-200 hover:text-amber-400 transition-colors">
+              <a href="https://www.linkedin.com/company/uasa-ae" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-green-200 hover:text-amber-400 transition-colors">
                 <Linkedin size={13} />
               </a>
-              <a href="#" aria-label="YouTube" className="text-green-200 hover:text-amber-400 transition-colors">
+              <a href="https://www.youtube.com/@uasa_ae" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-green-200 hover:text-amber-400 transition-colors">
                 <Youtube size={13} />
               </a>
             </div>
@@ -172,14 +182,22 @@ export default function Header() {
             </div>
           </Link>
           <div className="flex items-center gap-3">
-            <div className="relative hidden sm:block">
+            <form onSubmit={handleSearch} className="relative hidden sm:flex items-center">
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={isRtl ? 'ابحث...' : 'Search...'}
                 className="border border-gray-300 rounded-full px-4 py-2 text-sm pe-9 focus:outline-none focus:ring-2 focus:ring-[#009900]/30 focus:border-[#009900] w-48 lg:w-64"
               />
-              <Search size={14} className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            </div>
+              <button
+                type="submit"
+                aria-label={isRtl ? 'بحث' : 'Search'}
+                className="absolute end-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#009900] transition-colors"
+              >
+                <Search size={14} />
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -323,27 +341,27 @@ export default function Header() {
                                 {mobileExpanded[`${item.label}:${child.label}`] && (
                                   <div className="bg-black/20 pb-1">
                                     {child.children.map((sub) => (
-                                      <a
+                                      <Link
                                         key={sub.label}
-                                        href={sub.href}
+                                        to={sub.href}
                                         className="flex items-center gap-2 ps-12 pe-4 py-2 text-xs text-green-300 hover:text-amber-400 transition-colors"
                                         onClick={() => setMobileOpen(false)}
                                       >
                                         <span className="w-1 h-1 rounded-full bg-amber-400/60 flex-shrink-0" />
                                         {sub.label}
-                                      </a>
+                                      </Link>
                                     ))}
                                   </div>
                                 )}
                               </>
                             ) : (
-                              <a
-                                href={child.href}
+                              <Link
+                                to={child.href}
                                 className="block ps-8 pe-4 py-2.5 text-sm text-green-200 hover:text-amber-400 transition-colors"
                                 onClick={() => setMobileOpen(false)}
                               >
                                 {child.label}
-                              </a>
+                              </Link>
                             )}
                           </div>
                         ))}
@@ -351,13 +369,13 @@ export default function Header() {
                     )}
                   </>
                 ) : (
-                  <a
-                    href={item.href}
+                  <Link
+                    to={item.href!}
                     className="block px-4 py-3 text-sm hover:text-amber-400 transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 )}
               </div>
             ))}
