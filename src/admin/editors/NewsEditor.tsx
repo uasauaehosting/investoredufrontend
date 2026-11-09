@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Newspaper } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import FileUpload from '../../lib/FileUpload';
@@ -8,6 +8,10 @@ import RichHtmlEditor from '../components/RichHtmlEditor';
 import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
+import EditorDrawer from '../components/EditorDrawer';
+import DrawerFooter from '../components/DrawerFooter';
+import EmptyState from '../components/EmptyState';
+import SectionHeader from '../components/SectionHeader';
 
 const CATEGORIES = ['News', 'Publication', 'Event'];
 
@@ -28,17 +32,15 @@ export interface NewsItem {
 }
 
 const empty: Omit<NewsItem, 'id'> = {
-  title: '',
-  titleAr: '',
-  image: '',
-  category: 'News',
+  title: '', titleAr: '', image: '', category: 'News',
   date: new Date().toISOString().split('T')[0],
-  excerpt: '',
-  excerptAr: '',
-  fullDetail: '',
-  fullDetailAr: '',
-  pdfFile: '',
-  link: '',
+  excerpt: '', excerptAr: '', fullDetail: '', fullDetailAr: '', pdfFile: '', link: '',
+};
+
+const CATEGORY_COLORS: Record<string, string> = {
+  News:        'bg-blue-100 text-blue-700',
+  Publication: 'bg-purple-100 text-purple-700',
+  Event:       'bg-amber-100 text-amber-700',
 };
 
 export default function NewsEditor() {
@@ -49,30 +51,20 @@ export default function NewsEditor() {
   const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
-    try {
-      const data = await api.get('/home/news');
-      setItems(normalizeMediaFieldsDeep(data ?? []));
-    } catch (err) {
-      console.error('Failed to load news:', err);
-    } finally {
-      setLoading(false);
-    }
+    try { setItems(normalizeMediaFieldsDeep(await api.get('/home/news') ?? [])); }
+    catch (e) { console.error(e); } finally { setLoading(false); }
   };
   useEffect(() => { load(); }, []);
 
-  const sortable = useSortableReorder({
-    items,
-    setItems,
-    resource: 'news',
-    onError: load,
-  });
+  const sortable = useSortableReorder({ items, setItems, resource: 'news', onError: load });
 
-  const openNew = () => setEditing({ ...empty });
-  const openEdit = (n: NewsItem) => setEditing(normalizeMediaFieldsDeep({ ...n }));
-  const cancel = () => { setEditing(null); setError(null); };
+  const openNew  = () => { setError(null); setEditing({ ...empty }); };
+  const openEdit = (n: NewsItem) => { setError(null); setEditing(normalizeMediaFieldsDeep({ ...n })); };
+  const cancel   = () => { setEditing(null); setError(null); };
 
   const save = async () => {
     if (!editing) return;
+    if (!editing.title?.trim()) { setError('Title is required.'); return; }
     setSaving(true); setError(null);
     try {
       const payload = normalizeMediaFieldsDeep({
@@ -82,166 +74,127 @@ export default function NewsEditor() {
         fullDetailAr: editing.fullDetailAr?.trim() || null,
         pdfFile: editing.pdfFile?.trim() || null,
       });
-      if (editing.id) {
-        await api.put(`/home/news/${editing.id}`, payload);
-      } else {
-        await api.post('/home/news', payload);
-      }
-      setEditing(null);
-      load();
-    } catch (err: any) {
-      setError(err);
-    } finally {
-      setSaving(false);
-    }
+      editing.id ? await api.put(`/home/news/${editing.id}`, payload)
+                 : await api.post('/home/news', payload);
+      setEditing(null); load();
+    } catch (e: any) { setError(e?.message ?? 'Failed to save.'); }
+    finally { setSaving(false); }
   };
 
   const remove = async (id: number) => {
     if (!confirm('Delete this news item?')) return;
-    try {
-      await api.delete(`/home/news/${id}`);
-      load();
-    } catch (err) {
-      console.error('Failed to delete news:', err);
-    }
+    await api.delete(`/home/news/${id}`); load();
   };
 
-  if (loading) return <div className="p-6 text-gray-400 text-sm animate-pulse">Loading news...</div>;
+  if (loading) return <div className="animate-pulse text-gray-400 text-sm p-6">Loading news…</div>;
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
-        <div>
-          <h2 className="text-lg font-bold text-gray-800">News Items</h2>
-          <p className="text-xs text-gray-400 mt-0.5">Manage homepage news cards.</p>
-          <SortableReorderHint reordering={sortable.reordering} />
-        </div>
-        <button onClick={openNew} className="btn-primary flex items-center gap-1.5">
-          <Plus size={15} /> Add News
-        </button>
-      </div>
+      <SectionHeader
+        title="News & Events"
+        description="Manage news articles, publications and events. Drag to reorder."
+        hint={<SortableReorderHint reordering={sortable.reordering} />}
+        action={
+          <button onClick={openNew} className="btn-primary flex items-center gap-1.5">
+            <Plus size={15} /> Add News
+          </button>
+        }
+      />
 
-      {editing && (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
-          <h3 className="font-semibold text-[#009900] text-sm">{editing.id ? 'Edit News Item' : 'New News Item'}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {items.length === 0 ? (
+        <EmptyState
+          icon={<Newspaper size={40} strokeWidth={1.5} />}
+          title="No news items yet"
+          description="Add articles, publications or events to display on the homepage."
+          action={<button onClick={openNew} className="btn-primary flex items-center gap-1.5"><Plus size={14} /> Add News</button>}
+        />
+      ) : (
+        <div className="space-y-2">
+          {items.map((item, index) => (
+            <div
+              key={item.id}
+              onDragOver={sortable.handleDragOver}
+              onDrop={(e) => sortable.handleDrop(e, item.id)}
+              className={sortable.rowClassName(item.id, 'flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:border-green-300 transition-colors')}
+            >
+              <SortableGrip id={item.id} index={index} onDragStart={sortable.handleDragStart} onDragEnd={sortable.clearDragging} />
+              {item.image
+                ? <MediaPreview url={item.image} className="w-16 h-11 object-cover rounded-lg flex-shrink-0 border border-gray-100" />
+                : <div className="w-16 h-11 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0"><Newspaper size={16} className="text-gray-300" /></div>
+              }
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-800 truncate">{item.title}</p>
+                <p className="text-xs text-gray-400">{item.date}</p>
+              </div>
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${CATEGORY_COLORS[item.category] ?? 'bg-gray-100 text-gray-600'}`}>
+                {item.category}
+              </span>
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <button onClick={() => openEdit(item)} className="icon-btn" title="Edit"><Pencil size={14} /></button>
+                <button onClick={() => remove(item.id)} className="icon-btn text-red-400 hover:text-red-600" title="Delete"><Trash2 size={14} /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <EditorDrawer
+        open={!!editing}
+        onClose={cancel}
+        title={editing?.id ? 'Edit News Item' : 'New News Item'}
+        subtitle="Homepage news & events"
+        footer={<DrawerFooter onSave={save} onCancel={cancel} saving={saving} error={error} />}
+      >
+        {editing && (
+          <div className="space-y-4">
             <EnglishFieldsGroup>
-              <div className="sm:col-span-2">
+              <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">Title *</label>
                 <input type="text" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
               </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Category</label>
+                  <select value={editing.category ?? 'News'} onChange={(e) => setEditing({ ...editing, category: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]">
+                    {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
+                  <input type="date" value={editing.date ?? ''} onChange={(e) => setEditing({ ...editing, date: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+                </div>
+              </div>
+              <ImageUpload value={editing.image ?? ''} onChange={(url) => setEditing({ ...editing, image: url })} label="Cover Image" />
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Category</label>
-                <select value={editing.category ?? 'News'} onChange={(e) => setEditing({ ...editing, category: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]">
-                  {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Published Date</label>
-                <input type="date" value={editing.date ?? ''} onChange={(e) => setEditing({ ...editing, date: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
-              </div>
-              <div className="sm:col-span-2">
-                <ImageUpload
-                  value={editing.image ?? ''}
-                  onChange={(url) => setEditing({ ...editing, image: url })}
-                  label="News Header Image"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-gray-500 mb-1">Link URL</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1">External Link (optional)</label>
                 <input type="text" value={editing.link ?? ''} onChange={(e) => setEditing({ ...editing, link: e.target.value })}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
               </div>
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-gray-500 mb-1">Summary / Excerpt</label>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Excerpt / Summary</label>
                 <textarea rows={3} value={editing.excerpt ?? ''} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none" />
               </div>
-              <div className="sm:col-span-2">
-                <RichHtmlEditor
-                  label="Full Description (detail page)"
-                  value={editing.fullDetail ?? ''}
-                  onChange={(fullDetail) => setEditing({ ...editing, fullDetail })}
-                  placeholder="Full news article content..."
-                  hint="Shown on the news detail page. Use Visual mode for formatted text or HTML for raw markup."
-                  minHeight={280}
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <FileUpload
-                  label="Document / PDF"
-                  value={editing.pdfFile ?? ''}
-                  onChange={(url) => setEditing({ ...editing, pdfFile: url })}
-                  accept=".pdf,.doc,.docx,.xls,.xlsx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                  hint="Optional. When uploaded, a Download button appears on the news card and detail page."
-                />
-              </div>
+              <RichHtmlEditor label="Full Article (detail page)" value={editing.fullDetail ?? ''}
+                onChange={(v) => setEditing({ ...editing, fullDetail: v })}
+                placeholder="Full article content…" hint="Shown on the news detail page." minHeight={240} />
+              <FileUpload label="Attachment / PDF" value={editing.pdfFile ?? ''} onChange={(url) => setEditing({ ...editing, pdfFile: url })}
+                accept=".pdf,.doc,.docx" hint="Optional — shows a Download button on the card." />
             </EnglishFieldsGroup>
             <ArabicSectionDivider />
             <ArabicFieldsGroup>
-              <div className="sm:col-span-2">
-                <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
-              </div>
-              <div className="sm:col-span-2">
-                <ArabicTextAreaField label="الملخص (عربي)" value={editing.excerptAr ?? ''} onChange={(v) => setEditing({ ...editing, excerptAr: v })} rows={3} englishValue={editing.excerpt ?? ''} />
-              </div>
-              <div className="sm:col-span-2">
-                <RichHtmlEditor
-                  label="الوصف الكامل (عربي)"
-                  value={editing.fullDetailAr ?? ''}
-                  onChange={(fullDetailAr) => setEditing({ ...editing, fullDetailAr })}
-                  dir="rtl"
-                  placeholder="المحتوى الكامل للخبر..."
-                  hint="يُعرض في صفحة تفاصيل الخبر."
-                  minHeight={280}
-                />
-              </div>
+              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
+              <ArabicTextAreaField label="الملخص (عربي)" value={editing.excerptAr ?? ''} onChange={(v) => setEditing({ ...editing, excerptAr: v })} rows={3} englishValue={editing.excerpt ?? ''} />
+              <RichHtmlEditor label="المقال الكامل (عربي)" value={editing.fullDetailAr ?? ''}
+                onChange={(v) => setEditing({ ...editing, fullDetailAr: v })}
+                dir="rtl" placeholder="المحتوى الكامل بالعربية…" minHeight={240} />
             </ArabicFieldsGroup>
           </div>
-          {error && <p className="text-red-600 text-xs">{error}</p>}
-          <div className="flex gap-2">
-            <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5">
-              <Save size={14} /> {saving ? 'Saving...' : 'Save'}
-            </button>
-            <button onClick={cancel} className="btn-ghost flex items-center gap-1.5"><X size={14} /> Cancel</button>
-          </div>
-        </div>
-      )}
-
-      <div className="space-y-2">
-        {items.map((item, index) => (
-          <div
-            key={item.id}
-            onDragOver={sortable.handleDragOver}
-            onDrop={(e) => sortable.handleDrop(e, item.id)}
-            className={sortable.rowClassName(
-              item.id,
-              'flex items-center gap-3 bg-white border rounded-xl px-4 py-3 group transition-colors border-gray-200 hover:border-green-300',
-            )}
-          >
-            <SortableGrip
-              id={item.id}
-              index={index}
-              onDragStart={sortable.handleDragStart}
-              onDragEnd={sortable.clearDragging}
-            />
-            {item.image && <MediaPreview url={item.image} className="w-14 h-10 object-cover rounded-lg flex-shrink-0" />}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-800 truncate">{item.title}</p>
-              <p className="text-xs text-gray-400">{item.date} &middot; {item.category}</p>
-            </div>
-            <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-green-100 text-green-700 flex-shrink-0">{item.category}</span>
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-              <button onClick={() => openEdit(item)} className="icon-btn"><Pencil size={14} /></button>
-              <button onClick={() => remove(item.id)} className="icon-btn text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
-            </div>
-          </div>
-        ))}
-        {items.length === 0 && <p className="text-sm text-gray-400 py-4 text-center">No news items yet.</p>}
-      </div>
+        )}
+      </EditorDrawer>
     </div>
   );
 }

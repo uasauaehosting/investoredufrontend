@@ -1,20 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, ClipboardList } from 'lucide-react';
 import { api } from '../../lib/api';
-import {
-  INCLUSION_CATEGORY_FILTERS,
-  INCLUSION_MEMBER_FILTERS,
-} from '../../lib/inclusionMembers';
+import { INCLUSION_CATEGORY_FILTERS, INCLUSION_MEMBER_FILTERS } from '../../lib/inclusionMembers';
 import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
+import EditorDrawer from '../components/EditorDrawer';
+import DrawerFooter from '../components/DrawerFooter';
+import EmptyState from '../components/EmptyState';
+import SectionHeader from '../components/SectionHeader';
 
 interface StrategyProject {
   id: number;
-  title: string;
-  titleAr?: string | null;
-  description: string;
-  descriptionAr?: string | null;
+  title: string; titleAr?: string | null;
+  description: string; descriptionAr?: string | null;
   authority_name: string;
   type: string;
   fileUrl: string | null;
@@ -22,14 +21,8 @@ interface StrategyProject {
 }
 
 const empty = (): Omit<StrategyProject, 'id'> => ({
-  title: '',
-  titleAr: '',
-  description: 'View Description',
-  descriptionAr: '',
-  authority_name: '',
-  type: 'Strategy',
-  fileUrl: '',
-  isActive: true,
+  title: '', titleAr: '', description: 'View Description', descriptionAr: '',
+  authority_name: '', type: 'Strategy', fileUrl: '', isActive: true,
 });
 
 function normalize(raw: Record<string, unknown>): StrategyProject {
@@ -46,51 +39,36 @@ function normalize(raw: Record<string, unknown>): StrategyProject {
   };
 }
 
+const TYPE_COLORS: Record<string, string> = {
+  Strategy: 'bg-green-100 text-green-700',
+  Project:  'bg-blue-100 text-blue-700',
+};
+
 export default function MemberStrategiesProjectsEditor() {
-  const [items, setItems] = useState<StrategyProject[]>([]);
+  const [items, setItems]     = useState<StrategyProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<StrategyProject> | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving]   = useState(false);
+  const [error, setError]     = useState<string | null>(null);
 
   const load = async () => {
     try {
       const data = await api.get('/investor-education/member-strategies-projects?is_active=all');
-      const rows = Array.isArray(data) ? data : [];
-      setItems(rows.map((row) => normalize(row as Record<string, unknown>)));
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+      setItems(Array.isArray(data) ? data.map((r) => normalize(r as Record<string, unknown>)) : []);
+    } catch (e) { console.error(e); } finally { setLoading(false); }
   };
+  useEffect(() => { load(); }, []);
 
-  useEffect(() => {
-    load();
-  }, []);
+  const sortable = useSortableReorder({ items, setItems, resource: 'member-strategies-projects', onError: load });
 
-  const sortable = useSortableReorder({
-    items,
-    setItems,
-    resource: 'member-strategies-projects',
-    onError: load,
-  });
+  const openNew  = () => { setError(null); setEditing(empty()); };
+  const openEdit = (item: StrategyProject) => { setError(null); setEditing({ ...item }); };
+  const cancel   = () => { setEditing(null); setError(null); };
 
   const save = async () => {
     if (!editing) return;
-    if (!editing.title?.trim()) {
-      alert('Title is required.');
-      return;
-    }
-    if (!editing.authority_name?.trim()) {
-      alert('Active Member is required.');
-      return;
-    }
-    if (!editing.type?.trim()) {
-      alert('Category is required.');
-      return;
-    }
-    setSaving(true);
+    if (!editing.title?.trim()) { setError('Title is required.'); return; }
+    setSaving(true); setError(null);
     try {
       const payload = {
         title: editing.title?.trim() || '',
@@ -98,159 +76,117 @@ export default function MemberStrategiesProjectsEditor() {
         description: editing.description || 'View Description',
         descriptionAr: editing.descriptionAr?.trim() || null,
         authority_name: editing.authority_name?.trim() || '',
-        type: editing.type || 'Strategy',
+        type: editing.type ?? 'Strategy',
         fileUrl: editing.fileUrl || null,
         isActive: editing.isActive !== false,
       };
-      if (editing.id) {
-        await api.put(`/investor-education/member-strategies-projects/${editing.id}`, payload);
-      } else {
-        await api.post('/investor-education/member-strategies-projects', payload);
-      }
-      setEditing(null);
-      load();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
+      editing.id
+        ? await api.put(`/investor-education/member-strategies-projects/${editing.id}`, payload)
+        : await api.post('/investor-education/member-strategies-projects', payload);
+      setEditing(null); load();
+    } catch (e: any) { setError(e?.message ?? 'Failed to save.'); }
+    finally { setSaving(false); }
   };
 
   const remove = async (id: number) => {
-    if (!confirm('Delete this strategy/project entry? This cannot be undone.')) return;
-    setError(null);
-    try {
-      await api.delete(`/investor-education/member-strategies-projects/${id}`);
-      setItems((prev) => prev.filter((item) => item.id !== id));
-      if (editing?.id === id) {
-        setEditing(null);
-      }
-    } catch (err) {
-      console.error(err);
-      setError(typeof err === 'string' ? err : 'Failed to delete entry. Please try again.');
-    }
+    if (!confirm('Delete this entry?')) return;
+    await api.delete(`/investor-education/member-strategies-projects/${id}`); load();
   };
 
-  if (loading) {
-    return <div className="text-gray-400 text-sm animate-pulse">Loading strategies & projects...</div>;
-  }
+  if (loading) return <div className="animate-pulse text-gray-400 text-sm p-6">Loading strategies & projects…</div>;
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
-        <div>
-          <h2 className="text-lg font-bold text-gray-800">
-            Members Strategies &amp; Projects ({items.length})
-          </h2>
-          <p className="text-xs text-gray-400">
-            Manage financial inclusion strategies and reports by member authority
-          </p>
-          <SortableReorderHint reordering={sortable.reordering} />
-          {error && <p className="text-xs text-red-500 mt-2">{error}</p>}
-        </div>
-        <button onClick={() => setEditing(empty())} className="btn-primary flex items-center gap-1.5">
-          <Plus size={15} /> Add Entry
-        </button>
-      </div>
+      <SectionHeader
+        title={`Strategies & Projects (${items.length})`}
+        description="Financial inclusion strategies and projects at /inclusion/projects. Drag to reorder."
+        hint={<SortableReorderHint reordering={sortable.reordering} />}
+        action={<button onClick={openNew} className="btn-primary flex items-center gap-1.5"><Plus size={15} /> Add Entry</button>}
+      />
 
-      {editing && (
-          <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 grid sm:grid-cols-2 gap-3">
-          <h3 className="font-semibold text-[#009900] text-sm sm:col-span-2">
-            {editing.id ? 'Edit Entry' : 'New Entry'}
-          </h3>
-          <EnglishFieldsGroup>
-            <div className="sm:col-span-2">
-              <label htmlFor="msp-title" className="block text-sm font-semibold text-[#009900] mb-1">Title</label>
-              <input id="msp-title" className="border rounded-lg px-3 py-2 text-sm w-full" placeholder="Title" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
+      {items.length === 0 ? (
+        <EmptyState icon={<ClipboardList size={40} strokeWidth={1.5} />} title="No entries yet"
+          description="Add member authority strategies and financial inclusion projects."
+          action={<button onClick={openNew} className="btn-primary flex items-center gap-1.5"><Plus size={14} /> Add Entry</button>} />
+      ) : (
+        <div className="space-y-2">
+          {items.map((item, index) => (
+            <div key={item.id}
+              onDragOver={sortable.handleDragOver} onDrop={(e) => sortable.handleDrop(e, item.id)}
+              className={sortable.rowClassName(item.id, 'flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:border-green-300 transition-colors')}>
+              <SortableGrip id={item.id} index={index} onDragStart={sortable.handleDragStart} onDragEnd={sortable.clearDragging} />
+              <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center">
+                <ClipboardList size={15} className="text-[#009900]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-800 truncate">{item.title}</p>
+                <p className="text-xs text-gray-400 truncate">{item.authority_name}</p>
+              </div>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${TYPE_COLORS[item.type] ?? 'bg-gray-100 text-gray-600'}`}>{item.type}</span>
+                {!item.isActive && <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">Inactive</span>}
+              </div>
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <button onClick={() => openEdit(item)} className="icon-btn" title="Edit"><Pencil size={14} /></button>
+                <button onClick={() => remove(item.id)} className="icon-btn text-red-400 hover:text-red-600" title="Delete"><Trash2 size={14} /></button>
+              </div>
             </div>
-            <div>
-              <label htmlFor="msp-active-member" className="block text-sm font-semibold text-[#009900] mb-1">Active Member</label>
-              <input id="msp-active-member" list="msp-active-member-options" className="border rounded-lg px-3 py-2 text-sm w-full" placeholder="Select or type member authority" value={editing.authority_name ?? ''} onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })} />
-              <datalist id="msp-active-member-options">
-                {INCLUSION_MEMBER_FILTERS.map((member) => <option key={member} value={member} />)}
-              </datalist>
-            </div>
-            <div>
-              <label htmlFor="msp-category" className="block text-sm font-semibold text-[#009900] mb-1">Category</label>
-              <select id="msp-category" className="border rounded-lg px-3 py-2 text-sm w-full" value={editing.type ?? 'Strategy'} onChange={(e) => setEditing({ ...editing, type: e.target.value })}>
-                {INCLUSION_CATEGORY_FILTERS.map((category) => <option key={category} value={category}>{category}</option>)}
-              </select>
-            </div>
-            <div className="sm:col-span-2">
-              <label htmlFor="msp-file-url" className="block text-sm font-semibold text-[#009900] mb-1">URL / File</label>
-              <input id="msp-file-url" className="border rounded-lg px-3 py-2 text-sm w-full" placeholder="URL / File link" value={editing.fileUrl ?? ''} onChange={(e) => setEditing({ ...editing, fileUrl: e.target.value })} />
-            </div>
-            <div className="sm:col-span-2">
-              <label htmlFor="msp-description" className="block text-sm font-semibold text-[#009900] mb-1">Description</label>
-              <textarea id="msp-description" className="border rounded-lg px-3 py-2 text-sm w-full min-h-[60px]" placeholder="Description shown in View Description modal" value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
-            </div>
-            <label className="flex items-center gap-2 text-sm text-gray-600 sm:col-span-2">
-              <input type="checkbox" checked={editing.isActive !== false} onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })} />
-              Active (visible on public page)
-            </label>
-          </EnglishFieldsGroup>
-          <ArabicSectionDivider />
-          <ArabicFieldsGroup>
-            <div className="sm:col-span-2">
-              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
-            </div>
-            <div className="sm:col-span-2">
-              <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
-            </div>
-          </ArabicFieldsGroup>
-          <div className="sm:col-span-2 flex gap-2">
-            <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5"><Save size={14} /> Save</button>
-            <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-gray-500 flex items-center gap-1"><X size={14} /> Cancel</button>
-          </div>
+          ))}
         </div>
       )}
 
-      <div className="space-y-2">
-        {items.length === 0 && (
-          <p className="text-sm text-gray-400 bg-white rounded-xl border border-gray-200 p-4">
-            No entries yet. Add one or run the seed script to populate legacy data.
-          </p>
-        )}
-        {items.map((item, index) => (
-          <div
-            key={item.id}
-            onDragOver={sortable.handleDragOver}
-            onDrop={(e) => sortable.handleDrop(e, item.id)}
-            className={sortable.rowClassName(
-              item.id,
-              'bg-white rounded-xl border border-gray-200 p-3 flex items-start justify-between gap-3',
-            )}
-          >
-            <SortableGrip
-              id={item.id}
-              index={index}
-              onDragStart={sortable.handleDragStart}
-              onDragEnd={sortable.clearDragging}
-            />
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold text-sm text-gray-800 line-clamp-1">{item.title}</p>
-              <p className="text-xs text-gray-400">
-                Active Member: {item.authority_name || '—'} · Category: {item.type || '—'}
-                {!item.isActive && ' · Inactive'}
-              </p>
-            </div>
-            <div className="flex gap-1 shrink-0">
-              <button
-                onClick={() => setEditing(item)}
-                className="p-1.5 text-gray-400 hover:text-[#009900]"
-              >
-                <Pencil size={14} />
-              </button>
-              <button
-                onClick={() => remove(item.id)}
-                className="p-1.5 text-gray-400 hover:text-red-500"
-              >
-                <Trash2 size={14} />
-              </button>
-            </div>
+      <EditorDrawer open={!!editing} onClose={cancel}
+        title={editing?.id ? 'Edit Entry' : 'New Entry'} subtitle="Strategies & Projects"
+        footer={<DrawerFooter onSave={save} onCancel={cancel} saving={saving} error={error} />}>
+        {editing && (
+          <div className="space-y-4">
+            <EnglishFieldsGroup>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Title *</label>
+                <input type="text" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Authority</label>
+                  <select value={editing.authority_name ?? ''} onChange={(e) => setEditing({ ...editing, authority_name: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]">
+                    <option value="">Select…</option>
+                    {(INCLUSION_MEMBER_FILTERS as readonly string[]).map((m) => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Type</label>
+                  <select value={editing.type ?? 'Strategy'} onChange={(e) => setEditing({ ...editing, type: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]">
+                    {(INCLUSION_CATEGORY_FILTERS as readonly string[]).map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
+                <textarea rows={3} value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">File URL <span className="text-gray-400 font-normal">(optional)</span></label>
+                <input type="text" value={editing.fileUrl ?? ''} onChange={(e) => setEditing({ ...editing, fileUrl: e.target.value })}
+                  placeholder="https://…"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+              </div>
+              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                <input type="checkbox" checked={editing.isActive !== false} onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })} className="rounded border-gray-300" />
+                Active (visible on site)
+              </label>
+            </EnglishFieldsGroup>
+            <ArabicSectionDivider />
+            <ArabicFieldsGroup>
+              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
+              <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
+            </ArabicFieldsGroup>
           </div>
-        ))}
-      </div>
+        )}
+      </EditorDrawer>
     </div>
   );
 }

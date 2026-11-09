@@ -1,78 +1,54 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, BookOpen } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
 import RichHtmlEditor from '../components/RichHtmlEditor';
 import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPreview, EnglishFieldsGroup, ArabicFieldsGroup } from './siteContent/FormFields';
-import {
-  EDUCATION_SECTIONS,
-  EducationItem,
-  EducationSectionSlug,
-} from '../../lib/educationSections';
+import { EDUCATION_SECTIONS, EducationItem, EducationSectionSlug } from '../../lib/educationSections';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
+import EditorDrawer from '../components/EditorDrawer';
+import DrawerFooter from '../components/DrawerFooter';
+import EmptyState from '../components/EmptyState';
+import SectionHeader from '../components/SectionHeader';
 
 const sectionKeys = Object.keys(EDUCATION_SECTIONS) as EducationSectionSlug[];
 
 const empty = (section: EducationSectionSlug): Omit<EducationItem, 'id'> => ({
-  section,
-  title: '',
-  titleAr: '',
-  description: '',
-  descriptionAr: '',
-  imageUrl: '',
-  content: '',
-  contentAr: '',
-  displayOrder: 0,
-  isActive: true,
+  section, title: '', titleAr: '', description: '', descriptionAr: '',
+  imageUrl: '', content: '', contentAr: '', displayOrder: 0, isActive: true,
 });
 
 export default function EducationContentEditor() {
   const [activeSection, setActiveSection] = useState<EducationSectionSlug>('reading-materials');
-  const [items, setItems] = useState<EducationItem[]>([]);
+  const [items, setItems]     = useState<EducationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<EducationItem> | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving]   = useState(false);
+  const [error, setError]     = useState<string | null>(null);
 
   const load = async (section: EducationSectionSlug) => {
     setLoading(true);
-    try {
-      const data = await api.get(`/investor-education/content/admin?section=${section}`);
-      setItems(normalizeMediaFieldsDeep(data ?? []));
-    } catch (err) {
-      console.error('Failed to load education content:', err);
-      setItems([]);
-    } finally {
-      setLoading(false);
-    }
+    try { setItems(normalizeMediaFieldsDeep(await api.get(`/investor-education/content/admin?section=${section}`) ?? [])); }
+    catch (e) { console.error(e); setItems([]); } finally { setLoading(false); }
   };
-
-  useEffect(() => {
-    load(activeSection);
-  }, [activeSection]);
+  useEffect(() => { load(activeSection); }, [activeSection]);
 
   const sortable = useSortableReorder({
-    items,
-    setItems,
-    resource: 'education-content',
-    section: activeSection,
+    items, setItems, resource: 'education-content', section: activeSection,
     onError: () => load(activeSection),
   });
 
-  const openNew = () => setEditing({ ...empty(activeSection) });
-  const openEdit = (item: EducationItem) => setEditing(normalizeMediaFieldsDeep({ ...item }));
-  const cancel = () => {
-    setEditing(null);
-    setError(null);
-  };
+  const switchSection = (key: EducationSectionSlug) => { setActiveSection(key); setEditing(null); };
+  const openNew  = () => { setError(null); setEditing({ ...empty(activeSection) }); };
+  const openEdit = (item: EducationItem) => { setError(null); setEditing(normalizeMediaFieldsDeep({ ...item })); };
+  const cancel   = () => { setEditing(null); setError(null); };
 
   const save = async () => {
     if (!editing) return;
-
-    setSaving(true);
-    setError(null);
+    if (!editing.title?.trim()) { setError('Title is required.'); return; }
+    setSaving(true); setError(null);
     try {
       const payload = normalizeMediaFieldsDeep({
         section: editing.section ?? activeSection,
@@ -86,203 +62,109 @@ export default function EducationContentEditor() {
         displayOrder: editing.displayOrder ?? 0,
         isActive: editing.isActive !== false,
       });
-
-      if (editing.id) {
-        await api.put(`/investor-education/content/${editing.id}`, payload);
-      } else {
-        await api.post('/investor-education/content', payload);
-      }
-      setEditing(null);
-      load(activeSection);
-    } catch (err: unknown) {
-      setError(typeof err === 'string' ? err : 'Failed to save.');
-    } finally {
-      setSaving(false);
-    }
+      editing.id
+        ? await api.put(`/investor-education/content/${editing.id}`, payload)
+        : await api.post('/investor-education/content', payload);
+      setEditing(null); load(activeSection);
+    } catch { setError('Failed to save.'); } finally { setSaving(false); }
   };
 
   const remove = async (id: number) => {
     if (!confirm('Delete this item?')) return;
-    try {
-      await api.delete(`/investor-education/content/${id}`);
-      load(activeSection);
-    } catch (err) {
-      console.error('Failed to delete:', err);
-    }
+    await api.delete(`/investor-education/content/${id}`); load(activeSection);
   };
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-        <div>
-          <h2 className="text-lg font-bold text-gray-800">Investor Education Content</h2>
-          <p className="text-xs text-gray-400 mt-0.5">
-            Manage list items and detail pages for each education section
-          </p>
-          <SortableReorderHint reordering={sortable.reordering} />
-        </div>
-        <button onClick={openNew} className="btn-primary flex items-center gap-1.5 self-start">
-          <Plus size={15} /> Add Item
-        </button>
-      </div>
+      <SectionHeader
+        title="Education Section Content"
+        description="Manage cards and detail pages for each investor education section. Drag to reorder."
+        hint={<SortableReorderHint reordering={sortable.reordering} />}
+        action={<button onClick={openNew} className="btn-primary flex items-center gap-1.5"><Plus size={15} /> Add Item</button>}
+      />
 
-      <div className="flex flex-wrap gap-2 mb-6">
+      {/* Section tab pills */}
+      <div className="flex flex-wrap gap-2 mb-5">
         {sectionKeys.map((key) => (
-          <button
-            key={key}
-            onClick={() => {
-              setActiveSection(key);
-              setEditing(null);
-            }}
-            className={`px-4 py-2 rounded-full text-xs font-semibold transition-colors ${
+          <button key={key} onClick={() => switchSection(key)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
               activeSection === key
-                ? 'bg-[#009900] text-white'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-green-300'
-            }`}
-          >
+                ? 'bg-[#009900] text-white shadow-sm'
+                : 'bg-white border border-gray-200 text-gray-600 hover:border-[#009900]/40 hover:text-[#009900]'
+            }`}>
             {EDUCATION_SECTIONS[key].title}
           </button>
         ))}
       </div>
 
-      {editing && (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
-          <h3 className="font-semibold text-[#009900] text-sm">
-            {editing.id ? 'Edit Item' : 'New Item'} — {EDUCATION_SECTIONS[activeSection].title}
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <EnglishFieldsGroup>
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-gray-500 mb-1">Title *</label>
-                <input
-                  type="text"
-                  value={editing.title ?? ''}
-                  onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-gray-500 mb-1">
-                  Short Description (shown on list) *
-                </label>
-                <textarea
-                  rows={3}
-                  value={editing.description ?? ''}
-                  onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <ImageUpload
-                  label="Image"
-                  value={editing.imageUrl ?? ''}
-                  onChange={(url) => setEditing({ ...editing, imageUrl: url })}
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <RichHtmlEditor
-                  label="Full Content (detail page — HTML allowed)"
-                  value={editing.content ?? ''}
-                  onChange={(content) => setEditing({ ...editing, content })}
-                  placeholder="Full article content here..."
-                  hint="Use Visual mode to paste formatted text, or switch to HTML to paste raw markup."
-                />
-              </div>
-              <div className="flex items-end sm:col-span-2">
-                <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={editing.isActive !== false}
-                    onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })}
-                    className="rounded border-gray-300"
-                  />
-                  Active (visible on site)
-                </label>
-              </div>
-            </EnglishFieldsGroup>
-            <ArabicSectionDivider />
-            <ArabicFieldsGroup>
-              <div className="sm:col-span-2">
-                <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
-              </div>
-              <div className="sm:col-span-2">
-                <ArabicTextAreaField label="الوصف المختصر (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} />
-              </div>
-              <div className="sm:col-span-2">
-                <RichHtmlEditor
-                  label="المحتوى الكامل (عربي)"
-                  value={editing.contentAr ?? ''}
-                  onChange={(contentAr) => setEditing({ ...editing, contentAr })}
-                  dir="rtl"
-                  placeholder="المحتوى الكامل للمقال..."
-                  hint="يمكنك لصق النص المنسق أو التبديل إلى HTML للصق التنسيق مباشرة."
-                />
-              </div>
-            </ArabicFieldsGroup>
-          </div>
-          {error && <p className="text-red-600 text-xs">{error}</p>}
-          <div className="flex gap-2">
-            <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5">
-              <Save size={14} /> {saving ? 'Saving...' : 'Save'}
-            </button>
-            <button onClick={cancel} className="btn-ghost flex items-center gap-1.5">
-              <X size={14} /> Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
       {loading ? (
-        <div className="text-gray-400 text-sm animate-pulse py-8">Loading items...</div>
+        <div className="animate-pulse text-gray-400 text-sm py-8">Loading items…</div>
+      ) : items.length === 0 ? (
+        <EmptyState icon={<BookOpen size={40} strokeWidth={1.5} />}
+          title={`No items in "${EDUCATION_SECTIONS[activeSection].title}" yet`}
+          description="Add section cards that appear on the education section landing page."
+          action={<button onClick={openNew} className="btn-primary flex items-center gap-1.5"><Plus size={14} /> Add Item</button>} />
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {items.map((item, index) => (
-            <div
-              key={item.id}
-              onDragOver={sortable.handleDragOver}
-              onDrop={(e) => sortable.handleDrop(e, item.id)}
-              className={sortable.rowClassName(
-                item.id,
-                'bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-green-300 transition-colors',
-              )}
-            >
-              <SortableGrip
-                id={item.id}
-                index={index}
-                onDragStart={sortable.handleDragStart}
-                onDragEnd={sortable.clearDragging}
-              />
-              {item.imageUrl && <MediaPreview url={item.imageUrl} />}
+            <div key={item.id}
+              onDragOver={sortable.handleDragOver} onDrop={(e) => sortable.handleDrop(e, item.id)}
+              className={sortable.rowClassName(item.id, 'flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:border-green-300 transition-colors')}>
+              <SortableGrip id={item.id} index={index} onDragStart={sortable.handleDragStart} onDragEnd={sortable.clearDragging} />
+              {item.imageUrl
+                ? <MediaPreview url={item.imageUrl} className="w-14 h-10 object-cover rounded-lg flex-shrink-0 border border-gray-100" />
+                : <div className="w-14 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0"><BookOpen size={14} className="text-gray-300" /></div>
+              }
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-bold text-gray-800 truncate">{item.title}</h4>
-                <p className="text-xs text-gray-400 line-clamp-2 mt-0.5">{item.description}</p>
-                {!item.isActive && (
-                  <span className="text-[10px] text-gray-400 mt-1 inline-block">Hidden</span>
-                )}
+                <p className="text-sm font-semibold text-gray-800 truncate">{item.title}</p>
+                <p className="text-xs text-gray-400 line-clamp-1">{item.description}</p>
               </div>
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={() => openEdit(item)}
-                  className="p-1.5 text-gray-400 hover:text-[#009900] hover:bg-green-50 rounded-lg transition-colors"
-                >
-                  <Pencil size={14} />
-                </button>
-                <button
-                  onClick={() => remove(item.id)}
-                  className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <Trash2 size={14} />
-                </button>
+              {!item.isActive && <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-400 flex-shrink-0">Hidden</span>}
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <button onClick={() => openEdit(item)} className="icon-btn" title="Edit"><Pencil size={14} /></button>
+                <button onClick={() => remove(item.id)} className="icon-btn text-red-400 hover:text-red-600" title="Delete"><Trash2 size={14} /></button>
               </div>
             </div>
           ))}
-          {items.length === 0 && (
-            <p className="text-sm text-gray-400 py-8 text-center">
-              No items in {EDUCATION_SECTIONS[activeSection].title} yet.
-            </p>
-          )}
         </div>
       )}
+
+      <EditorDrawer open={!!editing} onClose={cancel}
+        title={editing?.id ? 'Edit Item' : 'New Item'}
+        subtitle={EDUCATION_SECTIONS[activeSection]?.title ?? 'Education Content'}
+        footer={<DrawerFooter onSave={save} onCancel={cancel} saving={saving} error={error} />}>
+        {editing && (
+          <div className="space-y-4">
+            <EnglishFieldsGroup>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Title *</label>
+                <input type="text" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Short Description <span className="text-gray-400 font-normal">(shown on list card)</span></label>
+                <textarea rows={3} value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none" />
+              </div>
+              <ImageUpload label="Image" value={editing.imageUrl ?? ''} onChange={(url) => setEditing({ ...editing, imageUrl: url })} />
+              <RichHtmlEditor label="Full Content (detail page)" value={editing.content ?? ''}
+                onChange={(v) => setEditing({ ...editing, content: v })}
+                placeholder="Full article content…" hint="Use Visual mode or HTML." />
+              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                <input type="checkbox" checked={editing.isActive !== false} onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })} className="rounded border-gray-300" />
+                Active (visible on site)
+              </label>
+            </EnglishFieldsGroup>
+            <ArabicSectionDivider />
+            <ArabicFieldsGroup>
+              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
+              <ArabicTextAreaField label="الوصف المختصر (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} />
+              <RichHtmlEditor label="المحتوى الكامل (عربي)" value={editing.contentAr ?? ''}
+                onChange={(v) => setEditing({ ...editing, contentAr: v })} dir="rtl" placeholder="المحتوى الكامل…" minHeight={200} />
+            </ArabicFieldsGroup>
+          </div>
+        )}
+      </EditorDrawer>
     </div>
   );
 }

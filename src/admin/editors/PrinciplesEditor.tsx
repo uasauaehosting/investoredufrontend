@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, BookOpen } from 'lucide-react';
 import { api } from '../../lib/api';
 import ImageUpload from '../../lib/ImageUpload';
 import { normalizeMediaFieldsDeep } from '../../lib/mediaUrl';
@@ -8,21 +8,15 @@ import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, MediaPrevie
 import { Principle } from '../../lib/principles';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
+import EditorDrawer from '../components/EditorDrawer';
+import DrawerFooter from '../components/DrawerFooter';
+import EmptyState from '../components/EmptyState';
+import SectionHeader from '../components/SectionHeader';
 
 const today = () => new Date().toISOString().slice(0, 10);
-
 const empty = (): Omit<Principle, 'id'> => ({
-  title: '',
-  titleAr: '',
-  description: '',
-  descriptionAr: '',
-  author: '',
-  date: today(),
-  fileUrl: '',
-  imageUrl: '',
-  content: '',
-  contentAr: '',
-  isActive: true,
+  title: '', titleAr: '', description: '', descriptionAr: '',
+  author: '', date: today(), fileUrl: '', imageUrl: '', content: '', contentAr: '', isActive: true,
 });
 
 export default function PrinciplesEditor() {
@@ -33,44 +27,26 @@ export default function PrinciplesEditor() {
   const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
-    setLoading(true);
     try {
-      const data = await api.get('/investor-education/principles/admin');
-      setItems(normalizeMediaFieldsDeep(data ?? []));
-    } catch (err) {
-      console.error('Failed to load principles:', err);
-      setItems([]);
-    } finally {
-      setLoading(false);
-    }
+      setLoading(true);
+      setItems(normalizeMediaFieldsDeep(await api.get('/investor-education/principles/admin') ?? []));
+    } catch (e) { console.error(e); setItems([]); } finally { setLoading(false); }
   };
+  useEffect(() => { load(); }, []);
 
-  useEffect(() => {
-    load();
-  }, []);
+  const sortable = useSortableReorder({ items, setItems, resource: 'principles', onError: load });
 
-  const sortable = useSortableReorder({
-    items,
-    setItems,
-    resource: 'principles',
-    onError: load,
-  });
-
-  const openNew = () => setEditing({ ...empty() });
-  const openEdit = (item: Principle) => setEditing(normalizeMediaFieldsDeep({
-    ...item,
-    date: item.date ? String(item.date).slice(0, 10) : today(),
-  }));
-  const cancel = () => {
-    setEditing(null);
+  const openNew  = () => { setError(null); setEditing({ ...empty() }); };
+  const openEdit = (item: Principle) => {
     setError(null);
+    setEditing(normalizeMediaFieldsDeep({ ...item, date: item.date ? String(item.date).slice(0, 10) : today() }));
   };
+  const cancel = () => { setEditing(null); setError(null); };
 
   const save = async () => {
     if (!editing) return;
-
-    setSaving(true);
-    setError(null);
+    if (!editing.title?.trim()) { setError('Title is required.'); return; }
+    setSaving(true); setError(null);
     try {
       const payload = normalizeMediaFieldsDeep({
         title: editing.title?.trim() || '',
@@ -85,193 +61,103 @@ export default function PrinciplesEditor() {
         contentAr: editing.contentAr?.trim() || null,
         isActive: editing.isActive !== false,
       });
-
-      if (editing.id) {
-        await api.put(`/investor-education/principles/${editing.id}`, payload);
-      } else {
-        await api.post('/investor-education/principles', payload);
-      }
-      setEditing(null);
-      load();
-    } catch (err: unknown) {
-      setError(typeof err === 'string' ? err : 'Failed to save.');
-    } finally {
-      setSaving(false);
-    }
+      editing.id
+        ? await api.put(`/investor-education/principles/${editing.id}`, payload)
+        : await api.post('/investor-education/principles', payload);
+      setEditing(null); load();
+    } catch { setError('Failed to save.'); } finally { setSaving(false); }
   };
 
   const remove = async (id: number) => {
-    if (!confirm('Delete this principle? This cannot be undone.')) return;
-    try {
-      await api.delete(`/investor-education/principles/${id}`);
-      setItems((prev) => prev.filter((item) => item.id !== id));
-    } catch (err) {
-      console.error('Failed to delete:', err);
-      setError('Failed to delete principle.');
-    }
+    if (!confirm('Delete this principle?')) return;
+    await api.delete(`/investor-education/principles/${id}`);
+    setItems((prev) => prev.filter((i) => i.id !== id));
   };
+
+  if (loading) return <div className="animate-pulse text-gray-400 text-sm p-6">Loading principles…</div>;
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-        <div>
-          <h2 className="text-lg font-bold text-gray-800">Principles</h2>
-          <p className="text-xs text-gray-400 mt-0.5">
-            Add and manage individual principle pages with images and content
-          </p>
-          <SortableReorderHint reordering={sortable.reordering} />
-        </div>
-        <button onClick={openNew} className="btn-primary flex items-center gap-1.5 self-start">
-          <Plus size={15} /> Add Principle
-        </button>
-      </div>
+      <SectionHeader
+        title="Principles"
+        description="Individual principle pages under /education/reading-materials/principles. Drag to reorder."
+        hint={<SortableReorderHint reordering={sortable.reordering} />}
+        action={<button onClick={openNew} className="btn-primary flex items-center gap-1.5"><Plus size={15} /> Add Principle</button>}
+      />
 
-      {editing && (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 space-y-4">
-          <h3 className="font-semibold text-[#009900] text-sm">
-            {editing.id ? 'Edit Principle' : 'New Principle'}
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {items.length === 0 ? (
+        <EmptyState icon={<BookOpen size={40} strokeWidth={1.5} />} title="No principles yet"
+          description="Add IOSCO / UASA principles to display on the reading materials page."
+          action={<button onClick={openNew} className="btn-primary flex items-center gap-1.5"><Plus size={14} /> Add Principle</button>} />
+      ) : (
+        <div className="space-y-2">
+          {items.map((item, index) => (
+            <div key={item.id}
+              onDragOver={sortable.handleDragOver} onDrop={(e) => sortable.handleDrop(e, item.id)}
+              className={sortable.rowClassName(item.id, 'flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:border-green-300 transition-colors')}>
+              <SortableGrip id={item.id} index={index} onDragStart={sortable.handleDragStart} onDragEnd={sortable.clearDragging} />
+              {item.imageUrl
+                ? <MediaPreview url={item.imageUrl} className="w-14 h-10 object-cover rounded-lg flex-shrink-0 border border-gray-100" />
+                : <div className="w-14 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0"><BookOpen size={14} className="text-gray-300" /></div>
+              }
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-800 truncate">{item.title}</p>
+                <p className="text-xs text-gray-400 truncate">{item.description}</p>
+              </div>
+              {!item.isActive && <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-400 flex-shrink-0">Hidden</span>}
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <button onClick={() => openEdit(item)} className="icon-btn" title="Edit"><Pencil size={14} /></button>
+                <button onClick={() => remove(item.id)} className="icon-btn text-red-400 hover:text-red-600" title="Delete"><Trash2 size={14} /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <EditorDrawer open={!!editing} onClose={cancel}
+        title={editing?.id ? 'Edit Principle' : 'New Principle'} subtitle="Reading materials"
+        footer={<DrawerFooter onSave={save} onCancel={cancel} saving={saving} error={error} />}>
+        {editing && (
+          <div className="space-y-4">
             <EnglishFieldsGroup>
-              <div className="sm:col-span-2">
+              <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">Title *</label>
-                <input
-                  type="text"
-                  value={editing.title ?? ''}
-                  onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-                  placeholder="Principle name"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-gray-500 mb-1">
-                  Short Description (shown on list) *
-                </label>
-                <textarea
-                  rows={3}
-                  value={editing.description ?? ''}
-                  onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <ImageUpload
-                  label="Image"
-                  value={editing.imageUrl ?? ''}
-                  onChange={(url) => setEditing({ ...editing, imageUrl: url })}
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <RichHtmlEditor
-                  label="Full Content (detail page — HTML allowed)"
-                  value={editing.content ?? ''}
-                  onChange={(content) => setEditing({ ...editing, content })}
-                  placeholder="Detailed principle content here..."
-                  hint="Use Visual mode to paste formatted text, or switch to HTML to paste raw markup."
-                />
+                <input type="text" value={editing.title ?? ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
-                <input
-                  type="date"
-                  value={editing.date ?? today()}
-                  onChange={(e) => setEditing({ ...editing, date: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
-                />
+                <label className="block text-xs font-medium text-gray-500 mb-1">Short Description (shown on list card)</label>
+                <textarea rows={3} value={editing.description ?? ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900] resize-none" />
               </div>
-              <div className="flex items-end">
-                <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={editing.isActive !== false}
-                    onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })}
-                    className="rounded border-gray-300"
-                  />
-                  Active (visible on site)
-                </label>
+              <ImageUpload label="Image" value={editing.imageUrl ?? ''} onChange={(url) => setEditing({ ...editing, imageUrl: url })} />
+              <RichHtmlEditor label="Full Content (detail page)" value={editing.content ?? ''}
+                onChange={(v) => setEditing({ ...editing, content: v })}
+                placeholder="Detailed principle content…" hint="Use Visual mode for formatted text or HTML for raw markup." />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
+                  <input type="date" value={editing.date ?? today()} onChange={(e) => setEditing({ ...editing, date: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
+                </div>
+                <div className="flex items-end pb-1">
+                  <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                    <input type="checkbox" checked={editing.isActive !== false} onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })} className="rounded border-gray-300" />
+                    Active (visible on site)
+                  </label>
+                </div>
               </div>
             </EnglishFieldsGroup>
             <ArabicSectionDivider />
             <ArabicFieldsGroup>
-              <div className="sm:col-span-2">
-                <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
-              </div>
-              <div className="sm:col-span-2">
-                <ArabicTextAreaField label="الوصف المختصر (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
-              </div>
-              <div className="sm:col-span-2">
-                <RichHtmlEditor
-                  label="المحتوى الكامل (عربي)"
-                  value={editing.contentAr ?? ''}
-                  onChange={(contentAr) => setEditing({ ...editing, contentAr })}
-                  dir="rtl"
-                  placeholder="المحتوى التفصيلي للمبدأ..."
-                  hint="يمكنك لصق النص المنسق أو التبديل إلى HTML للصق التنسيق مباشرة."
-                />
-              </div>
+              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
+              <ArabicTextAreaField label="الوصف المختصر (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
+              <RichHtmlEditor label="المحتوى الكامل (عربي)" value={editing.contentAr ?? ''}
+                onChange={(v) => setEditing({ ...editing, contentAr: v })} dir="rtl" placeholder="المحتوى التفصيلي…" minHeight={200} />
             </ArabicFieldsGroup>
           </div>
-          {error && <p className="text-red-600 text-xs">{error}</p>}
-          <div className="flex gap-2">
-            <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5">
-              <Save size={14} /> {saving ? 'Saving...' : 'Save'}
-            </button>
-            <button onClick={cancel} className="btn-ghost flex items-center gap-1.5">
-              <X size={14} /> Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
-      {loading ? (
-        <div className="text-gray-400 text-sm animate-pulse py-8">Loading principles...</div>
-      ) : (
-        <div className="space-y-3">
-          {items.map((item, index) => (
-            <div
-              key={item.id}
-              onDragOver={sortable.handleDragOver}
-              onDrop={(e) => sortable.handleDrop(e, item.id)}
-              className={sortable.rowClassName(
-                item.id,
-                'bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 group hover:border-green-300 transition-colors',
-              )}
-            >
-              <SortableGrip
-                id={item.id}
-                index={index}
-                onDragStart={sortable.handleDragStart}
-                onDragEnd={sortable.clearDragging}
-              />
-              {item.imageUrl && <MediaPreview url={item.imageUrl} />}
-              <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-bold text-gray-800 truncate">{item.title}</h4>
-                <p className="text-xs text-gray-400 line-clamp-2 mt-0.5">{item.description}</p>
-                {!item.isActive && (
-                  <span className="text-[10px] text-amber-600 mt-1 inline-block">Hidden</span>
-                )}
-              </div>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => openEdit(item)}
-                  className="p-1.5 text-gray-400 hover:text-[#009900] hover:bg-green-50 rounded-lg transition-colors"
-                >
-                  <Pencil size={14} />
-                </button>
-                <button
-                  onClick={() => remove(item.id)}
-                  className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            </div>
-          ))}
-          {items.length === 0 && (
-            <p className="text-sm text-gray-400 py-8 text-center">No principles yet. Add your first one above.</p>
-          )}
-        </div>
-      )}
+        )}
+      </EditorDrawer>
     </div>
   );
 }

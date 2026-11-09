@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import {
   LayoutDashboard, Image, Newspaper, Users, Globe2,
-  LogOut, ChevronRight, Menu, X, ExternalLink, BookOpen,
-  FileText, Globe, Info, Settings, ClipboardList, BarChart3, Inbox
+  LogOut, ChevronRight, ChevronDown, Menu, X, ExternalLink,
+  BookOpen, FileText, Globe, Info, Settings, ClipboardList,
+  BarChart3, Inbox, AlertCircle, Home, GraduationCap,
+  TrendingUp, Sliders,
 } from 'lucide-react';
 import { useAuth } from '../lib/useAuth';
-import { useLanguage } from '../lib/LanguageContext';
 import { AdminLangProvider, useAdminLang, type AdminLangMode } from './context/AdminLangContext';
 import SlidesEditor from './editors/SlidesEditor';
 import NewsEditor from './editors/NewsEditor';
@@ -26,33 +27,84 @@ import GlobalPolicyAreasEditor from './editors/GlobalPolicyAreasEditor';
 import BenchmarkingEditor from './editors/BenchmarkingEditor';
 import FeedbackInboxEditor from './editors/FeedbackInboxEditor';
 
-type Section =
-  | 'overview' | 'slides' | 'news' | 'members' | 'member-portals' | 'education' | 'principles' | 'frameworks'
-  | 'investment-products' | 'about' | 'pages' | 'glossary' | 'publications' | 'programs'
-  | 'alerts-bulletins' | 'member-strategies-projects' | 'global-policy-areas'
+// ── Section type ────────────────────────────────────────────────────────────
+
+export type Section =
+  | 'overview' | 'slides' | 'news' | 'members' | 'member-portals' | 'education'
+  | 'principles' | 'frameworks' | 'investment-products' | 'about' | 'pages'
+  | 'glossary' | 'publications' | 'programs' | 'alerts-bulletins'
+  | 'member-strategies-projects' | 'global-policy-areas'
   | 'benchmarking' | 'feedback-inbox';
 
-const navItems: { id: Section; label: string; icon: React.ElementType; desc: string }[] = [
-  { id: 'overview',      label: 'Overview',              icon: LayoutDashboard, desc: 'Dashboard summary' },
-  { id: 'slides',        label: 'Home — Hero Slides',    icon: Image,           desc: 'Homepage carousel (/)' },
-  { id: 'news',          label: 'Home — News',           icon: Newspaper,       desc: 'News articles (/news/:id)' },
-  { id: 'members',       label: 'Home — Members',        icon: Users,           desc: 'Authority logos on homepage' },
-  { id: 'pages',         label: 'Page Content',          icon: Settings,        desc: 'Welcome, footer, framework, index pages...' },
-  { id: 'about',         label: 'About',                 icon: Info,            desc: 'About page (/about)' },
-  { id: 'education',     label: 'Education Sections',    icon: BookOpen,        desc: 'Section landing pages (/education/:section)' },
-  { id: 'principles',    label: 'Principles',            icon: BookOpen,        desc: 'Principles pages (/education/reading-materials/principles)' },
-  { id: 'frameworks',    label: 'Framework',             icon: BookOpen,        desc: 'Framework pages (/education/reading-materials/framework)' },
-  { id: 'investment-products', label: 'Investment Products', icon: BookOpen, desc: 'Product literature (/education/reading-materials/products)' },
-  { id: 'publications',  label: 'Publications',          icon: FileText,        desc: 'Member publications (/education/members-activities/publications)' },
-  { id: 'programs',      label: 'Programs',              icon: ClipboardList,   desc: 'Education programs (/education/members-activities/programs)' },
-  { id: 'member-portals', label: 'Member Portals',       icon: Globe2,          desc: 'Authority portals (/education/members-activities/portals)' },
-  { id: 'alerts-bulletins', label: 'Alerts & Bulletins', icon: FileText,      desc: 'Alerts page (/education/alerts)' },
-  { id: 'member-strategies-projects', label: 'Strategies & Projects', icon: ClipboardList, desc: 'Financial inclusion (/inclusion/projects)' },
-  { id: 'global-policy-areas', label: 'Global Policy Areas', icon: Globe,     desc: 'Policy resources (/inclusion/policies)' },
-  { id: 'benchmarking',  label: "Members' Benchmarking", icon: BarChart3,     desc: 'Benchmarking table (/inclusion/index/benchmarking)' },
-  { id: 'glossary',      label: 'Glossary',              icon: Globe,           desc: 'Glossary terms (/glossary)' },
-  { id: 'feedback-inbox', label: 'Feedback Inbox',       icon: Inbox,           desc: 'User submissions (/feedback)' },
+// ── Nav groups ──────────────────────────────────────────────────────────────
+
+interface NavItem {
+  id: Section;
+  label: string;
+  icon: React.ElementType;
+  desc: string;
+}
+
+interface NavGroup {
+  id: string;
+  label: string;
+  icon: React.ElementType;
+  items: NavItem[];
+}
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    id: 'homepage',
+    label: 'Homepage',
+    icon: Home,
+    items: [
+      { id: 'slides',   label: 'Hero Slides',       icon: Image,       desc: 'Carousel banners (/)' },
+      { id: 'news',     label: 'News & Events',      icon: Newspaper,   desc: 'Articles & publications' },
+      { id: 'members',  label: 'Member Logos',       icon: Users,       desc: 'Authority logos strip' },
+    ],
+  },
+  {
+    id: 'education',
+    label: 'Investor Education',
+    icon: GraduationCap,
+    items: [
+      { id: 'about',               label: 'About Page',          icon: Info,          desc: '/about' },
+      { id: 'education',           label: 'Education Sections',  icon: BookOpen,      desc: 'Section landing cards' },
+      { id: 'principles',          label: 'Principles',          icon: BookOpen,      desc: 'Reading materials' },
+      { id: 'frameworks',          label: 'Framework',           icon: BookOpen,      desc: 'IOSCO frameworks' },
+      { id: 'investment-products', label: 'Investment Products', icon: BookOpen,      desc: 'Product literature' },
+      { id: 'publications',        label: 'Publications',        icon: FileText,      desc: 'Member publications' },
+      { id: 'programs',            label: 'Programs',            icon: ClipboardList, desc: 'Education programs' },
+      { id: 'member-portals',      label: 'Member Portals',      icon: Globe2,        desc: 'Authority portals' },
+      { id: 'alerts-bulletins',    label: 'Alerts & Bulletins',  icon: AlertCircle,   desc: 'Alerts page' },
+    ],
+  },
+  {
+    id: 'inclusion',
+    label: 'Financial Inclusion',
+    icon: TrendingUp,
+    items: [
+      { id: 'member-strategies-projects', label: 'Strategies & Projects', icon: ClipboardList, desc: '/inclusion/projects' },
+      { id: 'global-policy-areas',        label: 'Global Policy Areas',   icon: Globe,         desc: 'OECD, AFI resources' },
+      { id: 'benchmarking',               label: "Members' Benchmarking", icon: BarChart3,      desc: 'Benchmarking table' },
+    ],
+  },
+  {
+    id: 'settings',
+    label: 'Site Settings',
+    icon: Sliders,
+    items: [
+      { id: 'pages',         label: 'Page Content',  icon: Settings, desc: 'Texts, links, footer' },
+      { id: 'glossary',      label: 'Glossary',      icon: Globe,    desc: 'Financial terms' },
+      { id: 'feedback-inbox', label: 'Feedback Inbox', icon: Inbox,  desc: 'User submissions' },
+    ],
+  },
 ];
+
+// Flat map for breadcrumb lookups
+const ALL_ITEMS: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
+
+// ── Root export ─────────────────────────────────────────────────────────────
 
 export default function AdminDashboard() {
   return (
@@ -62,157 +114,254 @@ export default function AdminDashboard() {
   );
 }
 
+// ── Inner shell ─────────────────────────────────────────────────────────────
+
 function AdminDashboardInner() {
   const { session, signOut } = useAuth();
-  const { toggleLang, isRtl } = useLanguage();
   const { mode, setMode } = useAdminLang();
   const [section, setSection] = useState<Section>('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  // which groups are expanded; all open by default
+  const [openGroups, setOpenGroups] = useState<Set<string>>(
+    () => new Set(NAV_GROUPS.map((g) => g.id))
+  );
 
-  const navigate = (id: Section) => { setSection(id); setSidebarOpen(false); };
+  const navigate = (id: Section) => {
+    setSection(id);
+    setSidebarOpen(false);
+  };
+
+  const toggleGroup = (id: string) => {
+    setOpenGroups((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const currentItem = ALL_ITEMS.find((n) => n.id === section);
+  const currentGroup = NAV_GROUPS.find((g) => g.items.some((i) => i.id === section));
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+      {/* Mobile backdrop */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/40 z-20 md:hidden" onClick={() => setSidebarOpen(false)} />
+        <div
+          className="fixed inset-0 bg-black/40 z-20 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
 
+      {/* ── Sidebar ── */}
       <aside className={`
-        fixed inset-y-0 start-0 z-30 w-64 bg-[#009900] text-white flex flex-col
+        fixed inset-y-0 start-0 z-30 w-64 bg-[#004d00] text-white flex flex-col
         transform transition-transform duration-300
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        md:relative md:translate-x-0
+        md:relative md:translate-x-0 md:flex-shrink-0
       `}>
-        <div className="px-5 py-5 border-b border-white/10">
+        {/* Logo */}
+        <div className="px-4 py-4 border-b border-white/10">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="font-bold text-sm">UASA Admin</p>
-              <p className="text-green-200 text-xs mt-0.5">Content Management</p>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
+                <LayoutDashboard size={16} className="text-white" />
+              </div>
+              <div>
+                <p className="font-bold text-sm leading-none">UASA Admin</p>
+                <p className="text-green-300 text-[10px] mt-0.5">Content Management</p>
+              </div>
             </div>
             <button className="md:hidden text-white/60 hover:text-white" onClick={() => setSidebarOpen(false)}>
-              <X size={18} />
+              <X size={16} />
             </button>
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {navItems.map(({ id, label, icon: Icon, desc }) => (
-            <button
-              key={id}
-              onClick={() => navigate(id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all group ${
-                section === id
-                  ? 'bg-white/15 text-white font-semibold'
-                  : 'text-green-200 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              <Icon size={17} className="flex-shrink-0" />
-              <div className="flex-1 text-start">
-                <p className="leading-none">{label}</p>
-                <p className="text-xs opacity-60 mt-0.5">{desc}</p>
+        {/* Lang toggle inside sidebar */}
+        <div className="px-4 py-2.5 border-b border-white/10">
+          <p className="text-[10px] text-green-300 uppercase tracking-wider mb-1.5 font-semibold">Content Language</p>
+          <AdminLangToggle mode={mode} setMode={setMode} />
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 overflow-y-auto py-3">
+          {/* Overview */}
+          <button
+            onClick={() => navigate('overview')}
+            className={`w-full flex items-center gap-2.5 px-4 py-2 text-sm transition-colors ${
+              section === 'overview'
+                ? 'bg-white/15 text-white font-semibold'
+                : 'text-green-200 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            <LayoutDashboard size={15} className="flex-shrink-0" />
+            <span>Overview</span>
+            {section === 'overview' && <ChevronRight size={12} className="ms-auto" />}
+          </button>
+
+          {/* Groups */}
+          {NAV_GROUPS.map((group) => {
+            const isOpen = openGroups.has(group.id);
+            const GroupIcon = group.icon;
+            return (
+              <div key={group.id} className="mt-1">
+                {/* Group header */}
+                <button
+                  onClick={() => toggleGroup(group.id)}
+                  className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-green-300 hover:text-white transition-colors"
+                >
+                  <GroupIcon size={13} className="flex-shrink-0" />
+                  <span className="flex-1 text-start">{group.label}</span>
+                  {isOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                </button>
+
+                {/* Items */}
+                {isOpen && (
+                  <div className="pb-1">
+                    {group.items.map(({ id, label, icon: Icon, desc }) => (
+                      <button
+                        key={id}
+                        onClick={() => navigate(id)}
+                        className={`w-full flex items-center gap-2.5 ps-7 pe-4 py-2 text-sm transition-colors group ${
+                          section === id
+                            ? 'bg-white/15 text-white font-semibold border-s-2 border-green-300'
+                            : 'text-green-200 hover:bg-white/8 hover:text-white border-s-2 border-transparent'
+                        }`}
+                      >
+                        <Icon size={14} className="flex-shrink-0 opacity-70" />
+                        <div className="flex-1 text-start min-w-0">
+                          <p className="text-sm leading-none truncate">{label}</p>
+                          <p className="text-[10px] opacity-50 mt-0.5 truncate">{desc}</p>
+                        </div>
+                        {section === id && <ChevronRight size={11} className="flex-shrink-0" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-              {section === id && <ChevronRight size={13} className="flex-shrink-0" />}
-            </button>
-          ))}
+            );
+          })}
         </nav>
 
-        <div className="px-4 py-4 border-t border-white/10 space-y-2">
-          <a href="/" className="flex items-center gap-2 text-green-200 hover:text-white text-xs transition-colors px-2 py-1.5 rounded-lg hover:bg-white/10">
-            <ExternalLink size={13} /> View Public Site
+        {/* Footer */}
+        <div className="px-4 py-3 border-t border-white/10 space-y-1">
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-green-300 hover:text-white text-xs transition-colors px-2 py-1.5 rounded-lg hover:bg-white/10"
+          >
+            <ExternalLink size={12} /> View Public Site
           </a>
-          <button onClick={signOut} className="w-full flex items-center gap-2 text-green-200 hover:text-red-300 text-xs transition-colors px-2 py-1.5 rounded-lg hover:bg-red-500/10">
-            <LogOut size={13} /> Sign Out ({session?.username})
+          <button
+            onClick={signOut}
+            className="w-full flex items-center gap-2 text-green-300 hover:text-red-300 text-xs transition-colors px-2 py-1.5 rounded-lg hover:bg-red-500/10"
+          >
+            <LogOut size={12} />
+            <span className="truncate">Sign Out ({session?.username})</span>
           </button>
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3.5 flex items-center justify-between flex-shrink-0">
+      {/* ── Main ── */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3">
-            <button className="md:hidden text-gray-500 hover:text-gray-700" onClick={() => setSidebarOpen(true)}>
+            <button
+              className="md:hidden text-gray-500 hover:text-gray-700 p-1"
+              onClick={() => setSidebarOpen(true)}
+            >
               <Menu size={20} />
             </button>
             <div>
-              <p className="font-semibold text-gray-800 text-sm">
-                {navItems.find((n) => n.id === section)?.label ?? 'Dashboard'}
-              </p>
-              <p className="text-gray-400 text-xs">
-                {navItems.find((n) => n.id === section)?.desc}
-              </p>
+              {/* Breadcrumb */}
+              <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                <span>Admin</span>
+                {currentGroup && (
+                  <>
+                    <ChevronRight size={11} />
+                    <span>{currentGroup.label}</span>
+                  </>
+                )}
+                {currentItem && (
+                  <>
+                    <ChevronRight size={11} />
+                    <span className="text-gray-700 font-semibold">{currentItem.label}</span>
+                  </>
+                )}
+                {section === 'overview' && (
+                  <>
+                    <ChevronRight size={11} />
+                    <span className="text-gray-700 font-semibold">Overview</span>
+                  </>
+                )}
+              </div>
+              {currentItem?.desc && (
+                <p className="text-[10px] text-gray-400 mt-0.5">{currentItem.desc}</p>
+              )}
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            {/* Content language mode — controls which form fields are shown in editors */}
-            <AdminLangToggle mode={mode} setMode={setMode} />
-            {/* Public site RTL preview toggle */}
-            <button
-              onClick={toggleLang}
-              title={isRtl ? 'Switch public site to English (LTR)' : 'Switch public site to Arabic (RTL)'}
-              className={`hidden sm:flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
-                isRtl
-                  ? 'bg-[#009900] text-white border-[#009900] hover:bg-[#006600]'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-[#009900] hover:text-[#009900]'
-              }`}
-            >
-              <Globe size={13} />
-              {isRtl ? 'RTL' : 'LTR'}
-            </button>
-            <div className="hidden sm:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 text-xs text-gray-500">
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span>{session?.email}</span>
-            </div>
+
+          {/* User badge */}
+          <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 text-xs text-gray-500">
+            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            <span className="hidden sm:inline truncate max-w-[160px]">{session?.email}</span>
           </div>
         </header>
 
+        {/* Content */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">
-          {section === 'overview' && <Overview onNavigate={navigate} />}
-          {section === 'slides' && <SlidesEditor />}
-          {section === 'news' && <NewsEditor />}
-          {section === 'members' && <MembersEditor />}
-          {section === 'member-portals' && <PortalCategoriesEditor />}
-          {section === 'education' && <EducationContentEditor />}
-          {section === 'principles' && <PrinciplesEditor />}
-          {section === 'frameworks' && <FrameworksEditor />}
-          {section === 'investment-products' && <InvestmentProductsEditor />}
-          {section === 'about' && <AboutEditor />}
-          {section === 'pages' && <SiteContentEditor />}
-          {section === 'glossary' && <GlossaryEditor />}
-          {section === 'publications' && <PublicationsEditor />}
-          {section === 'programs' && <ProgramsEditor />}
-          {section === 'alerts-bulletins' && <AlertsBulletinsEditor />}
-          {section === 'member-strategies-projects' && <MemberStrategiesProjectsEditor />}
-          {section === 'global-policy-areas' && <GlobalPolicyAreasEditor />}
-          {section === 'benchmarking' && <BenchmarkingEditor />}
-          {section === 'feedback-inbox' && <FeedbackInboxEditor />}
+          {section === 'overview'                    && <Overview onNavigate={navigate} />}
+          {section === 'slides'                      && <SlidesEditor />}
+          {section === 'news'                        && <NewsEditor />}
+          {section === 'members'                     && <MembersEditor />}
+          {section === 'member-portals'              && <PortalCategoriesEditor />}
+          {section === 'education'                   && <EducationContentEditor />}
+          {section === 'principles'                  && <PrinciplesEditor />}
+          {section === 'frameworks'                  && <FrameworksEditor />}
+          {section === 'investment-products'         && <InvestmentProductsEditor />}
+          {section === 'about'                       && <AboutEditor />}
+          {section === 'pages'                       && <SiteContentEditor />}
+          {section === 'glossary'                    && <GlossaryEditor />}
+          {section === 'publications'                && <PublicationsEditor />}
+          {section === 'programs'                    && <ProgramsEditor />}
+          {section === 'alerts-bulletins'            && <AlertsBulletinsEditor />}
+          {section === 'member-strategies-projects'  && <MemberStrategiesProjectsEditor />}
+          {section === 'global-policy-areas'         && <GlobalPolicyAreasEditor />}
+          {section === 'benchmarking'                && <BenchmarkingEditor />}
+          {section === 'feedback-inbox'              && <FeedbackInboxEditor />}
         </main>
       </div>
     </div>
   );
 }
 
-/** Segmented 3-button toggle: English / Arabic / Both */
-function AdminLangToggle({ mode, setMode }: { mode: AdminLangMode; setMode: (m: AdminLangMode) => void }) {
-  const options: { value: AdminLangMode; label: string; title: string }[] = [
-    { value: 'en',   label: 'EN',   title: 'Show English fields only (LTR)' },
-    { value: 'ar',   label: 'AR',   title: 'Show Arabic fields only (RTL)'  },
-    { value: 'both', label: 'Both', title: 'Show both English and Arabic fields' },
-  ];
+// ── Lang toggle ─────────────────────────────────────────────────────────────
 
+function AdminLangToggle({
+  mode,
+  setMode,
+}: {
+  mode: AdminLangMode;
+  setMode: (m: AdminLangMode) => void;
+}) {
+  const options: { value: AdminLangMode; label: string }[] = [
+    { value: 'en',   label: 'EN' },
+    { value: 'ar',   label: 'AR' },
+    { value: 'both', label: 'Both' },
+  ];
   return (
-    <div
-      className="flex items-center rounded-full border border-gray-200 bg-white overflow-hidden text-xs font-semibold"
-      title="Content language — controls which form fields are shown in editors"
-    >
-      {options.map(({ value, label, title }, i) => (
+    <div className="flex rounded-lg border border-white/20 bg-white/10 overflow-hidden text-xs font-semibold w-full">
+      {options.map(({ value, label }, i) => (
         <button
           key={value}
           onClick={() => setMode(value)}
-          title={title}
-          className={`px-3 py-1.5 transition-colors ${
+          className={`flex-1 py-1.5 transition-colors ${
             mode === value
-              ? 'bg-[#009900] text-white'
-              : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
-          } ${i > 0 ? 'border-s border-gray-200' : ''}`}
+              ? 'bg-white/25 text-white'
+              : 'text-green-300 hover:text-white hover:bg-white/10'
+          } ${i > 0 ? 'border-s border-white/20' : ''}`}
         >
           {label}
         </button>
@@ -221,31 +370,57 @@ function AdminLangToggle({ mode, setMode }: { mode: AdminLangMode; setMode: (m: 
   );
 }
 
-function Overview({ onNavigate }: { onNavigate: (s: Section) => void }) {
-  const cards = navItems.filter((n) => n.id !== 'overview');
+// ── Overview page ────────────────────────────────────────────────────────────
 
+function Overview({ onNavigate }: { onNavigate: (s: Section) => void }) {
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-800">Welcome back</h2>
-        <p className="text-gray-500 text-sm mt-1">All website content is stored in MySQL and editable from here.</p>
+    <div className="space-y-8 max-w-5xl">
+      {/* Welcome */}
+      <div className="bg-gradient-to-r from-[#004d00] to-[#009900] rounded-2xl p-6 text-white">
+        <p className="text-xs font-semibold text-green-300 uppercase tracking-wider">Welcome back</p>
+        <h1 className="text-2xl font-bold mt-1">UASA Admin Dashboard</h1>
+        <p className="text-green-200 text-sm mt-2">
+          All website content is managed from here. Select any section below to start editing.
+        </p>
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 mt-4 text-xs font-semibold bg-white/15 hover:bg-white/25 text-white px-3 py-1.5 rounded-lg transition-colors"
+        >
+          <ExternalLink size={12} /> View Public Site
+        </a>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {cards.map(({ id, label, icon: Icon, desc }) => (
-          <button
-            key={id}
-            onClick={() => onNavigate(id)}
-            className="group text-start bg-white rounded-2xl border border-gray-200 p-5 hover:border-green-300 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
-          >
-            <div className="inline-flex items-center justify-center w-10 h-10 bg-[#009900] text-white rounded-xl mb-3">
-              <Icon size={18} />
+
+      {/* Groups as quick-launch cards */}
+      {NAV_GROUPS.map((group) => {
+        const GroupIcon = group.icon;
+        return (
+          <div key={group.id}>
+            <div className="flex items-center gap-2 mb-3">
+              <GroupIcon size={15} className="text-[#009900]" />
+              <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider">{group.label}</h2>
             </div>
-            <p className="font-semibold text-gray-800 text-sm">{label}</p>
-            <p className="text-gray-400 text-xs mt-1">{desc}</p>
-          </button>
-        ))}
-      </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {group.items.map(({ id, label, icon: Icon, desc }) => (
+                <button
+                  key={id}
+                  onClick={() => onNavigate(id)}
+                  className="group text-start bg-white rounded-xl border border-gray-200 p-4 hover:border-[#009900]/40 hover:shadow-sm transition-all duration-150 hover:-translate-y-0.5"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-lg bg-[#009900]/10 flex items-center justify-center group-hover:bg-[#009900] transition-colors">
+                      <Icon size={15} className="text-[#009900] group-hover:text-white transition-colors" />
+                    </div>
+                    <p className="text-sm font-semibold text-gray-800">{label}</p>
+                  </div>
+                  <p className="text-xs text-gray-400 leading-relaxed">{desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
-
