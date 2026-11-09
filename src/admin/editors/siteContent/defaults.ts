@@ -58,6 +58,7 @@ export const DEFAULTS: Record<PageKey, Record<string, unknown>> = {
     badgeAr: '',
     title: '',
     titleAr: '',
+    sidebarImage: '',
   } satisfies AboutHeroContent,
   principles: {
     introParagraphs: [''],

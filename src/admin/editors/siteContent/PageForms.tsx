@@ -239,6 +239,7 @@ export interface AboutHeroContent {
   badgeAr?: string;
   title: string;
   titleAr?: string;
+  sidebarImage?: string;
 }
 
 export function AboutHeroForm({ data, onChange }: FormProps<AboutHeroContent>) {
@@ -247,7 +248,19 @@ export function AboutHeroForm({ data, onChange }: FormProps<AboutHeroContent>) {
 
   return (
     <div className="space-y-6">
-      <SectionHeading title="About Page Hero" description="Top banner on the About page. Body paragraphs are edited in the About section." />
+      <SectionHeading title="About Page" description="Top banner and sidebar image on the About page. Body paragraphs are edited in the About section." />
+
+      {/* Sidebar image — always visible, not language-gated */}
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
+        <p className="text-xs font-semibold text-amber-700">📷 Sidebar Image</p>
+        <p className="text-[11px] text-amber-600">This image appears in the left panel of the About page beside the text content.</p>
+        <ImageField
+          label="Sidebar Image"
+          value={data.sidebarImage ?? ''}
+          onChange={(v) => set('sidebarImage', v)}
+        />
+      </div>
+
       <EnglishFieldsGroup>
         <TextField label="Badge Text" value={data.badge} onChange={(v) => set('badge', v)} placeholder="About UASA" />
         <TextField label="Page Title" value={data.title} onChange={(v) => set('title', v)} />
