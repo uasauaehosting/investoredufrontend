@@ -1,10 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Save, X, Image as ImageIcon, AlignLeft, GripVertical } from 'lucide-react';
 import { api } from '../../lib/api';
-import { ArabicSectionDivider, ArabicTextAreaField, ArabicTextField, EnglishFieldsGroup, ArabicFieldsGroup, ImageField, MediaPreview } from './siteContent/FormFields';
+import {
+  ArabicSectionDivider,
+  ArabicFieldsGroup,
+  EnglishFieldsGroup,
+  ImageField,
+  MediaPreview,
+} from './siteContent/FormFields';
 import { useSortableReorder } from '../hooks/useSortableReorder';
 import { SortableGrip, SortableReorderHint } from '../components/SortableControls';
 import RichHtmlEditor from '../components/RichHtmlEditor';
+
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 interface AboutSection {
   id: number;
@@ -17,8 +25,8 @@ interface AboutSection {
   isActive: boolean;
 }
 
-const empty = (): Omit<AboutSection, 'id'> => ({
-  title: 'Section',
+const emptySection = (): Omit<AboutSection, 'id'> => ({
+  title: '',
   titleAr: '',
   content: '',
   contentAr: '',
@@ -27,11 +35,21 @@ const empty = (): Omit<AboutSection, 'id'> => ({
   isActive: true,
 });
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Strip HTML tags for a plain-text preview snippet */
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]+>/g, ' ').replace(/\s{2,}/g, ' ').trim();
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
 export default function AboutEditor() {
   const [sections, setSections] = useState<AboutSection[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<AboutSection> | null>(null);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
     try {
@@ -53,12 +71,33 @@ export default function AboutEditor() {
     onError: load,
   });
 
+  const openNew = () => {
+    setError(null);
+    setEditing({ ...emptySection(), order: sections.length + 1 });
+  };
+
+  const openEdit = (s: AboutSection) => {
+    setError(null);
+    setEditing({ ...s });
+  };
+
+  const cancel = () => {
+    setEditing(null);
+    setError(null);
+  };
+
   const save = async () => {
     if (!editing) return;
+    if (!editing.content?.trim()) {
+      setError('Content (English) is required.');
+      return;
+    }
     setSaving(true);
+    setError(null);
     try {
       const payload = {
         ...editing,
+        title: editing.title?.trim() || 'Section',
         titleAr: editing.titleAr?.trim() || null,
         contentAr: editing.contentAr?.trim() || null,
         imageUrl: editing.imageUrl?.trim() || null,
@@ -74,120 +113,202 @@ export default function AboutEditor() {
       }
       setEditing(null);
       load();
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      setError('Failed to save. Please try again.');
     } finally {
       setSaving(false);
     }
   };
 
   const remove = async (id: number) => {
-    if (!confirm('Delete this section?')) return;
+    if (!confirm('Delete this paragraph block?')) return;
     await api.delete(`/about/sections/${id}`);
     load();
   };
 
-  if (loading) return <div className="text-gray-400 text-sm animate-pulse">Loading...</div>;
+  if (loading) return <div className="text-gray-400 text-sm animate-pulse p-4">Loading...</div>;
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-5">
+    <div className="space-y-6">
+
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-bold text-gray-800">About Page</h2>
-          <p className="text-xs text-gray-400">Edit about page paragraphs</p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            Manage the paragraph blocks shown on the About page. The first block's image is used as the sidebar image.
+          </p>
           <SortableReorderHint reordering={sortable.reordering} />
         </div>
-        <button onClick={() => setEditing({ ...empty(), order: sections.length + 1 })} className="btn-primary flex items-center gap-1.5">
-          <Plus size={15} /> Add Section
+        <button onClick={openNew} className="btn-primary flex items-center gap-1.5 flex-shrink-0">
+          <Plus size={15} /> Add Paragraph
         </button>
       </div>
 
+      {/* ── Edit / Create form ─────────────────────────────────────────────── */}
       {editing && (
-        <div className="bg-white rounded-2xl border border-green-200 p-5 mb-5 space-y-4">
+        <div className="bg-green-50 border border-green-200 rounded-2xl p-5 space-y-5">
+          <h3 className="font-semibold text-[#009900] text-sm">
+            {editing.id ? 'Edit Paragraph Block' : 'New Paragraph Block'}
+          </h3>
+
+          {/* English fields */}
           <EnglishFieldsGroup>
-            {/* Title */}
-            <input
-              className="w-full border rounded-lg px-3 py-2 text-sm"
-              placeholder="Title"
-              value={editing.title ?? ''}
-              onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-            />
+            <div className="space-y-4">
+              {/* Internal label (not shown on frontend) */}
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">
+                  Internal label <span className="text-gray-400 font-normal">(for admin reference only)</span>
+                </label>
+                <input
+                  type="text"
+                  value={editing.title ?? ''}
+                  onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                  placeholder="e.g. Introduction, Mission, Vision…"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]"
+                />
+              </div>
 
-            {/* Content — WYSIWYG */}
-            <RichHtmlEditor
-              label="Content"
-              value={editing.content ?? ''}
-              onChange={(v) => setEditing({ ...editing, content: v })}
-              placeholder="Section content…"
-              minHeight={180}
-            />
+              {/* Content */}
+              <RichHtmlEditor
+                label="Content (English) *"
+                value={editing.content ?? ''}
+                onChange={(v) => setEditing({ ...editing, content: v })}
+                placeholder="Write paragraph content here…"
+                minHeight={200}
+              />
 
-            {/* Image */}
-            <ImageField
-              label="Section Image (optional)"
-              value={editing.imageUrl ?? ''}
-              onChange={(v) => setEditing({ ...editing, imageUrl: v })}
-            />
+              {/* Image — only shown on the first block visually, but any block can have one */}
+              <ImageField
+                label="Sidebar Image (optional — used for the About page left panel)"
+                value={editing.imageUrl ?? ''}
+                onChange={(v) => setEditing({ ...editing, imageUrl: v })}
+              />
+            </div>
           </EnglishFieldsGroup>
 
+          {/* Arabic fields */}
           <ArabicSectionDivider />
-
           <ArabicFieldsGroup>
-            <ArabicTextField
-              label="العنوان (عربي)"
-              value={editing.titleAr ?? ''}
-              onChange={(v) => setEditing({ ...editing, titleAr: v })}
-              englishValue={editing.title ?? ''}
-            />
-            <RichHtmlEditor
-              label="المحتوى (عربي)"
-              value={editing.contentAr ?? ''}
-              onChange={(v) => setEditing({ ...editing, contentAr: v })}
-              placeholder="المحتوى بالعربية…"
-              dir="rtl"
-              minHeight={180}
-            />
+            <div className="space-y-4">
+              <RichHtmlEditor
+                label="المحتوى (عربي)"
+                value={editing.contentAr ?? ''}
+                onChange={(v) => setEditing({ ...editing, contentAr: v })}
+                placeholder="المحتوى بالعربية…"
+                dir="rtl"
+                minHeight={200}
+              />
+            </div>
           </ArabicFieldsGroup>
 
-          <div className="flex gap-2">
-            <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5"><Save size={14} /> Save</button>
-            <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"><X size={14} /> Cancel</button>
+          {/* Error */}
+          {error && (
+            <p className="text-red-600 text-xs bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
+          )}
+
+          {/* Actions */}
+          <div className="flex gap-2 pt-1">
+            <button onClick={save} disabled={saving} className="btn-primary flex items-center gap-1.5">
+              <Save size={14} /> {saving ? 'Saving…' : 'Save'}
+            </button>
+            <button onClick={cancel} className="btn-ghost flex items-center gap-1.5">
+              <X size={14} /> Cancel
+            </button>
           </div>
         </div>
       )}
 
-      <div className="space-y-3">
-        {sections.map((s, index) => (
-          <div
-            key={s.id}
-            onDragOver={sortable.handleDragOver}
-            onDrop={(e) => sortable.handleDrop(e, s.id)}
-            className={sortable.rowClassName(
-              s.id,
-              'bg-white rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-4',
-            )}
-          >
-            <SortableGrip
-              id={s.id}
-              index={index}
-              onDragStart={sortable.handleDragStart}
-              onDragEnd={sortable.clearDragging}
-            />
-            <MediaPreview url={s.imageUrl} alt={s.title} />
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm text-gray-800">{s.title}</p>
-              <p
-                className="text-xs text-gray-500 mt-1 line-clamp-2"
-                dangerouslySetInnerHTML={{ __html: s.content }}
-              />
-            </div>
-            <div className="flex gap-1 shrink-0">
-              <button onClick={() => setEditing(s)} className="p-2 text-gray-400 hover:text-[#009900]"><Pencil size={15} /></button>
-              <button onClick={() => remove(s.id)} className="p-2 text-gray-400 hover:text-red-500"><Trash2 size={15} /></button>
-            </div>
+      {/* ── Paragraph list ──────────────────────────────────────────────────── */}
+      <div className="space-y-2">
+        {sections.length === 0 && !editing && (
+          <div className="text-center py-12 text-gray-400 text-sm bg-white rounded-2xl border border-dashed border-gray-200">
+            <AlignLeft size={28} className="mx-auto mb-3 opacity-30" />
+            No paragraph blocks yet. Click <strong>Add Paragraph</strong> to get started.
           </div>
-        ))}
+        )}
+
+        {sections.map((s, index) => {
+          const preview = stripHtml(s.content);
+          return (
+            <div
+              key={s.id}
+              onDragOver={sortable.handleDragOver}
+              onDrop={(e) => sortable.handleDrop(e, s.id)}
+              className={sortable.rowClassName(
+                s.id,
+                'group flex items-start gap-3 bg-white border border-gray-200 hover:border-green-300 rounded-xl px-4 py-3 transition-colors',
+              )}
+            >
+              {/* Drag handle */}
+              <SortableGrip
+                id={s.id}
+                index={index}
+                onDragStart={sortable.handleDragStart}
+                onDragEnd={sortable.clearDragging}
+              />
+
+              {/* Block number badge */}
+              <div className="flex-shrink-0 w-7 h-7 rounded-full bg-green-50 border border-green-200 flex items-center justify-center text-[11px] font-bold text-[#009900] mt-0.5">
+                {index + 1}
+              </div>
+
+              {/* Image thumbnail */}
+              {s.imageUrl && (
+                <MediaPreview
+                  url={s.imageUrl}
+                  alt={s.title}
+                  className="w-16 h-12 object-cover rounded-lg flex-shrink-0 border border-gray-100"
+                />
+              )}
+              {!s.imageUrl && (
+                <div className="w-16 h-12 rounded-lg bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center flex-shrink-0">
+                  <ImageIcon size={14} className="text-gray-300" />
+                </div>
+              )}
+
+              {/* Text preview */}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-700 truncate">
+                  {s.title || <span className="text-gray-400 italic">Untitled</span>}
+                </p>
+                <p className="text-xs text-gray-400 mt-0.5 line-clamp-2 leading-relaxed">{preview || '—'}</p>
+                {s.contentAr && (
+                  <span className="inline-block mt-1 text-[10px] px-2 py-0.5 bg-amber-50 text-amber-600 rounded-full font-medium">
+                    AR ✓
+                  </span>
+                )}
+              </div>
+
+              {/* Actions — visible on hover */}
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                <button
+                  onClick={() => openEdit(s)}
+                  className="icon-btn"
+                  title="Edit"
+                >
+                  <Pencil size={14} />
+                </button>
+                <button
+                  onClick={() => remove(s.id)}
+                  className="icon-btn text-red-400 hover:text-red-600"
+                  title="Delete"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
+
+      {/* ── Helper note ─────────────────────────────────────────────────────── */}
+      {sections.length > 0 && (
+        <p className="text-[11px] text-gray-400 text-center">
+          Drag <GripVertical size={10} className="inline" /> to reorder blocks. The blocks appear in this order on the About page.
+          {sections.some(s => s.imageUrl) && ' · The first block with an image is displayed in the left sidebar.'}
+        </p>
+      )}
     </div>
   );
 }
