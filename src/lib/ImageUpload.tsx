@@ -37,8 +37,8 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
 
     try {
       const token = localStorage.getItem('uasa_token');
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
       const response = await fetch(`${API_URL}/upload`, {
         method: 'POST',
         headers: {

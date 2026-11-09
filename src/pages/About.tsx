@@ -56,10 +56,9 @@ export default function About() {
 
   const isFallback = sections.length === 0;
 
-  // Collect all text blocks (joined for continuous reading) and the first image
-  const firstImage = !isFallback
-    ? normalizeMediaUrl(sections.find((s) => s.imageUrl)?.imageUrl)
-    : null;
+  // Find first section that has a non-empty imageUrl
+  const rawFirstImage = sections.find((s) => s.imageUrl && s.imageUrl.trim() !== '')?.imageUrl ?? null;
+  const firstImage = normalizeMediaUrl(rawFirstImage) || null;
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
@@ -90,7 +89,7 @@ export default function About() {
             {/* ── Left column: image / logo sidebar ──────────────────────── */}
             <div className={`lg:w-64 xl:w-72 flex-shrink-0 bg-gray-50 border-b lg:border-b-0 ${isRtl ? 'lg:border-l' : 'lg:border-r'} border-gray-100 flex flex-col items-center justify-start gap-6 p-8`}>
 
-              {firstImage ? (
+              {firstImage && firstImage.length > 0 ? (
                 /* Image uploaded via CMS */
                 <div className="w-full rounded-2xl overflow-hidden shadow-md">
                   <img
