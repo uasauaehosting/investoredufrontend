@@ -43,7 +43,9 @@ interface Section {
 export default function About() {
   const { lang } = useLanguage();
   const { data: hero } = useLocalizedSiteContent('about.hero', HERO_FALLBACK, ['badge', 'title']);
-  const [sections, setSections] = useState<Section[]>([]);
+
+  // sidebarImage is a non-localized field — access directly from the raw hero data
+  const sidebarImage = normalizeMediaUrl((hero as typeof HERO_FALLBACK & { sidebarImage?: string }).sidebarImage) || null;  const [sections, setSections] = useState<Section[]>([]);
 
   const isRtl = lang === 'ar';
   const fallbackParagraphs = isRtl ? FALLBACK_PARAGRAPHS_AR : FALLBACK_PARAGRAPHS_EN;
@@ -56,9 +58,6 @@ export default function About() {
   }, [lang]);
 
   const isFallback = sections.length === 0;
-
-  // Sidebar image comes from site_content (about.hero.sidebarImage) — set in admin under "About — Hero"
-  const sidebarImage = normalizeMediaUrl((hero as any).sidebarImage) || null;
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
