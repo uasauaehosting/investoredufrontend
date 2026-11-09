@@ -23,6 +23,7 @@ const MEDIA_FIELD_KEYS = new Set([
   'fileUrl',
   'pdfUrl',
   'heroImage',
+  'headerImage',
   'backgroundImage',
   'image',
   'logo',

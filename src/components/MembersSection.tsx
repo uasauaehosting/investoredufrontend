@@ -3,6 +3,7 @@ import { api } from '../lib/api';
 import { useLanguage } from '../lib/LanguageContext';
 import { t } from '../lib/translations';
 import { useSiteContent } from '../lib/useSiteContent';
+import { normalizeMediaUrl } from '../lib/mediaUrl';
 
 const MEMBERS_HEADER_FALLBACK = {
   headerImage: 'https://images.pexels.com/photos/1105766/pexels-photo-1105766.jpeg?auto=compress&cs=tinysrgb&w=1600',
@@ -52,7 +53,7 @@ export default function MembersSection() {
   const [error, setError] = useState<string | null>(null);
   const { data: headerData } = useSiteContent('home.members_header', MEMBERS_HEADER_FALLBACK);
 
-  const headerImage = (headerData.headerImage as string) || MEMBERS_HEADER_FALLBACK.headerImage;
+  const headerImage = normalizeMediaUrl((headerData.headerImage as string) || '') || MEMBERS_HEADER_FALLBACK.headerImage;
 
   useEffect(() => {
     api.get('/home/members')
