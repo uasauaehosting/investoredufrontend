@@ -1,7 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import PublicationsResultsTable from '../components/publications/PublicationsResultsTable';
-import SectionLangToggle from '../components/SectionLangToggle';
 import { api } from '../lib/api';
 import {
   PUBLICATION_AUTHORITIES,
@@ -100,11 +99,6 @@ function PublicationsInner() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10 mb-10">
-
-          {/* ── Per-section language toggle ── */}
-          <div className="flex justify-end mb-6 pb-5 border-b border-gray-100">
-            <SectionLangToggle />
-          </div>
 
           <form onSubmit={handleSubmit}>
             <div className="space-y-6">

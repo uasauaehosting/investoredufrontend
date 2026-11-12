@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, ExternalLink, Globe } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
-import SectionLangToggle from '../components/SectionLangToggle';
 import { api } from '../lib/api';
 import { normalizeMediaUrl } from '../lib/mediaUrl';
 import { MEMBER_PORTALS, MemberPortal } from '../data/memberPortals';
@@ -181,13 +180,9 @@ function PortalsInner() {
               </div>
             </div>
 
-            <div className="flex flex-col items-end gap-3">
-              {/* ── Per-section language toggle ── */}
-              <SectionLangToggle showPolicySelector={false} />
-              {!loading && (
-                <p className="text-sm text-gray-500">{portalCountLabel}</p>
-              )}
-            </div>
+            {!loading && (
+              <p className="text-sm text-gray-500 shrink-0">{portalCountLabel}</p>
+            )}
           </div>
 
           {loading ? (

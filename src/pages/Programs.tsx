@@ -1,7 +1,6 @@
 import { FormEvent, useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import ProgramsResultsTable from '../components/programs/ProgramsResultsTable';
-import SectionLangToggle from '../components/SectionLangToggle';
 import { api } from '../lib/api';
 import { PROGRAM_FILTER_GROUPS, PROGRAM_MEMBERS, getLabelsFromSelect } from '../lib/programFilters';
 import { useLanguage } from '../lib/LanguageContext';
@@ -135,11 +134,6 @@ function ProgramsInner() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10 mb-10">
-
-          {/* ── Per-section language toggle ── */}
-          <div className="flex justify-end mb-6 pb-5 border-b border-gray-100">
-            <SectionLangToggle />
-          </div>
 
           <form onSubmit={handleSubmit}>
             <div className="space-y-6" dir={isRtl ? 'rtl' : 'ltr'}>
