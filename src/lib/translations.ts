@@ -289,8 +289,10 @@ Object.assign(ar, {
   'feedback.emailLabel':           'راسلنا',
   'feedback.websiteLabel':         'الموقع الإلكتروني',
   'feedback.nameLabel':            'الاسم',
-  'feedback.orgLabel':             'جهة العمل',
+  'feedback.orgLabel':             'جهة العمل / الهيئة',
+  'feedback.orgPlaceholder':       'جهة عملك أو الهيئة',
   'feedback.countryLabel':         'البلد',
+  'feedback.countrySelect':        'اختر',
   'feedback.contentLabel':         'المحتوى',
 
   // ── Detail pages (Principle / Framework) ─────────────────────────────────
