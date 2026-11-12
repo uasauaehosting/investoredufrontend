@@ -35,6 +35,7 @@ const Programs                   = lazy(() => import('./pages/Programs'));
 const AlertsBulletins            = lazy(() => import('./pages/AlertsBulletins'));
 const GlobalPolicyAreas          = lazy(() => import('./pages/GlobalPolicyAreas'));
 const AdditionalResources        = lazy(() => import('./pages/AdditionalResources'));
+const SearchPage                 = lazy(() => import('./pages/Search'));
 
 function PageLoader() {
   return (
@@ -116,6 +117,7 @@ export default function App() {
                     <Route path="/inclusion/index/resources" element={<AdditionalResources />} />
                     <Route path="/glossary" element={<Glossary />} />
                     <Route path="/feedback" element={<Feedback />} />
+                    <Route path="/search" element={<SearchPage />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </Suspense>
