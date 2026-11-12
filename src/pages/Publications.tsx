@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import PublicationsResultsTable from '../components/publications/PublicationsResultsTable';
+import SectionLangToggle from '../components/SectionLangToggle';
 import { api } from '../lib/api';
 import {
   PUBLICATION_AUTHORITIES,
@@ -10,6 +11,7 @@ import {
 } from '../lib/publicationFilters';
 import { groupPublicationsByAuthority } from '../lib/publicationGrouping';
 import { useLanguage } from '../lib/LanguageContext';
+import { SectionLangProvider, useSectionLang } from '../lib/SectionLangContext';
 import { t } from '../lib/translations';
 
 interface Publication {
@@ -38,8 +40,8 @@ function getMultiSelectValues(select: HTMLSelectElement): string[] {
     .filter((value) => value !== 'All');
 }
 
-export default function Publications() {
-  const { lang, isRtl } = useLanguage();
+function PublicationsInner() {
+  const { lang, isRtl } = useSectionLang();
   const [selectedAuthorities, setSelectedAuthorities] = useState<PublicationAuthority[]>([]);
   const [_selectedCategories, setSelectedCategories] = useState<PublicationCategory[]>([]);
   const [publications, setPublications] = useState<Publication[]>([]);
@@ -98,6 +100,12 @@ export default function Publications() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10 mb-10">
+
+          {/* ── Per-section language toggle ── */}
+          <div className="flex justify-end mb-6 pb-5 border-b border-gray-100">
+            <SectionLangToggle />
+          </div>
+
           <form onSubmit={handleSubmit}>
             <div className="space-y-6">
               {/* Authority filter */}
@@ -183,5 +191,14 @@ export default function Publications() {
         </section>
       </div>
     </div>
+  );
+}
+
+export default function Publications() {
+  const { lang: globalLang } = useLanguage();
+  return (
+    <SectionLangProvider initialLang={globalLang}>
+      <PublicationsInner />
+    </SectionLangProvider>
   );
 }

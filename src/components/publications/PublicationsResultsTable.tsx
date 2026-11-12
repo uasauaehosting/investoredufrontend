@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import { PublicationAuthorityGroup } from '../../lib/publicationGrouping';
-import { useLanguage } from '../../lib/LanguageContext';
+import { useSectionLang } from '../../lib/SectionLangContext';
 import { pickLocalized } from '../../lib/localizedText';
 import { t } from '../../lib/translations';
 
@@ -13,7 +13,7 @@ function DescriptionModal({
   description: string | null;
   onClose: () => void;
 }) {
-  const { lang } = useLanguage();
+  const { lang } = useSectionLang();
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" onClick={onClose} role="presentation">
       <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()} role="dialog" aria-labelledby="pub-desc-modal-title">
@@ -30,7 +30,7 @@ function DescriptionModal({
 }
 
 function DescriptionLink({ title, description }: { title: string; description: string | null }) {
-  const { lang } = useLanguage();
+  const { lang } = useSectionLang();
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -46,14 +46,15 @@ const thClass = 'border border-[#ccc] px-3 py-2.5 text-center text-xs sm:text-sm
 const tdClass = 'border border-[#ccc] px-3 py-2.5 text-center text-xs sm:text-sm text-gray-800 align-middle';
 
 export default function PublicationsResultsTable({ groups }: { groups: PublicationAuthorityGroup[] }) {
-  const { lang } = useLanguage();
+  const { lang, isRtl, missingArPolicy } = useSectionLang();
 
   if (groups.length === 0) {
     return <p className="text-gray-500 text-sm">{t(lang, 'noMatch.publications', 'No publications match the selected filters.')}</p>;
   }
 
   return (
-    <div className="space-y-10">
+    // RTL wrapper: flips text alignment and table layout when Arabic is active
+    <div className="space-y-10" dir={isRtl ? 'rtl' : 'ltr'}>
       {groups.map((authorityGroup) => (
         <div key={authorityGroup.authority} className="overflow-x-auto">
           <table className="w-full min-w-[640px] border-collapse border border-[#ccc] text-sm">
@@ -71,14 +72,27 @@ export default function PublicationsResultsTable({ groups }: { groups: Publicati
                     </th>
                   </tr>
                   <tr>
-                    <th className={thClass}>{t(lang, 'table.title',   'Title')}</th>
-                    <th className={thClass}>{t(lang, 'table.type',    'Type')}</th>
+                    <th className={thClass}>{t(lang, 'table.title',       'Title')}</th>
+                    <th className={thClass}>{t(lang, 'table.type',        'Type')}</th>
                     <th className={thClass}>{t(lang, 'table.description', 'Description')}</th>
-                    <th className={thClass}>{t(lang, 'table.urlFile', 'URL / File')}</th>
+                    <th className={thClass}>{t(lang, 'table.urlFile',     'URL / File')}</th>
                   </tr>
                   {categoryGroup.items.map((publication, index) => {
-                    const title       = pickLocalized(lang, publication.title,       publication.title_ar);
-                    const description = pickLocalized(lang, publication.description, publication.description_ar);
+                    const rawTitle       = pickLocalized(lang, publication.title,       publication.title_ar);
+                    const rawDescription = pickLocalized(lang, publication.description, publication.description_ar);
+
+                    // Apply missing-AR policy: if AR was requested but unavailable, hide the row
+                    if (
+                      lang === 'ar' &&
+                      missingArPolicy === 'hide' &&
+                      !publication.title_ar?.trim()
+                    ) {
+                      return null;
+                    }
+
+                    const title       = rawTitle;
+                    const description = rawDescription;
+
                     return (
                       <tr key={publication.id} className={index % 2 === 0 ? 'bg-[#eef7ee]' : 'bg-white'}>
                         <td className={tdClass}>{title}</td>

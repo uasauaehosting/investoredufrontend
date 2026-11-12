@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MemberStrategyProjectGroup } from '../../lib/strategiesProjectsGrouping';
-import { useLanguage } from '../../lib/LanguageContext';
+import { useSectionLang } from '../../lib/SectionLangContext';
 import { pickLocalized } from '../../lib/localizedText';
 import { t } from '../../lib/translations';
 
@@ -13,7 +13,7 @@ function DescriptionModal({
   description: string | null;
   onClose: () => void;
 }) {
-  const { lang } = useLanguage();
+  const { lang } = useSectionLang();
   const text =
     description?.trim() && description !== 'View Description'
       ? description
@@ -33,7 +33,7 @@ function DescriptionModal({
 }
 
 function DescriptionLink({ title, description }: { title: string; description: string | null }) {
-  const { lang } = useLanguage();
+  const { lang } = useSectionLang();
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -53,7 +53,7 @@ function getCategoryLabel(type?: string, categoryName?: string | null): string {
 }
 
 export default function MemberStrategiesProjectsResultsTable({ groups }: { groups: MemberStrategyProjectGroup[] }) {
-  const { lang } = useLanguage();
+  const { lang, isRtl, missingArPolicy } = useSectionLang();
 
   if (groups.length === 0) {
     return (
@@ -64,7 +64,8 @@ export default function MemberStrategiesProjectsResultsTable({ groups }: { group
   }
 
   return (
-    <div className="space-y-10">
+    // RTL wrapper: flips text direction when Arabic is active
+    <div className="space-y-10" dir={isRtl ? 'rtl' : 'ltr'}>
       {groups.map((group) => (
         <div key={group.member} className="overflow-x-auto">
           <table className="w-full min-w-[640px] border-collapse border border-[#ccc] text-sm">
@@ -81,8 +82,18 @@ export default function MemberStrategiesProjectsResultsTable({ groups }: { group
                 <th className={thClass}>                  {t(lang, 'table.urlFile',     'URL / File')}</th>
               </tr>
               {group.items.map((project, index) => {
+                // Apply missing-AR policy: skip the row entirely if no Arabic title
+                if (
+                  lang === 'ar' &&
+                  missingArPolicy === 'hide' &&
+                  !project.titleAr?.trim()
+                ) {
+                  return null;
+                }
+
                 const title       = pickLocalized(lang, project.title,       project.titleAr);
                 const description = pickLocalized(lang, project.description, project.descriptionAr);
+
                 return (
                   <tr key={project.id} className={index % 2 === 0 ? 'bg-white' : 'bg-[#eef7ee]'}>
                     <td className={`${tdClass} text-start`}>{title}</td>

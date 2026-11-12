@@ -1,20 +1,29 @@
 import { FormEvent, useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import ProgramsResultsTable from '../components/programs/ProgramsResultsTable';
+import SectionLangToggle from '../components/SectionLangToggle';
 import { api } from '../lib/api';
 import { PROGRAM_FILTER_GROUPS, PROGRAM_MEMBERS, getLabelsFromSelect } from '../lib/programFilters';
 import { useLanguage } from '../lib/LanguageContext';
+import { SectionLangProvider, useSectionLang } from '../lib/SectionLangContext';
 import { t } from '../lib/translations';
 
 interface Program {
   id: number;
   member_name: string;
+  member_name_ar?: string | null;
   general_info: string[];
+  general_info_ar?: string[] | null;
   education_materials: string[];
+  education_materials_ar?: string[] | null;
   specific_materials: string[];
+  specific_materials_ar?: string[] | null;
   assisting_groups: string[];
+  assisting_groups_ar?: string[] | null;
   evaluation: string[];
+  evaluation_ar?: string[] | null;
   successful_programs: string[];
+  successful_programs_ar?: string[] | null;
 }
 
 function parseProgramArray(value: unknown): string[] {
@@ -51,8 +60,8 @@ function filterPrograms(
   });
 }
 
-export default function Programs() {
-  const { lang, isRtl } = useLanguage();
+function ProgramsInner() {
+  const { lang, isRtl } = useSectionLang();
   const [results, setResults] = useState<Program[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -90,12 +99,18 @@ export default function Programs() {
       const response = await api.get('/programs');
       const programs: Program[] = (response?.data ?? response ?? []).map((program: Program) => ({
         ...program,
-        general_info:        parseProgramArray(program.general_info),
-        education_materials: parseProgramArray(program.education_materials),
-        specific_materials:  parseProgramArray(program.specific_materials),
-        assisting_groups:    parseProgramArray(program.assisting_groups),
-        evaluation:          parseProgramArray(program.evaluation),
-        successful_programs: parseProgramArray(program.successful_programs),
+        general_info:              parseProgramArray(program.general_info),
+        general_info_ar:           parseProgramArray(program.general_info_ar),
+        education_materials:       parseProgramArray(program.education_materials),
+        education_materials_ar:    parseProgramArray(program.education_materials_ar),
+        specific_materials:        parseProgramArray(program.specific_materials),
+        specific_materials_ar:     parseProgramArray(program.specific_materials_ar),
+        assisting_groups:          parseProgramArray(program.assisting_groups),
+        assisting_groups_ar:       parseProgramArray(program.assisting_groups_ar),
+        evaluation:                parseProgramArray(program.evaluation),
+        evaluation_ar:             parseProgramArray(program.evaluation_ar),
+        successful_programs:       parseProgramArray(program.successful_programs),
+        successful_programs_ar:    parseProgramArray(program.successful_programs_ar),
       }));
       setResults(filterPrograms(programs, member, filters));
     } catch {
@@ -120,6 +135,12 @@ export default function Programs() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10 mb-10">
+
+          {/* ── Per-section language toggle ── */}
+          <div className="flex justify-end mb-6 pb-5 border-b border-gray-100">
+            <SectionLangToggle />
+          </div>
+
           <form onSubmit={handleSubmit}>
             <div className="space-y-6" dir={isRtl ? 'rtl' : 'ltr'}>
               {/* Member select */}
@@ -202,5 +223,14 @@ export default function Programs() {
         </section>
       </div>
     </div>
+  );
+}
+
+export default function Programs() {
+  const { lang: globalLang } = useLanguage();
+  return (
+    <SectionLangProvider initialLang={globalLang}>
+      <ProgramsInner />
+    </SectionLangProvider>
   );
 }

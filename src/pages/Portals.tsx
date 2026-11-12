@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, ExternalLink, Globe } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
+import SectionLangToggle from '../components/SectionLangToggle';
 import { api } from '../lib/api';
 import { normalizeMediaUrl } from '../lib/mediaUrl';
 import { MEMBER_PORTALS, MemberPortal } from '../data/memberPortals';
 import { useLanguage } from '../lib/LanguageContext';
+import { SectionLangProvider, useSectionLang } from '../lib/SectionLangContext';
 import { pickLocalized } from '../lib/localizedText';
 import { t } from '../lib/translations';
 
@@ -29,7 +31,8 @@ function PortalAccordionItem({
   isOpen: boolean;
   onToggle: () => void;
 }) {
-  const { lang, isRtl } = useLanguage();
+  // Uses section lang so the accordion title reflects the section choice
+  const { lang, isRtl } = useSectionLang();
   const [imgSrc, setImgSrc] = useState(portal.imageUrl || FALLBACK_IMAGE);
 
   return (
@@ -98,13 +101,13 @@ function PortalSkeleton() {
   );
 }
 
-export default function Portals() {
-  const { lang, isRtl } = useLanguage();
+// Inner component — lives inside SectionLangProvider
+function PortalsInner() {
+  const { lang, isRtl } = useSectionLang();
   const [portals, setPortals] = useState<MemberPortal[]>(
     MEMBER_PORTALS.map((p) => ({
       ...p,
       imageUrl: normalizeMediaUrl(p.imageUrl),
-      // Apply Arabic titles from static fallback immediately
       panelTitle:   pickLocalized(lang, p.panelTitle, p.panelTitleAr),
       displayTitle: pickLocalized(lang, p.displayTitle, p.displayTitleAr),
     })),
@@ -112,7 +115,9 @@ export default function Portals() {
   const [openId, setOpenId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Re-fetch (or re-apply lang) whenever the section language changes
   useEffect(() => {
+    setLoading(true);
     api
       .get('/portals')
       .then((data) => {
@@ -128,7 +133,6 @@ export default function Portals() {
             })),
           );
         } else {
-          // API empty — re-apply language to static fallback
           setPortals(
             MEMBER_PORTALS.map((p) => ({
               ...p,
@@ -161,6 +165,7 @@ export default function Portals() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10">
+          {/* Section header row: title + language toggle */}
           <div className="flex flex-wrap items-start justify-between gap-4 mb-8 pb-8 border-b border-gray-100">
             <div className="flex items-start gap-4 max-w-3xl">
               <div className="hidden sm:flex shrink-0 w-12 h-12 rounded-xl bg-green-50 items-center justify-center">
@@ -175,9 +180,14 @@ export default function Portals() {
                 </p>
               </div>
             </div>
-            {!loading && (
-              <p className="text-sm text-gray-500 shrink-0">{portalCountLabel}</p>
-            )}
+
+            <div className="flex flex-col items-end gap-3">
+              {/* ── Per-section language toggle ── */}
+              <SectionLangToggle showPolicySelector={false} />
+              {!loading && (
+                <p className="text-sm text-gray-500">{portalCountLabel}</p>
+              )}
+            </div>
           </div>
 
           {loading ? (
@@ -205,5 +215,15 @@ export default function Portals() {
         </section>
       </div>
     </div>
+  );
+}
+
+// Exported page — wraps content in SectionLangProvider for isolation
+export default function Portals() {
+  const { lang: globalLang } = useLanguage();
+  return (
+    <SectionLangProvider initialLang={globalLang}>
+      <PortalsInner />
+    </SectionLangProvider>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Filter, X } from 'lucide-react';
 import MemberStrategiesProjectsResultsTable from '../components/member-strategies-projects/MemberStrategiesProjectsResultsTable';
+import SectionLangToggle from '../components/SectionLangToggle';
 import { api } from '../lib/api';
 import {
   INCLUSION_CATEGORY_FILTERS,
@@ -14,6 +15,7 @@ import {
 } from '../lib/inclusionMembers';
 import { groupStrategiesProjectsByMember } from '../lib/strategiesProjectsGrouping';
 import { useLanguage } from '../lib/LanguageContext';
+import { SectionLangProvider, useSectionLang } from '../lib/SectionLangContext';
 import { t } from '../lib/translations';
 
 interface StrategyProject {
@@ -53,8 +55,8 @@ function FilterCheckbox({
   );
 }
 
-export default function MembersStrategiesProjects() {
-  const { lang, isRtl } = useLanguage();
+function MembersStrategiesProjectsInner() {
+  const { lang, isRtl } = useSectionLang();
   const [projects, setProjects] = useState<StrategyProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -111,9 +113,15 @@ export default function MembersStrategiesProjects() {
     <div className="bg-gray-50 min-h-screen pb-20">
       <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full mb-6 tracking-widest uppercase">
-            {t(lang, 'strategies.badge', 'Financial Inclusion')}
-          </span>
+          <div className="flex flex-wrap items-start justify-between gap-6 mb-6">
+            <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full tracking-widest uppercase">
+              {t(lang, 'strategies.badge', 'Financial Inclusion')}
+            </span>
+            {/* ── Per-section language toggle (white variant for dark hero) ── */}
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/20">
+              <SectionLangToggle showPolicySelector={true} className="[&_button]:!text-white [&_.text-\\[\\#009900\\]]:!text-white [&_button[aria-pressed=true]]:!bg-white/30 [&_button[aria-pressed=false]]:!bg-transparent [&_button[aria-pressed=false]]:hover:!bg-white/20 [&_.border-\\[\\#009900\\]\\/30]:!border-white/30" />
+            </div>
+          </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
             {t(lang, 'strategies.title', 'Members Strategies & Projects')}
           </h1>
@@ -246,5 +254,14 @@ export default function MembersStrategiesProjects() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function MembersStrategiesProjects() {
+  const { lang: globalLang } = useLanguage();
+  return (
+    <SectionLangProvider initialLang={globalLang}>
+      <MembersStrategiesProjectsInner />
+    </SectionLangProvider>
   );
 }
