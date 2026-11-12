@@ -1,4 +1,4 @@
-import { Facebook, Twitter, Linkedin, Youtube, MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
+import { Facebook, Twitter, Linkedin, Youtube, MapPin, Phone, Mail } from 'lucide-react';
 import { useLocalizedSiteContent } from '../lib/useLocalizedSiteContent';
 import { useFooterStats } from '../lib/useSiteContent';
 import { useLanguage } from '../lib/LanguageContext';
@@ -13,16 +13,14 @@ const FALLBACK_STATS = [
 ];
 
 const FALLBACK_FOOTER = {
-  educationLinks: ['Investment Basics', 'Types of Investments', 'Investment Risks', 'Market Indices', 'Protecting Against Fraud', 'Savings and Investment'],
-  educationLinksAr: ['المبادئ', 'إصدارات', 'التنبيهات والنشرات', 'مواد علمية / المنتجات الاستثمارية', 'برامج', 'بوابات توعية وتعليم المستثمرين'],
-  inclusionLinks: ['Financial Literacy', 'Digital Finance', 'Microfinance', 'Women Empowerment', 'Youth Financial Education'],
-  inclusionLinksAr: ['استراتيجيات وبرامج الأعضاء', 'السياسات الدولية', 'مؤشر الشمول المالي', 'تقييم أعضاء الاتحاد', 'مواد إضافية'],
+  educationLinks: ['Reading Materials', "Members' Activities", 'Alerts & Bulletins'],
+  educationLinksAr: ['مواد القراءة', 'أنشطة الأعضاء', 'التنبيهات والنشرات'],
+  inclusionLinks: ["Members Strategies & Projects", 'Global Policy Areas', 'Financial Inclusion Index'],
+  inclusionLinksAr: ['استراتيجيات وبرامج الأعضاء', 'السياسات الدولية', 'مؤشر الشمول المالي'],
   usefulLinks: [
-    { label: 'UASA Official Website',           labelAr: 'الموقع الرسمي للاتحاد',                href: 'https://www.uasa.ae' },
-    { label: 'IOSCO',                            labelAr: 'المنظمة الدولية لهيئات الأوراق المالية (IOSCO)', href: 'https://www.iosco.org' },
-    { label: 'World Federation of Exchanges',    labelAr: 'الاتحاد العالمي للبورصات',             href: 'https://www.world-exchanges.org' },
-    { label: 'Arab Monetary Fund',               labelAr: 'صندوق النقد العربي',                   href: 'https://www.amf.org.ae' },
-    { label: 'Securities Commission Resources',  labelAr: 'موارد هيئات الأوراق المالية',          href: 'https://www.iosco.org/library' },
+    { label: 'About Us',   labelAr: 'من نحن',      href: '/about' },
+    { label: 'Glossary',   labelAr: 'المسرد',       href: '/glossary' },
+    { label: 'Feedback',   labelAr: 'التغذية الراجعة', href: '/feedback' },
   ],
   address: 'Union of Arab Securities Authorities, Abu Dhabi, UAE',
   addressAr: 'الراشدية، أم الرمول دبي، صندوق بريد 117555 دبي، إ.ع.م',
@@ -134,11 +132,9 @@ export default function Footer() {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-black text-sm hover:opacity-70 transition-opacity flex items-center gap-1.5 group"
+                      className="text-black text-sm hover:opacity-70 transition-opacity flex items-center gap-1.5"
                     >
-                      <ExternalLink size={10} className="text-black/50 flex-shrink-0" />{label}
+                      <span className="w-1 h-1 bg-black/50 rounded-full" />{label}
                     </a>
                   </li>
                 );
