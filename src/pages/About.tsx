@@ -30,6 +30,11 @@ const HERO_FALLBACK = {
   sidebarImage: '',
 };
 
+// Rich content pasted from Word/PDF often stores non-breaking spaces (&nbsp;) between
+// every word. Those prevent line wrapping, so a paragraph renders as one very long
+// line that overflows the container and gets clipped. Normalize them to plain spaces.
+const toRenderableHtml = (html: string) => html.replace(/&nbsp;|&#160;|\u00a0/g, ' ');
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface Section {
@@ -45,10 +50,21 @@ export default function About() {
   const { data: hero } = useLocalizedSiteContent('about.hero', HERO_FALLBACK, ['badge', 'title']);
 
   // sidebarImage is a non-localized field — access directly from the raw hero data
-  const sidebarImage = normalizeMediaUrl((hero as typeof HERO_FALLBACK & { sidebarImage?: string }).sidebarImage) || null;  const [sections, setSections] = useState<Section[]>([]);
+  const heroSidebarImage = normalizeMediaUrl((hero as typeof HERO_FALLBACK & { sidebarImage?: string }).sidebarImage);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [imageIndex, setImageIndex] = useState(0);
 
   const isRtl = lang === 'ar';
   const fallbackParagraphs = isRtl ? FALLBACK_PARAGRAPHS_AR : FALLBACK_PARAGRAPHS_EN;
+
+  // Sidebar image candidates in priority order: the About hero image first, then
+  // the first paragraph block's image (matches the admin hint in AboutEditor).
+  // Broken candidates are skipped via onError, falling back to the UASA logo.
+  const sectionImage = normalizeMediaUrl(sections[0]?.imageUrl);
+  const sidebarCandidates = [heroSidebarImage, sectionImage].filter(Boolean);
+  const sidebarImage = sidebarCandidates[imageIndex] ?? null;
+
+  useEffect(() => { setImageIndex(0); }, [heroSidebarImage, sectionImage]);
 
   useEffect(() => {
     api
@@ -88,14 +104,14 @@ export default function About() {
             {/* ── Left column: image / logo sidebar ──────────────────────── */}
             <div className={`lg:w-64 xl:w-72 flex-shrink-0 bg-gray-50 border-b lg:border-b-0 ${isRtl ? 'lg:border-l' : 'lg:border-r'} border-gray-100 flex flex-col items-center justify-start gap-6 p-8`}>
 
-              {sidebarImage && sidebarImage.length > 0 ? (
+              {sidebarImage ? (
                 /* Image set via CMS → About — Hero → Sidebar Image */
                 <div className="w-full rounded-2xl overflow-hidden shadow-md">
                   <img
                     src={sidebarImage}
                     alt="UASA"
                     className="w-full object-cover"
-                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    onError={() => setImageIndex((i) => i + 1)}
                   />
                 </div>
               ) : (
@@ -140,7 +156,7 @@ export default function About() {
                         <div
                           key={i}
                           className="text-gray-700 text-sm sm:text-base leading-relaxed prose prose-sm prose-gray max-w-none"
-                          dangerouslySetInnerHTML={{ __html: text }}
+                          dangerouslySetInnerHTML={{ __html: toRenderableHtml(text) }}
                         />
                       );
                     })

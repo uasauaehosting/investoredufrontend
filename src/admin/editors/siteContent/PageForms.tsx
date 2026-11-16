@@ -51,6 +51,12 @@ export interface HomeWelcomeContent {
 
 export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent>) {
   const highlights = asArray(data.highlights, [{ icon: 'TrendingUp', title: '', description: '' }]);
+  // The public site renders the English list and overlays Arabic by index, so keep
+  // the Arabic entries aligned 1:1 with the English ones (no holes, same length).
+  const highlightsAr = highlights.map((h, i) => {
+    const existing = Array.isArray(data.highlightsAr) ? data.highlightsAr[i] : undefined;
+    return existing ?? { icon: h.icon, title: '', description: '' };
+  });
 
   const set = <K extends keyof HomeWelcomeContent>(key: K, value: HomeWelcomeContent[K]) =>
     onChange({ ...data, [key]: value });
@@ -59,6 +65,23 @@ export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent
     const next = [...highlights];
     next[index] = { ...next[index], [field]: value };
     set('highlights', next);
+  };
+
+  // Adding/removing keeps both language lists in sync so they never drift apart.
+  const addHighlight = () => {
+    onChange({
+      ...data,
+      highlights: [...highlights, { icon: 'TrendingUp', title: '', description: '' }],
+      highlightsAr: [...highlightsAr, { icon: 'TrendingUp', title: '', description: '' }],
+    });
+  };
+
+  const removeHighlight = (index: number) => {
+    onChange({
+      ...data,
+      highlights: highlights.filter((_, i) => i !== index),
+      highlightsAr: highlightsAr.filter((_, i) => i !== index),
+    });
   };
 
   return (
@@ -94,7 +117,7 @@ export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent
                 {highlights.length > 1 && (
                   <button
                     type="button"
-                    onClick={() => set('highlights', highlights.filter((_, i) => i !== index))}
+                    onClick={() => removeHighlight(index)}
                     className="p-1 text-gray-400 hover:text-red-500 rounded"
                   >
                     <Trash2 size={14} />
@@ -120,7 +143,7 @@ export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent
           {highlights.length < 6 && (
             <button
               type="button"
-              onClick={() => set('highlights', [...highlights, { icon: 'TrendingUp', title: '', description: '' }])}
+              onClick={addHighlight}
               className="flex items-center gap-1.5 text-xs font-medium text-[#009900]"
             >
               <Plus size={14} /> Add highlight card
@@ -133,21 +156,39 @@ export function HomeWelcomeForm({ data, onChange }: FormProps<HomeWelcomeContent
         <SectionHeading title="Highlight Cards (Arabic)" description="Arabic titles and descriptions for each card" />
         <div className="space-y-3">
           {highlights.map((item, index) => {
-            const arItems = asArray(data.highlightsAr, highlights.map(() => ({ icon: item.icon, title: '', description: '' })));
-            const arItem = arItems[index] ?? { icon: item.icon, title: '', description: '' };
+            const arItem = highlightsAr[index];
             const updateAr = (field: 'title' | 'description', value: string) => {
-              const next = [...arItems];
-              next[index] = { ...arItem, [field]: value };
+              const next = highlightsAr.map((it, i) => (i === index ? { ...it, [field]: value } : it));
               set('highlightsAr', next);
             };
             return (
               <div key={`ar-${index}`} className={cardClass}>
-                <span className="text-xs font-semibold text-gray-500">البطاقة {index + 1}</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-gray-500">البطاقة {index + 1}</span>
+                  {highlights.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeHighlight(index)}
+                      className="p-1 text-gray-400 hover:text-red-500 rounded"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
+                </div>
                 <ArabicTextField label="العنوان" value={arItem.title} onChange={(v) => updateAr('title', v)} englishValue={item.title} />
                 <ArabicTextAreaField label="الوصف" value={arItem.description} onChange={(v) => updateAr('description', v)} rows={2} englishValue={item.description} />
               </div>
             );
           })}
+          {highlights.length < 6 && (
+            <button
+              type="button"
+              onClick={addHighlight}
+              className="flex items-center gap-1.5 text-xs font-medium text-[#009900]"
+            >
+              <Plus size={14} /> إضافة بطاقة
+            </button>
+          )}
         </div>
       </ArabicFieldsGroup>
     </div>
@@ -232,11 +273,22 @@ export function HomePortalForm({ data, onChange }: FormProps<HomePortalContent>)
       </EnglishFieldsGroup>
 
       <ArabicFieldsGroup>
-        <SectionHeading title="Portal Cards (Arabic)" description="Arabic titles for each card" />
+        <SectionHeading title="Portal Cards (Arabic)" description="Arabic titles and images for each card" />
         <div className="space-y-3">
           {cards.map((card, index) => (
             <div key={`ar-${index}`} className={cardClass}>
-              <span className="text-xs font-semibold text-gray-500">البطاقة {index + 1}</span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-gray-500">البطاقة {index + 1}</span>
+                {cards.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => set('cards', cards.filter((_, i) => i !== index))}
+                    className="p-1 text-gray-400 hover:text-red-500 rounded"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
+              </div>
               <ArabicTextField
                 label="العنوان (عربي)"
                 value={card.titleAr ?? ''}
@@ -250,6 +302,13 @@ export function HomePortalForm({ data, onChange }: FormProps<HomePortalContent>)
               />
             </div>
           ))}
+          <button
+            type="button"
+            onClick={() => set('cards', [...cards, { title: '', titleAr: '', imageAr: '', href: '', image_url: '' }])}
+            className="flex items-center gap-1.5 text-xs font-medium text-[#009900]"
+          >
+            <Plus size={14} /> إضافة بطاقة
+          </button>
         </div>
       </ArabicFieldsGroup>
     </div>

@@ -68,7 +68,7 @@ export default function EditorDrawer({
           fixed inset-y-0 end-0 z-50 flex flex-col bg-white shadow-2xl
           w-full ${width}
           transform transition-transform duration-300 ease-in-out
-          ${open ? 'translate-x-0' : 'translate-x-full'}
+          ${open ? 'translate-x-0' : 'translate-x-full rtl:-translate-x-full'}
         `}
       >
         {/* Header */}

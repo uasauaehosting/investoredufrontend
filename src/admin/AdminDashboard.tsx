@@ -142,8 +142,12 @@ function AdminDashboardInner() {
   const currentItem = ALL_ITEMS.find((n) => n.id === section);
   const currentGroup = NAV_GROUPS.find((g) => g.items.some((i) => i.id === section));
 
+  // The admin shell follows the content language: Arabic mode renders the whole
+  // UI right-to-left (the shell already uses logical spacing/anchor utilities).
+  const dir = mode === 'ar' ? 'rtl' : 'ltr';
+
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div dir={dir} className="min-h-screen bg-gray-50 flex">
       {/* Mobile backdrop */}
       {sidebarOpen && (
         <div
@@ -156,7 +160,7 @@ function AdminDashboardInner() {
       <aside className={`
         fixed inset-y-0 start-0 z-30 w-64 bg-[#004d00] text-white flex flex-col
         transform transition-transform duration-300
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full rtl:translate-x-full'}
         md:relative md:translate-x-0 md:flex-shrink-0
       `}>
         {/* Logo */}
