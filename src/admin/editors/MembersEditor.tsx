@@ -103,7 +103,13 @@ export default function MembersEditor() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-gray-800 truncate">{m.name}</p>
-                <p className="text-xs text-gray-400 truncate">{m.country}</p>
+                {m.nameAr?.trim() && (
+                  <p dir="rtl" lang="ar" className="text-xs text-gray-500 truncate">{m.nameAr}</p>
+                )}
+                <p className="text-xs text-gray-400 truncate">
+                  {m.country}
+                  {m.countryAr?.trim() ? <span dir="rtl" lang="ar"> · {m.countryAr}</span> : null}
+                </p>
               </div>
               <div className="flex items-center gap-1 flex-shrink-0">
                 <button onClick={() => openEdit(m)} className="icon-btn" title="Edit"><Pencil size={14} /></button>

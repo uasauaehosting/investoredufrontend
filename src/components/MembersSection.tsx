@@ -4,6 +4,7 @@ import { useLanguage } from '../lib/LanguageContext';
 import { t } from '../lib/translations';
 import { useSiteContent } from '../lib/useSiteContent';
 import { normalizeMediaUrl } from '../lib/mediaUrl';
+import { pickLocalized } from '../lib/localizedText';
 
 const MEMBERS_HEADER_FALLBACK = {
   headerImage: 'https://images.pexels.com/photos/1105766/pexels-photo-1105766.jpeg?auto=compress&cs=tinysrgb&w=1600',
@@ -12,26 +13,33 @@ const MEMBERS_HEADER_FALLBACK = {
 export interface Member {
   id: number;
   name: string;
+  nameAr?: string | null;
   country: string;
+  countryAr?: string | null;
   logo: string | null;
   website: string | null;
 }
 
 function MemberCard({ member }: { member: Member }) {
+  const { lang, isRtl } = useLanguage();
   const [imgVisible, setImgVisible] = useState(true);
+
+  const name = pickLocalized(lang, member.name, member.nameAr);
+  const country = pickLocalized(lang, member.country, member.countryAr);
 
   return (
     <a
       href={member.website ?? '#'}
       target={member.website ? '_blank' : undefined}
       rel={member.website ? 'noopener noreferrer' : undefined}
+      dir={isRtl ? 'rtl' : 'ltr'}
       className="group flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200 hover:border-[#009900]/40 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 bg-white"
     >
       <div className="w-full h-28 flex items-center justify-center mb-3">
         {imgVisible && member.logo ? (
           <img
             src={member.logo}
-            alt={`${member.name} — ${member.country}`}
+            alt={`${name} — ${country}`}
             className="max-h-24 max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
             onError={() => setImgVisible(false)}
           />
@@ -39,9 +47,16 @@ function MemberCard({ member }: { member: Member }) {
           <span className="text-3xl">🏛️</span>
         )}
       </div>
-      <span className="text-xs text-gray-500 font-medium text-center group-hover:text-[#009900] transition-colors leading-tight">
-        {member.country}
-      </span>
+      {name && (
+        <span className="text-xs font-semibold text-gray-700 text-center group-hover:text-[#009900] transition-colors leading-tight">
+          {name}
+        </span>
+      )}
+      {country && (
+        <span className="text-[11px] text-gray-500 font-medium text-center group-hover:text-[#009900] transition-colors leading-tight mt-0.5">
+          {country}
+        </span>
+      )}
     </a>
   );
 }
