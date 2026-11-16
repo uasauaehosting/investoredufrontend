@@ -160,7 +160,7 @@ export interface HomePortalContent {
   heroImage: string;
   heroTitle?: string;
   heroTitleAr?: string;
-  cards: { title: string; href: string; image_url: string }[];
+  cards: { title: string; titleAr?: string; href: string; image_url: string }[];
 }
 
 export function HomePortalForm({ data, onChange }: FormProps<HomePortalContent>) {
@@ -200,34 +200,53 @@ export function HomePortalForm({ data, onChange }: FormProps<HomePortalContent>)
       </ArabicFieldsGroup>
 
       <SectionHeading title="Portal Cards" description="Clickable cards linking to main sections" />
-      <div className="space-y-3">
-        {cards.map((card, index) => (
-          <div key={index} className={cardClass}>
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-gray-500">Card {index + 1}</span>
-              {cards.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => set('cards', cards.filter((_, i) => i !== index))}
-                  className="p-1 text-gray-400 hover:text-red-500 rounded"
-                >
-                  <Trash2 size={14} />
-                </button>
-              )}
+      <EnglishFieldsGroup>
+        <div className="space-y-3">
+          {cards.map((card, index) => (
+            <div key={index} className={cardClass}>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-gray-500">Card {index + 1}</span>
+                {cards.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => set('cards', cards.filter((_, i) => i !== index))}
+                    className="p-1 text-gray-400 hover:text-red-500 rounded"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
+              </div>
+              <TextField label="Title" value={card.title} onChange={(v) => updateCard(index, 'title', v)} />
+              <TextField label="Link" value={card.href} onChange={(v) => updateCard(index, 'href', v)} placeholder="/education/reading-materials/principles" />
+              <ImageField label="Card Image" value={card.image_url} onChange={(v) => updateCard(index, 'image_url', v)} />
             </div>
-            <TextField label="Title" value={card.title} onChange={(v) => updateCard(index, 'title', v)} />
-            <TextField label="Link" value={card.href} onChange={(v) => updateCard(index, 'href', v)} placeholder="/education/reading-materials/principles" />
-            <ImageField label="Card Image" value={card.image_url} onChange={(v) => updateCard(index, 'image_url', v)} />
-          </div>
-        ))}
-        <button
-          type="button"
-          onClick={() => set('cards', [...cards, { title: '', href: '', image_url: '' }])}
-          className="flex items-center gap-1.5 text-xs font-medium text-[#009900]"
-        >
-          <Plus size={14} /> Add portal card
-        </button>
-      </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => set('cards', [...cards, { title: '', titleAr: '', href: '', image_url: '' }])}
+            className="flex items-center gap-1.5 text-xs font-medium text-[#009900]"
+          >
+            <Plus size={14} /> Add portal card
+          </button>
+        </div>
+      </EnglishFieldsGroup>
+
+      <ArabicFieldsGroup>
+        <SectionHeading title="Portal Cards (Arabic)" description="Arabic titles for each card" />
+        <div className="space-y-3">
+          {cards.map((card, index) => (
+            <div key={`ar-${index}`} className={cardClass}>
+              <span className="text-xs font-semibold text-gray-500">البطاقة {index + 1}</span>
+              <ArabicTextField
+                label="العنوان (عربي)"
+                value={card.titleAr ?? ''}
+                onChange={(v) => updateCard(index, 'titleAr', v)}
+                englishValue={card.title}
+              />
+            </div>
+          ))}
+        </div>
+      </ArabicFieldsGroup>
     </div>
   );
 }
