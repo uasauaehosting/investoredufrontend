@@ -18,6 +18,7 @@ interface ApiPortal {
   short_title: string;
   short_title_ar?: string | null;
   image_url: string;
+  image_ar?: string | null;
   link: string;
 }
 
@@ -126,7 +127,7 @@ function PortalsInner() {
               id: p.id,
               panelTitle:   pickLocalized(lang, p.title, p.title_ar),
               displayTitle: pickLocalized(lang, p.short_title, p.short_title_ar),
-              imageUrl:     normalizeMediaUrl(p.image_url),
+              imageUrl:     normalizeMediaUrl(pickLocalized(lang, p.image_url, p.image_ar)),
               imageAlt:     pickLocalized(lang, p.short_title, p.short_title_ar),
               link: p.link,
             })),
@@ -199,7 +200,7 @@ function PortalsInner() {
             <div className="space-y-4">
               {portals.map((portal) => (
                 <PortalAccordionItem
-                  key={portal.id}
+                  key={`${portal.id}-${lang}`}
                   portal={portal}
                   isOpen={openId === portal.id}
                   onToggle={() => setOpenId(openId === portal.id ? null : portal.id)}

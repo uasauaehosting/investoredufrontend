@@ -16,7 +16,7 @@ export interface PortalCategory {
   title: string; titleAr?: string | null;
   short_title: string; short_titleAr?: string | null;
   description: string | null; descriptionAr?: string | null;
-  image_url: string | null;
+  image_url: string | null; imageAr?: string | null;
   link: string;
   authority_name: string; authority_nameAr?: string | null;
   country: string; countryAr?: string | null;
@@ -24,9 +24,29 @@ export interface PortalCategory {
 
 const empty: Omit<PortalCategory, 'id'> = {
   title: '', titleAr: '', short_title: '', short_titleAr: '',
-  description: '', descriptionAr: '', image_url: '', link: '#',
+  description: '', descriptionAr: '', image_url: '', imageAr: '', link: '#',
   authority_name: '', authority_nameAr: '', country: '', countryAr: '',
 };
+
+/** API rows expose snake_case columns; the editor works in camelCase keys. */
+function fromApi(row: any): PortalCategory {
+  return {
+    id: row.id,
+    title: row.title ?? '',
+    short_title: row.short_title ?? '',
+    description: row.description ?? '',
+    image_url: row.image_url ?? '',
+    link: row.link ?? '',
+    authority_name: row.authority_name ?? '',
+    country: row.country ?? '',
+    titleAr: row.title_ar ?? '',
+    short_titleAr: row.short_title_ar ?? '',
+    descriptionAr: row.description_ar ?? '',
+    authority_nameAr: row.authority_name_ar ?? '',
+    countryAr: row.country_ar ?? '',
+    imageAr: row.image_ar ?? '',
+  };
+}
 
 function F({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
@@ -46,7 +66,7 @@ export default function PortalCategoriesEditor() {
   const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
-    try { setCats(normalizeMediaFieldsDeep(await api.get('/portals') ?? [])); }
+    try { setCats(normalizeMediaFieldsDeep((await api.get('/portals') ?? []).map(fromApi))); }
     catch (e) { console.error(e); } finally { setLoading(false); }
   };
   useEffect(() => { load(); }, []);
@@ -69,6 +89,7 @@ export default function PortalCategoriesEditor() {
         descriptionAr: editing.descriptionAr?.trim() || null,
         authority_nameAr: editing.authority_nameAr?.trim() || null,
         countryAr: editing.countryAr?.trim() || null,
+        imageAr: editing.imageAr?.trim() || null,
       });
       editing.id ? await api.put(`/portals/${editing.id}`, payload)
                  : await api.post('/portals', payload);
@@ -162,6 +183,7 @@ export default function PortalCategoriesEditor() {
               <ArabicTextAreaField label="الوصف (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} englishValue={editing.description ?? ''} />
               <ArabicTextField label="اسم الجهة (عربي)" value={editing.authority_nameAr ?? ''} onChange={(v) => setEditing({ ...editing, authority_nameAr: v })} englishValue={editing.authority_name ?? ''} />
               <ArabicTextField label="الدولة (عربي)" value={editing.countryAr ?? ''} onChange={(v) => setEditing({ ...editing, countryAr: v })} englishValue={editing.country ?? ''} />
+              <ImageUpload label="صورة البوابة (عربي)" value={editing.imageAr ?? ''} onChange={(url) => setEditing({ ...editing, imageAr: url })} />
             </ArabicFieldsGroup>
           </div>
         )}
