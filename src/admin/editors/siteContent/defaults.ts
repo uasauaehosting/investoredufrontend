@@ -48,7 +48,7 @@ export const DEFAULTS: Record<PageKey, Record<string, unknown>> = {
     heroImage: '',
     heroTitle: 'UASA INVESTOR EDUCATION PORTAL',
     heroTitleAr: 'بوابة اتحاد هيئات الأوراق المالية العربية لتعليم وتوعية المستثمرين',
-    cards: [{ title: '', titleAr: '', href: '', image_url: '' }],
+    cards: [{ title: '', titleAr: '', imageAr: '', href: '', image_url: '' }],
   } satisfies HomePortalContent,
   'home.members_header': {
     headerImage: '',

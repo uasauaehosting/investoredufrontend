@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useSiteContent } from '../lib/useSiteContent';
@@ -9,6 +9,7 @@ import { normalizeMediaUrl } from '../lib/mediaUrl';
 interface PortalCard {
   title: string;
   titleAr?: string;
+  imageAr?: string;
   href: string;
   image_url: string;
 }
@@ -41,8 +42,11 @@ const FALLBACK = {
 
 function PortalCardItem({ card }: { card: PortalCard }) {
   const { lang, isRtl } = useLanguage();
-  const [imgSrc, setImgSrc] = useState(card.image_url);
+  const image = lang === 'ar' && card.imageAr ? card.imageAr : card.image_url;
+  const [imgSrc, setImgSrc] = useState(image);
   const label = lang === 'ar' && card.titleAr ? card.titleAr : card.title;
+
+  useEffect(() => { setImgSrc(image); }, [image]);
 
   return (
     <Link

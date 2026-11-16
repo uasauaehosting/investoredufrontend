@@ -160,7 +160,7 @@ export interface HomePortalContent {
   heroImage: string;
   heroTitle?: string;
   heroTitleAr?: string;
-  cards: { title: string; titleAr?: string; href: string; image_url: string }[];
+  cards: { title: string; titleAr?: string; imageAr?: string; href: string; image_url: string }[];
 }
 
 export function HomePortalForm({ data, onChange }: FormProps<HomePortalContent>) {
@@ -223,7 +223,7 @@ export function HomePortalForm({ data, onChange }: FormProps<HomePortalContent>)
           ))}
           <button
             type="button"
-            onClick={() => set('cards', [...cards, { title: '', titleAr: '', href: '', image_url: '' }])}
+            onClick={() => set('cards', [...cards, { title: '', titleAr: '', imageAr: '', href: '', image_url: '' }])}
             className="flex items-center gap-1.5 text-xs font-medium text-[#009900]"
           >
             <Plus size={14} /> Add portal card
@@ -242,6 +242,11 @@ export function HomePortalForm({ data, onChange }: FormProps<HomePortalContent>)
                 value={card.titleAr ?? ''}
                 onChange={(v) => updateCard(index, 'titleAr', v)}
                 englishValue={card.title}
+              />
+              <ImageField
+                label="صورة البطاقة (عربي)"
+                value={card.imageAr ?? ''}
+                onChange={(v) => updateCard(index, 'imageAr', v)}
               />
             </div>
           ))}
