@@ -191,9 +191,11 @@ export default function Glossary() {
                   <th className={`${CELL_BORDER} px-4 py-3 text-center font-bold text-[#008000] uppercase tracking-wide w-[18%]`}>
                     {t(lang, 'glossary.colEnglish', 'Term in English')}
                   </th>
-                  <th className={`${CELL_BORDER} px-4 py-3 text-center font-bold text-[#008000] uppercase tracking-wide w-[22%]`}>
-                    {t(lang, 'glossary.colFrench', 'Term in French')}
-                  </th>
+                  {!isRtl && (
+                    <th className={`${CELL_BORDER} px-4 py-3 text-center font-bold text-[#008000] uppercase tracking-wide w-[22%]`}>
+                      {t(lang, 'glossary.colFrench', 'Term in French')}
+                    </th>
+                  )}
                   <th className={`${CELL_BORDER} px-4 py-3 text-center font-bold text-[#008000] uppercase tracking-wide w-[18%]`}>
                     {t(lang, 'glossary.colArabic', 'Term in Arabic')}
                   </th>
@@ -205,7 +207,7 @@ export default function Glossary() {
               <tbody>
                 {filteredTerms.length === 0 ? (
                   <tr className="bg-white">
-                    <td colSpan={4} className={`${CELL_BORDER} px-4 py-8 text-center text-gray-500`}>
+                    <td colSpan={isRtl ? 3 : 4} className={`${CELL_BORDER} px-4 py-8 text-center text-gray-500`}>
                       {t(lang, 'glossary.noResults', 'No terms match your search.')}
                     </td>
                   </tr>
@@ -215,9 +217,11 @@ export default function Glossary() {
                       <td className={`${CELL_BORDER} px-4 py-3 text-center align-middle text-gray-900`}>
                         {term.english}
                       </td>
-                      <td className={`${CELL_BORDER} px-4 py-3 text-center align-middle text-gray-900`}>
-                        {term.french}
-                      </td>
+                      {!isRtl && (
+                        <td className={`${CELL_BORDER} px-4 py-3 text-center align-middle text-gray-900`}>
+                          {term.french}
+                        </td>
+                      )}
                       <td className={`${CELL_BORDER} px-4 py-3 text-center align-middle text-gray-900`} dir="rtl">
                         {term.arabic}
                       </td>
