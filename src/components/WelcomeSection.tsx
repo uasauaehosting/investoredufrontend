@@ -1,7 +1,6 @@
 import { TrendingUp, Shield, Globe } from 'lucide-react';
 import { useLocalizedSiteContent } from '../lib/useLocalizedSiteContent';
 import { useLanguage } from '../lib/LanguageContext';
-import { pickField } from '../lib/localizedText';
 import { t } from '../lib/translations';
 
 const ICON_MAP = { TrendingUp, Shield, Globe } as const;
@@ -57,7 +56,16 @@ export default function WelcomeSection() {
       : (d.paragraphs as string[]);
 
   const highlights = d.highlights ?? FALLBACK.highlights;
-  const highlightsAr = d.highlightsAr ?? FALLBACK.highlightsAr;
+  // Merge Arabic per item/field: CMS Arabic wins, then the built-in Arabic default,
+  // then English. This keeps cards Arabic even when the CMS entry exists but is blank.
+  const highlightsAr = FALLBACK.highlightsAr.map((fb, i) => {
+    const cms = Array.isArray(d.highlightsAr) ? d.highlightsAr[i] : undefined;
+    return {
+      icon: cms?.icon || fb.icon,
+      title: cms?.title?.trim() ? cms.title : fb.title,
+      description: cms?.description?.trim() ? cms.description : fb.description,
+    };
+  });
 
   return (
     <section className="py-14 bg-white">
@@ -90,13 +98,9 @@ export default function WelcomeSection() {
           <div className="grid grid-cols-1 gap-4">
             {highlights.map((item, index) => {
               const Icon = ICON_MAP[item.icon as keyof typeof ICON_MAP] ?? TrendingUp;
-              const arItem = highlightsAr?.[index];
-              const cardTitle = lang === 'ar' && arItem?.title
-                ? arItem.title
-                : pickField(lang, { title: item.title, titleAr: arItem?.title }, 'title');
-              const cardDesc = lang === 'ar' && arItem?.description
-                ? arItem.description
-                : pickField(lang, { description: item.description, descriptionAr: arItem?.description }, 'description');
+              const arItem = highlightsAr[index];
+              const cardTitle = isRtl ? (arItem?.title || item.title) : item.title;
+              const cardDesc = isRtl ? (arItem?.description || item.description) : item.description;
 
               return (
                 <div

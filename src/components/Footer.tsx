@@ -1,16 +1,7 @@
 import { Facebook, Twitter, Linkedin, Youtube, MapPin, Phone, Mail } from 'lucide-react';
 import { useLocalizedSiteContent } from '../lib/useLocalizedSiteContent';
-import { useFooterStats } from '../lib/useSiteContent';
 import { useLanguage } from '../lib/LanguageContext';
-import { pickLocalized } from '../lib/localizedText';
 import { t } from '../lib/translations';
-
-const FALLBACK_STATS = [
-  { value: '10+', label: 'Member States',        labelAr: 'الدول الأعضاء' },
-  { value: '1000+', label: 'Educational Resources', labelAr: 'موارد تعليمية' },
-  { value: '50+', label: 'Publications',          labelAr: 'إصدارات' },
-  { value: '20+', label: 'Years of Service',       labelAr: 'سنوات من الخدمة' },
-];
 
 const FALLBACK_FOOTER = {
   educationLinks: ['Reading Materials', "Members' Activities", 'Alerts & Bulletins'],
@@ -30,7 +21,6 @@ const FALLBACK_FOOTER = {
 
 export default function Footer() {
   const { lang, isRtl } = useLanguage();
-  const { stats } = useFooterStats(FALLBACK_STATS);
   const { data: footer } = useLocalizedSiteContent(
     'footer',
     FALLBACK_FOOTER,
@@ -68,19 +58,6 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#c8e6c9] text-black border-t border-[#009900]/25">
-      <div className="bg-[#006600] py-6 px-4">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          {stats.map((stat) => (
-            <div key={stat.label}>
-              <div className="text-2xl font-bold text-white">{stat.value}</div>
-              <div className="text-xs text-white mt-0.5">
-                {pickLocalized(lang, stat.label, (stat as { labelAr?: string }).labelAr)}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 
