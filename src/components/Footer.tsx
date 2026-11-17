@@ -1,4 +1,4 @@
-import { Facebook, Twitter, Linkedin, Youtube, MapPin, Phone, Mail } from 'lucide-react';
+import { Facebook, Twitter, Linkedin, Youtube, MapPin, Phone, Mail, Printer } from 'lucide-react';
 import { useLocalizedSiteContent } from '../lib/useLocalizedSiteContent';
 import { useLanguage } from '../lib/LanguageContext';
 import { t } from '../lib/translations';
@@ -13,9 +13,13 @@ const FALLBACK_FOOTER = {
     { label: 'Glossary',   labelAr: 'المسرد',       href: '/glossary' },
     { label: 'Feedback',   labelAr: 'التغذية الراجعة', href: '/feedback' },
   ],
-  address: 'Union of Arab Securities Authorities, Abu Dhabi, UAE',
-  addressAr: 'الراشدية، أم الرمول دبي، صندوق بريد 117555 دبي، إ.ع.م',
+  address: 'Al Rashidiya, Umm Ramoul, Dubai',
+  addressAr: 'الراشدية، أم الرمول دبي',
+  poBox: 'P.O. Box 117555, Dubai, UAE',
+  poBoxAr: 'صندوق بريد: 117555 دبي، إ.ع.م',
   phone: '+971 4 290 0000',
+  phoneDirect: '+971 4 290 0056',
+  fax: '+971 4 290 0059',
   email: 'info@uasa.ae',
 };
 
@@ -24,7 +28,7 @@ export default function Footer() {
   const { data: footer } = useLocalizedSiteContent(
     'footer',
     FALLBACK_FOOTER,
-    ['address', 'phone', 'email'],
+    ['address', 'addressAr', 'poBox', 'poBoxAr', 'phone', 'phoneDirect', 'fax', 'email'],
     ['educationLinks', 'inclusionLinks'],
   );
 
@@ -51,10 +55,13 @@ export default function Footer() {
         )
       : (footer.inclusionLinks as string[]);
 
-  const addressDisplay =
-    lang === 'ar'
-      ? (((footer.addressAr as string | undefined)?.trim()) || FALLBACK_FOOTER.addressAr)
-      : (footer.address as string);
+  const addressDisplay = lang === 'ar'
+    ? ((footer.addressAr as string | undefined)?.trim() || FALLBACK_FOOTER.addressAr)
+    : (footer.address as string);
+
+  const poBoxDisplay = lang === 'ar'
+    ? ((footer.poBoxAr as string | undefined)?.trim() || FALLBACK_FOOTER.poBoxAr)
+    : (footer.poBox as string);
 
   return (
     <footer className="bg-[#c8e6c9] text-black border-t border-[#009900]/25">
@@ -122,27 +129,67 @@ export default function Footer() {
           {/* Contact / Address */}
           <div dir={isRtl ? 'rtl' : 'ltr'}>
             <h4 className="font-semibold text-black uppercase tracking-wider text-xs mb-4 pb-2 border-b border-black/15">
-              {t(lang, 'footer.address', 'Address')}
+              {t(lang, 'footer.address', 'Contact Information')}
             </h4>
-            <ul className="space-y-3 mb-6">
-              <li className="flex items-start gap-2.5 text-sm text-black">
-                <MapPin size={14} className="text-black mt-0.5 flex-shrink-0" />
-                <span>{addressDisplay}</span>
+            <ul className="space-y-2.5 mb-6 text-sm text-black">
+
+              {/* Address */}
+              <li className={`flex items-start gap-2 w-full ${isRtl ? 'flex-row-reverse justify-end' : ''}`}>
+                <MapPin size={13} className="mt-0.5 flex-shrink-0 text-black/70" />
+                <span dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'text-right' : ''}>
+                  <span className="font-medium">{isRtl ? 'العنوان:' : 'Address:'}</span>{' '}
+                  <span dir="auto">{addressDisplay}</span>
+                </span>
               </li>
-              <li className="flex items-center gap-2.5 text-sm text-black">
-                <Phone size={14} className="text-black flex-shrink-0" />
-                <span>{footer.phone as string}</span>
+
+              {/* PO Box */}
+              <li className={`flex items-start gap-2 w-full ${isRtl ? 'flex-row-reverse justify-end' : ''}`}>
+                <MapPin size={13} className="mt-0.5 flex-shrink-0 opacity-0" aria-hidden />
+                <span dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'text-right' : ''}>{poBoxDisplay}</span>
               </li>
-              <li className="flex items-center gap-2.5 text-sm text-black">
-                <Mail size={14} className="text-black flex-shrink-0" />
-                <span>{footer.email as string}</span>
+
+              {/* Phone */}
+              <li className={`flex items-start gap-2 w-full ${isRtl ? 'flex-row-reverse justify-end' : ''}`}>
+                <Phone size={13} className="mt-0.5 flex-shrink-0 text-black/70" />
+                <span dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'text-right' : ''}>
+                  <span className="font-medium">{isRtl ? 'هاتف:' : 'Tel:'}</span>{' '}
+                  <span dir="ltr" className="inline-block">{footer.phone as string}</span>
+                </span>
               </li>
+
+              {/* Direct */}
+              <li className={`flex items-start gap-2 w-full ${isRtl ? 'flex-row-reverse justify-end' : ''}`}>
+                <Phone size={13} className="mt-0.5 flex-shrink-0 opacity-0" aria-hidden />
+                <span dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'text-right' : ''}>
+                  <span className="font-medium">{isRtl ? 'مباشر:' : 'Direct:'}</span>{' '}
+                  <span dir="ltr" className="inline-block">{footer.phoneDirect as string}</span>
+                </span>
+              </li>
+
+              {/* Fax */}
+              <li className={`flex items-start gap-2 w-full ${isRtl ? 'flex-row-reverse justify-end' : ''}`}>
+                <Printer size={13} className="mt-0.5 flex-shrink-0 text-black/70" />
+                <span dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'text-right' : ''}>
+                  <span className="font-medium">{isRtl ? 'فاكس:' : 'Fax:'}</span>{' '}
+                  <span dir="ltr" className="inline-block">{footer.fax as string}</span>
+                </span>
+              </li>
+
+              {/* Email */}
+              <li className={`flex items-start gap-2 w-full ${isRtl ? 'flex-row-reverse justify-end' : ''}`}>
+                <Mail size={13} className="mt-0.5 flex-shrink-0 text-black/70" />
+                <span dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'text-right' : ''}>
+                  <span className="font-medium">{isRtl ? 'البريد الإلكتروني:' : 'Email:'}</span>{' '}
+                  <span dir="ltr" className="inline-block">{footer.email as string}</span>
+                </span>
+              </li>
+
             </ul>
 
             <h4 className="font-semibold text-black uppercase tracking-wider text-xs mb-3">
               {t(lang, 'footer.followUs', 'Follow Us')}
             </h4>
-            <div className="flex items-center gap-3">
+            <div className={`flex items-center gap-3 ${isRtl ? 'flex-row-reverse justify-end' : ''}`}>
               {[
                 { Icon: Facebook, label: 'Facebook',  href: 'https://www.facebook.com/uasa.ae' },
                 { Icon: Twitter,  label: 'Twitter',   href: 'https://twitter.com/uasa_ae' },

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { api } from '../lib/api';
-import { Send, Mail, User, Globe, Building2, MapPin } from 'lucide-react';
+import { Send, Mail, User, Building2, MapPin, Phone, Printer } from 'lucide-react';
 import { useLanguage } from '../lib/LanguageContext';
 import { t } from '../lib/translations';
 
@@ -273,37 +273,75 @@ export default function Feedback() {
 
           {/* ── Contact sidebar ───────────────────────────────────────── */}
           <div className="space-y-8">
-            <div className="bg-white rounded-3xl shadow-lg p-8 border border-gray-100">
-              <h3
-                className="text-xl font-bold text-[#009900] mb-6"
-                dir={isRtl ? 'rtl' : 'ltr'}
-              >
+            <div className="bg-white rounded-3xl shadow-lg p-8 border border-gray-100" dir={isRtl ? 'rtl' : 'ltr'}>
+              <h3 className="text-xl font-bold text-[#009900] mb-6">
                 {t(lang, 'feedback.contactTitle', 'Contact Info')}
               </h3>
-              <div className="space-y-6">
-                <div className="flex gap-4" dir={isRtl ? 'rtl' : 'ltr'}>
-                  <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 shrink-0">
-                    <Mail size={20} />
+
+              <ul className="space-y-4 text-sm text-gray-700">
+
+                {/* Address */}
+                <li className={`flex items-start gap-3 w-full ${isRtl ? 'flex-row-reverse' : ''}`}>
+                  <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-green-600 shrink-0 mt-0.5">
+                    <MapPin size={15} />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase">
-                      {t(lang, 'feedback.emailLabel', 'Email Us')}
-                    </p>
-                    <p className="text-gray-700 font-medium">info@uasa.ae</p>
+                  <span dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'text-right' : ''}>
+                    <span className="font-semibold text-gray-800">{isRtl ? 'العنوان:' : 'Address:'}</span>{' '}
+                    {isRtl ? 'الراشدية، أم الرمول دبي' : 'Al Rashidiya, Umm Ramoul, Dubai'}
+                  </span>
+                </li>
+
+                {/* PO Box */}
+                <li className={`flex items-start gap-3 w-full ${isRtl ? 'flex-row-reverse' : ''}`}>
+                  <div className="w-8 h-8 rounded-full shrink-0 opacity-0 mt-0.5" aria-hidden />
+                  <span dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'text-right' : ''}>
+                    {isRtl ? 'صندوق بريد: 117555 دبي، إ.ع.م' : 'P.O. Box 117555, Dubai, UAE'}
+                  </span>
+                </li>
+
+                {/* Phone */}
+                <li className={`flex items-start gap-3 w-full ${isRtl ? 'flex-row-reverse' : ''}`}>
+                  <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 mt-0.5">
+                    <Phone size={15} />
                   </div>
-                </div>
-                <div className="flex gap-4" dir={isRtl ? 'rtl' : 'ltr'}>
-                  <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-600 shrink-0">
-                    <Globe size={20} />
+                  <span dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'text-right' : ''}>
+                    <span className="font-semibold text-gray-800">{isRtl ? 'هاتف:' : 'Tel:'}</span>{' '}
+                    <span dir="ltr" className="inline-block">+971 4 290 0000</span>
+                  </span>
+                </li>
+
+                {/* Direct */}
+                <li className={`flex items-start gap-3 w-full ${isRtl ? 'flex-row-reverse' : ''}`}>
+                  <div className="w-8 h-8 rounded-full shrink-0 opacity-0 mt-0.5" aria-hidden />
+                  <span dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'text-right' : ''}>
+                    <span className="font-semibold text-gray-800">{isRtl ? 'مباشر:' : 'Direct:'}</span>{' '}
+                    <span dir="ltr" className="inline-block">+971 4 290 0056</span>
+                  </span>
+                </li>
+
+                {/* Fax */}
+                <li className={`flex items-start gap-3 w-full ${isRtl ? 'flex-row-reverse' : ''}`}>
+                  <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 shrink-0 mt-0.5">
+                    <Printer size={15} />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase">
-                      {t(lang, 'feedback.websiteLabel', 'Website')}
-                    </p>
-                    <p className="text-gray-700 font-medium">www.uasa.ae</p>
+                  <span dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'text-right' : ''}>
+                    <span className="font-semibold text-gray-800">{isRtl ? 'فاكس:' : 'Fax:'}</span>{' '}
+                    <span dir="ltr" className="inline-block">+971 4 290 0059</span>
+                  </span>
+                </li>
+
+                {/* Email */}
+                <li className={`flex items-start gap-3 w-full ${isRtl ? 'flex-row-reverse' : ''}`}>
+                  <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-green-600 shrink-0 mt-0.5">
+                    <Mail size={15} />
                   </div>
-                </div>
-              </div>
+                  <span dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'text-right' : ''}>
+                    <span className="font-semibold text-gray-800">{isRtl ? 'البريد الإلكتروني:' : 'Email:'}</span>{' '}
+                    <span dir="ltr" className="inline-block">info@uasa.ae</span>
+                  </span>
+                </li>
+
+              </ul>
             </div>
           </div>
         </div>
