@@ -17,12 +17,17 @@ interface StrategyProject {
   authority_name: string;
   type: string;
   fileUrl: string | null;
+  /** Master visibility switch */
   isActive: boolean;
+  /** English content visible on site */
+  isActiveEn: boolean;
+  /** Arabic content visible on site */
+  isActiveAr: boolean;
 }
 
 const empty = (): Omit<StrategyProject, 'id'> => ({
   title: '', titleAr: '', description: 'View Description', descriptionAr: '',
-  authority_name: '', type: 'Strategy', fileUrl: '', isActive: true,
+  authority_name: '', type: 'Strategy', fileUrl: '', isActive: true, isActiveEn: true, isActiveAr: true,
 });
 
 function normalize(raw: Record<string, unknown>): StrategyProject {
@@ -36,6 +41,8 @@ function normalize(raw: Record<string, unknown>): StrategyProject {
     type: String(raw.type ?? 'Strategy'),
     fileUrl: (raw.fileUrl as string | null) ?? (raw.file_url as string | null) ?? '',
     isActive: raw.isActive !== false && raw.is_active !== false && raw.is_active !== 0,
+    isActiveEn: raw.isActiveEn !== false && raw.is_active_en !== false && raw.is_active_en !== 0,
+    isActiveAr: raw.isActiveAr !== false && raw.is_active_ar !== false && raw.is_active_ar !== 0,
   };
 }
 
@@ -44,6 +51,39 @@ const TYPE_COLORS: Record<string, string> = {
   Project:  'bg-blue-100 text-blue-700',
 };
 
+// ── Small reusable toggle pill ────────────────────────────────────────────────
+interface LangToggleProps {
+  lang: 'EN' | 'AR';
+  active: boolean;
+  onChange: (v: boolean) => void;
+}
+function LangToggle({ lang, active, onChange }: LangToggleProps) {
+  const isAr = lang === 'AR';
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!active)}
+      title={`${lang} content: ${active ? 'Active' : 'Inactive'}`}
+      className={[
+        'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border transition-all',
+        active
+          ? isAr
+            ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
+            : 'bg-green-50 border-green-300 text-[#009900] hover:bg-green-100'
+          : 'bg-gray-50 border-gray-200 text-gray-400 hover:bg-gray-100',
+      ].join(' ')}
+    >
+      {/* dot indicator */}
+      <span className={[
+        'w-1.5 h-1.5 rounded-full',
+        active ? (isAr ? 'bg-blue-500' : 'bg-[#009900]') : 'bg-gray-300',
+      ].join(' ')} />
+      {lang}
+    </button>
+  );
+}
+
+// ── Main editor ───────────────────────────────────────────────────────────────
 export default function MemberStrategiesProjectsEditor() {
   const [items, setItems]     = useState<StrategyProject[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,14 +111,16 @@ export default function MemberStrategiesProjectsEditor() {
     setSaving(true); setError(null);
     try {
       const payload = {
-        title: editing.title?.trim() || '',
-        titleAr: editing.titleAr?.trim() || null,
-        description: editing.description || 'View Description',
+        title:        editing.title?.trim() || '',
+        titleAr:      editing.titleAr?.trim() || null,
+        description:  editing.description || 'View Description',
         descriptionAr: editing.descriptionAr?.trim() || null,
         authority_name: editing.authority_name?.trim() || '',
-        type: editing.type ?? 'Strategy',
-        fileUrl: editing.fileUrl || null,
-        isActive: editing.isActive !== false,
+        type:         editing.type ?? 'Strategy',
+        fileUrl:      editing.fileUrl || null,
+        isActive:     editing.isActive !== false,
+        isActiveEn:   editing.isActiveEn !== false,
+        isActiveAr:   editing.isActiveAr !== false,
       };
       editing.id
         ? await api.put(`/investor-education/member-strategies-projects/${editing.id}`, payload)
@@ -122,9 +164,22 @@ export default function MemberStrategiesProjectsEditor() {
                 <p className="text-sm font-semibold text-gray-800 truncate">{item.title}</p>
                 <p className="text-xs text-gray-400 truncate">{item.authority_name}</p>
               </div>
+              {/* Status badges */}
               <div className="flex items-center gap-1.5 flex-shrink-0">
                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${TYPE_COLORS[item.type] ?? 'bg-gray-100 text-gray-600'}`}>{item.type}</span>
-                {!item.isActive && <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">Inactive</span>}
+                {!item.isActive && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-400 font-medium">Inactive</span>
+                )}
+                {item.isActive && (
+                  <>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${item.isActiveEn ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
+                      EN {item.isActiveEn ? '●' : '○'}
+                    </span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${item.isActiveAr ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-400'}`}>
+                      AR {item.isActiveAr ? '●' : '○'}
+                    </span>
+                  </>
+                )}
               </div>
               <div className="flex items-center gap-1 flex-shrink-0">
                 <button onClick={() => openEdit(item)} className="icon-btn" title="Edit"><Pencil size={14} /></button>
@@ -174,11 +229,79 @@ export default function MemberStrategiesProjectsEditor() {
                   placeholder="https://…"
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009900]/20 focus:border-[#009900]" />
               </div>
-              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                <input type="checkbox" checked={editing.isActive !== false} onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })} className="rounded border-gray-300" />
-                Active (visible on site)
-              </label>
+
+              {/* ── Visibility controls ─────────────────────────────── */}
+              <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 space-y-3">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Visibility</p>
+
+                {/* Master switch */}
+                <label className="flex items-center justify-between cursor-pointer">
+                  <span className="text-sm text-gray-700">Active <span className="text-gray-400 font-normal text-xs">(master switch)</span></span>
+                  <button
+                    type="button"
+                    onClick={() => setEditing({ ...editing, isActive: !editing.isActive })}
+                    className={[
+                      'relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none',
+                      editing.isActive !== false ? 'bg-[#009900]' : 'bg-gray-300',
+                    ].join(' ')}
+                  >
+                    <span className={[
+                      'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform',
+                      editing.isActive !== false ? 'translate-x-4' : 'translate-x-0.5',
+                    ].join(' ')} />
+                  </button>
+                </label>
+
+                {/* Per-language toggles — only meaningful when master is on */}
+                <div className={editing.isActive !== false ? '' : 'opacity-40 pointer-events-none'}>
+                  <p className="text-xs text-gray-500 mb-2">Language visibility</p>
+                  <div className="flex items-center gap-3">
+                    {/* English toggle */}
+                    <label className="flex items-center justify-between flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 cursor-pointer hover:border-green-300 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-semibold text-gray-600">EN</span>
+                        <span className="text-xs text-gray-400">English</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setEditing({ ...editing, isActiveEn: !editing.isActiveEn })}
+                        className={[
+                          'relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none',
+                          editing.isActiveEn !== false ? 'bg-[#009900]' : 'bg-gray-300',
+                        ].join(' ')}
+                      >
+                        <span className={[
+                          'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform',
+                          editing.isActiveEn !== false ? 'translate-x-4' : 'translate-x-0.5',
+                        ].join(' ')} />
+                      </button>
+                    </label>
+
+                    {/* Arabic toggle */}
+                    <label className="flex items-center justify-between flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 cursor-pointer hover:border-blue-300 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-semibold text-gray-600">AR</span>
+                        <span className="text-xs text-gray-400">عربي</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setEditing({ ...editing, isActiveAr: !editing.isActiveAr })}
+                        className={[
+                          'relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none',
+                          editing.isActiveAr !== false ? 'bg-blue-500' : 'bg-gray-300',
+                        ].join(' ')}
+                      >
+                        <span className={[
+                          'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform',
+                          editing.isActiveAr !== false ? 'translate-x-4' : 'translate-x-0.5',
+                        ].join(' ')} />
+                      </button>
+                    </label>
+                  </div>
+                </div>
+              </div>
             </EnglishFieldsGroup>
+
             <ArabicSectionDivider />
             <ArabicFieldsGroup>
               <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} englishValue={editing.title ?? ''} />
