@@ -73,3 +73,41 @@
     fill: #009900;
   }
 }
+
+/* ── Education detail page: rich content styling ─────────────────────────── */
+@layer components {
+  /* Constrain and style images embedded in the full content HTML */
+  .prose img {
+    @apply max-w-full h-auto rounded-xl my-6 block;
+    max-height: 600px;
+    object-fit: contain;
+  }
+
+  /* Ensure Quill-emitted inline width/height attributes don't overflow */
+  .prose img[width],
+  .prose img[style] {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Brand-colored links inside prose content */
+  .prose a {
+    @apply text-[#009900] underline hover:text-[#006600] transition-colors;
+  }
+
+  /* Quill wraps aligned images in a figure with text-align style */
+  .prose figure,
+  .prose p[style*="text-align"] img {
+    @apply max-w-full;
+  }
+
+  /* RTL prose: flip list indentation and text alignment */
+  [dir='rtl'] .prose {
+    @apply text-right;
+  }
+
+  [dir='rtl'] .prose ul,
+  [dir='rtl'] .prose ol {
+    @apply pr-6 pl-0;
+  }
+}

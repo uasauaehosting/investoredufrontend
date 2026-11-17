@@ -80,7 +80,13 @@ export default function EducationItemDetail() {
             </p>
             {content ? (
               <div
-                className="prose prose-blue max-w-none text-gray-600 leading-relaxed"
+                className="prose prose-gray max-w-none
+                  prose-headings:text-[#009900] prose-headings:font-bold
+                  prose-a:text-[#009900] prose-a:no-underline hover:prose-a:underline
+                  prose-strong:text-gray-800
+                  prose-img:rounded-xl prose-img:max-w-full prose-img:h-auto
+                  prose-li:text-gray-600 prose-p:text-gray-600
+                  text-gray-600 leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: content }}
               />
             ) : (
