@@ -117,11 +117,17 @@
 .education-content {
   overflow-wrap: break-word;
   word-break: break-word;
+  /* &nbsp; chains from copy-pasted content must not prevent wrapping */
+  white-space: normal;
 }
 
 .education-content * {
   max-width: 100%;
   box-sizing: border-box;
+  /* Allow wrapping even on runs of &nbsp; */
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .education-content img {
