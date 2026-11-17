@@ -57,7 +57,7 @@ export default function EducationItemDetail() {
 
   return (
     <div className="bg-gray-50 min-h-screen py-12">
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-4 overflow-hidden">
         <Link
           to={meta.listPath}
           className="inline-flex items-center gap-2 text-[#009900] hover:text-amber-600 mb-8 transition-colors"
@@ -73,20 +73,21 @@ export default function EducationItemDetail() {
             className="w-full h-72 sm:h-96 object-cover"
             onError={() => setImgSrc(FALLBACK_IMAGE)}
           />
-          <div className="p-8 sm:p-12" dir={isRtl ? 'rtl' : 'ltr'}>
+          <div className="p-8 sm:p-12 overflow-hidden min-w-0" dir={isRtl ? 'rtl' : 'ltr'}>
             <h1 className="text-3xl sm:text-4xl font-bold text-[#009900] mb-6 leading-tight">{title}</h1>
             <p className="text-gray-600 text-lg leading-relaxed mb-8 border-b border-gray-100 pb-8">
               {description}
             </p>
             {content ? (
               <div
-                className="prose prose-gray max-w-none
+                className="prose prose-gray max-w-none overflow-hidden min-w-0
                   prose-headings:text-[#009900] prose-headings:font-bold
                   prose-a:text-[#009900] prose-a:no-underline hover:prose-a:underline
                   prose-strong:text-gray-800
                   prose-img:rounded-xl prose-img:max-w-full prose-img:h-auto
                   prose-li:text-gray-600 prose-p:text-gray-600
-                  text-gray-600 leading-relaxed"
+                  prose-table:block prose-table:overflow-x-auto prose-table:w-full
+                  text-gray-600 leading-relaxed education-content"
                 dangerouslySetInnerHTML={{ __html: content }}
               />
             ) : (
