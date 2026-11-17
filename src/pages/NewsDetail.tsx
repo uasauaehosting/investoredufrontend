@@ -67,7 +67,7 @@ export default function NewsDetail() {
         {item.image && (
           <img src={item.image} alt={title} className="w-full h-80 object-cover" />
         )}
-        <div className="p-8 sm:p-12" dir={isRtl ? 'rtl' : 'ltr'}>
+        <div className="p-8 sm:p-12 overflow-hidden min-w-0" dir={isRtl ? 'rtl' : 'ltr'}>
           <div className="flex flex-wrap gap-4 mb-6">
             <span className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 bg-green-50 text-green-700 rounded-full">
               <Tag size={12} />
@@ -81,7 +81,14 @@ export default function NewsDetail() {
 
           <h1 className="text-3xl sm:text-4xl font-bold text-[#009900] mb-8 leading-tight">{title}</h1>
 
-          <div className="prose prose-blue max-w-none text-gray-600 leading-relaxed space-y-6">
+          <div className="prose prose-gray max-w-none overflow-hidden min-w-0
+            prose-headings:text-[#009900] prose-headings:font-bold
+            prose-a:text-[#009900] prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-gray-800
+            prose-img:rounded-xl prose-img:max-w-full prose-img:h-auto
+            prose-li:text-gray-600 prose-p:text-gray-600
+            prose-table:block prose-table:overflow-x-auto prose-table:w-full
+            text-gray-600 leading-relaxed education-content">
             {body ? (
               <div dangerouslySetInnerHTML={{ __html: body }} />
             ) : (

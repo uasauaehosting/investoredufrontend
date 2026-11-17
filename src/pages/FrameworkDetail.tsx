@@ -76,8 +76,8 @@ export default function FrameworkDetail() {
 
       {/* Content card */}
       <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
-        <article className="bg-white rounded-3xl shadow-xl border border-gray-100">
-          <div className="grid lg:grid-cols-2 gap-0 items-start">
+        <article className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-0 items-start overflow-hidden min-w-0">
             {/* Image */}
             <div className="bg-gray-50 border-b lg:border-b-0 lg:border-r border-gray-100 flex items-center justify-center p-6 sm:p-8 lg:p-10 lg:sticky lg:top-6 lg:self-start rounded-t-3xl lg:rounded-s-3xl lg:rounded-tr-none">
               <img
@@ -88,13 +88,20 @@ export default function FrameworkDetail() {
               />
             </div>
             {/* Text */}
-            <div className="p-8 sm:p-12 lg:p-14" dir={isRtl ? 'rtl' : 'ltr'}>
+            <div className="p-8 sm:p-12 lg:p-14 overflow-hidden min-w-0" dir={isRtl ? 'rtl' : 'ltr'}>
               <p className="text-gray-600 text-lg leading-relaxed mb-8 border-b border-gray-100 pb-8">
                 {description}
               </p>
               {content ? (
                 <div
-                  className="prose prose-blue max-w-none text-gray-600 leading-relaxed"
+                  className="prose prose-gray max-w-none overflow-hidden min-w-0
+                    prose-headings:text-[#009900] prose-headings:font-bold
+                    prose-a:text-[#009900] prose-a:no-underline hover:prose-a:underline
+                    prose-strong:text-gray-800
+                    prose-img:rounded-xl prose-img:max-w-full prose-img:h-auto
+                    prose-li:text-gray-600 prose-p:text-gray-600
+                    prose-table:block prose-table:overflow-x-auto prose-table:w-full
+                    text-gray-600 leading-relaxed education-content"
                   dangerouslySetInnerHTML={{ __html: content }}
                 />
               ) : (
