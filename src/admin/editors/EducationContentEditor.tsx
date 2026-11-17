@@ -157,10 +157,28 @@ export default function EducationContentEditor() {
             </EnglishFieldsGroup>
             <ArabicSectionDivider />
             <ArabicFieldsGroup>
-              <ArabicTextField label="العنوان (عربي)" value={editing.titleAr ?? ''} onChange={(v) => setEditing({ ...editing, titleAr: v })} />
-              <ArabicTextAreaField label="الوصف المختصر (عربي)" value={editing.descriptionAr ?? ''} onChange={(v) => setEditing({ ...editing, descriptionAr: v })} rows={3} />
-              <RichHtmlEditor label="المحتوى الكامل (عربي)" value={editing.contentAr ?? ''}
-                onChange={(v) => setEditing({ ...editing, contentAr: v })} dir="rtl" placeholder="المحتوى الكامل…" minHeight={200} />
+              <ArabicTextField
+                label="العنوان (عربي)"
+                value={editing.titleAr ?? ''}
+                onChange={(v) => setEditing({ ...editing, titleAr: v })}
+                englishValue={editing.title ?? ''}
+              />
+              <ArabicTextAreaField
+                label="الوصف المختصر (عربي)"
+                value={editing.descriptionAr ?? ''}
+                onChange={(v) => setEditing({ ...editing, descriptionAr: v })}
+                rows={3}
+                englishValue={editing.description ?? ''}
+              />
+              <RichHtmlEditor
+                label="المحتوى الكامل (عربي)"
+                value={editing.contentAr ?? ''}
+                onChange={(v) => setEditing({ ...editing, contentAr: v })}
+                dir="rtl"
+                placeholder="المحتوى الكامل…"
+                hint="استخدم الوضع المرئي أو HTML."
+                minHeight={200}
+              />
             </ArabicFieldsGroup>
           </div>
         )}
