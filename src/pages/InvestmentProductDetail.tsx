@@ -9,7 +9,7 @@ import { pickField } from '../lib/localizedText';
 import { t } from '../lib/translations';
 
 const FALLBACK_IMAGE =
-  'https://images.unsplash.com/photo-1454165804603-c3d57bc86b40?auto=format&fit=crop&q=80&w=1200';
+  'https://images.unsplash.com/photo-1454165804603-c3d57bc86b40?auto=format&fit=crop&q=80&w=800';
 
 export default function InvestmentProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -46,12 +46,14 @@ export default function InvestmentProductDetail() {
     );
   }
 
-  const title      = pickField(lang, item, 'title');
-  const rawContent = pickField(lang, item, 'content');
+  const title       = pickField(lang, item, 'title');
+  const description = pickField(lang, item, 'description');
+  const rawContent  = pickField(lang, item, 'content');
   const contentHtml = normalizeInvestmentProductContent(rawContent);
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
+      {/* Hero banner */}
       <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <Link
@@ -70,34 +72,46 @@ export default function InvestmentProductDetail() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
+      {/* Wide content card */}
+      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10 pb-8">
         <article className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-          <div className="grid lg:grid-cols-2 gap-0 items-start overflow-hidden min-w-0">
-            <div className="bg-gray-50 border-b lg:border-b-0 lg:border-r border-gray-100 flex items-center justify-center p-6 sm:p-8 lg:p-10 lg:sticky lg:top-6 lg:self-start rounded-t-3xl lg:rounded-s-3xl lg:rounded-tr-none">
-              <img
-                src={imgSrc}
-                alt={title}
-                className="w-full max-h-72 sm:max-h-96 lg:max-h-[32rem] object-contain rounded-2xl"
-                onError={() => setImgSrc(FALLBACK_IMAGE)}
+          <div className="p-8 sm:p-10 lg:p-14 overflow-hidden min-w-0" dir={isRtl ? 'rtl' : 'ltr'}>
+
+            {/* Top row: small image card + description */}
+            <div className={`flex flex-col sm:flex-row gap-6 mb-8 pb-8 border-b border-gray-100 ${isRtl ? 'sm:flex-row-reverse' : ''}`}>
+              {/* Small image card */}
+              <div className="flex-shrink-0 self-start">
+                <div className="w-48 sm:w-56 rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50">
+                  <img
+                    src={imgSrc}
+                    alt={title}
+                    className="w-full h-36 sm:h-44 object-cover"
+                    onError={() => setImgSrc(FALLBACK_IMAGE)}
+                  />
+                </div>
+              </div>
+              {/* Description */}
+              <p className="text-gray-600 text-lg leading-relaxed flex-1">
+                {description}
+              </p>
+            </div>
+
+            {/* Full-width rich content */}
+            {contentHtml ? (
+              <div
+                className="prose prose-gray max-w-none overflow-hidden min-w-0
+                  prose-headings:text-[#009900] prose-headings:font-bold
+                  prose-a:text-[#009900] prose-a:no-underline hover:prose-a:underline
+                  prose-strong:text-gray-800
+                  prose-img:rounded-xl prose-img:max-w-full prose-img:h-auto
+                  prose-li:text-gray-600 prose-p:text-gray-600
+                  prose-table:block prose-table:overflow-x-auto prose-table:w-full
+                  text-gray-600 leading-relaxed education-content"
+                dangerouslySetInnerHTML={{ __html: contentHtml }}
               />
-            </div>
-            <div className="p-8 sm:p-12 lg:p-14 overflow-hidden min-w-0" dir={isRtl ? 'rtl' : 'ltr'}>
-              {contentHtml ? (
-                <div
-                  className="prose prose-gray max-w-none overflow-hidden min-w-0
-                    prose-headings:text-[#009900] prose-headings:font-bold
-                    prose-a:text-[#009900] prose-a:no-underline hover:prose-a:underline
-                    prose-strong:text-gray-800
-                    prose-img:rounded-xl prose-img:max-w-full prose-img:h-auto
-                    prose-li:text-gray-600 prose-p:text-gray-600
-                    prose-table:block prose-table:overflow-x-auto prose-table:w-full
-                    text-gray-600 leading-relaxed education-content"
-                  dangerouslySetInnerHTML={{ __html: contentHtml }}
-                />
-              ) : (
-                <p className="text-gray-500">{pickField(lang, item, 'description')}</p>
-              )}
-            </div>
+            ) : (
+              <p className="text-gray-500">{description}</p>
+            )}
           </div>
         </article>
       </div>

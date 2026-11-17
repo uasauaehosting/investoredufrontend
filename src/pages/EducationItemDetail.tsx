@@ -56,28 +56,51 @@ export default function EducationItemDetail() {
   const content     = pickLocalized(lang, item.content, item.contentAr);
 
   return (
-    <div className="bg-gray-50 min-h-screen py-12">
-      <div className="max-w-4xl mx-auto px-4 overflow-hidden">
-        <Link
-          to={meta.listPath}
-          className="inline-flex items-center gap-2 text-[#009900] hover:text-amber-600 mb-8 transition-colors"
-        >
-          {isRtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
-          {t(lang, 'educationDetail.backTo', 'Back to')} {sectionTitle}
-        </Link>
+    <div className="bg-gray-50 min-h-screen pb-20">
+      {/* Hero banner */}
+      <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          <Link
+            to={meta.listPath}
+            className="inline-flex items-center gap-2 text-green-200 hover:text-white text-sm mb-6 transition-colors"
+          >
+            {isRtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
+            {t(lang, 'educationDetail.backTo', 'Back to')} {sectionTitle}
+          </Link>
+          <span className="inline-block px-4 py-1.5 bg-amber-400 text-[#009900] text-xs font-bold rounded-full mb-4 tracking-widest uppercase">
+            {sectionTitle}
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-bold leading-tight" dir={isRtl ? 'rtl' : 'ltr'}>
+            {title}
+          </h1>
+        </div>
+      </div>
 
-        <article className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-          <img
-            src={imgSrc}
-            alt={title}
-            className="w-full h-72 sm:h-96 object-cover"
-            onError={() => setImgSrc(FALLBACK_IMAGE)}
-          />
-          <div className="p-8 sm:p-12 overflow-hidden min-w-0" dir={isRtl ? 'rtl' : 'ltr'}>
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#009900] mb-6 leading-tight">{title}</h1>
-            <p className="text-gray-600 text-lg leading-relaxed mb-8 border-b border-gray-100 pb-8">
-              {description}
-            </p>
+      {/* Wide content card */}
+      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10 pb-8">
+        <article className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="p-8 sm:p-10 lg:p-14 overflow-hidden min-w-0" dir={isRtl ? 'rtl' : 'ltr'}>
+
+            {/* Top row: small image card + description */}
+            <div className={`flex flex-col sm:flex-row gap-6 mb-8 pb-8 border-b border-gray-100 ${isRtl ? 'sm:flex-row-reverse' : ''}`}>
+              {/* Small image card */}
+              <div className="flex-shrink-0 self-start">
+                <div className="w-48 sm:w-56 rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50">
+                  <img
+                    src={imgSrc}
+                    alt={title}
+                    className="w-full h-36 sm:h-44 object-cover"
+                    onError={() => setImgSrc(FALLBACK_IMAGE)}
+                  />
+                </div>
+              </div>
+              {/* Description */}
+              <p className="text-gray-600 text-lg leading-relaxed flex-1">
+                {description}
+              </p>
+            </div>
+
+            {/* Full-width rich content */}
             {content ? (
               <div
                 className="prose prose-gray max-w-none overflow-hidden min-w-0
