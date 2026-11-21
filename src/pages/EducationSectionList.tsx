@@ -11,14 +11,14 @@ const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800';
 
 function ItemCard({ item, basePath }: { item: EducationItem; basePath: string }) {
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, prefixPath } = useLanguage();
   const [imgSrc, setImgSrc] = useState(item.imageUrl || FALLBACK_IMAGE);
   const title       = pickField(lang, item, 'title');
   const description = pickField(lang, item, 'description');
 
   return (
     <Link
-      to={`${basePath}/${item.id}`}
+      to={prefixPath(`${basePath}/${item.id}`)}
       className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col"
     >
       <div className="aspect-[16/10] overflow-hidden bg-gray-100">
@@ -46,8 +46,7 @@ function ItemCard({ item, basePath }: { item: EducationItem; basePath: string })
 }
 
 export default function EducationSectionList() {
-  const { lang, isRtl } = useLanguage();
-  const { section } = useParams<{ section: string }>();
+  const { lang, isRtl, prefixPath } = useLanguage();  const { section } = useParams<{ section: string }>();
   const meta  = section ? getSectionMeta(section) : null;
   const valid = section && isValidSection(section) && meta;
   const [items,   setItems]   = useState<EducationItem[]>([]);
@@ -65,7 +64,7 @@ export default function EducationSectionList() {
       .finally(() => setLoading(false));
   }, [section, valid, lang]);
 
-  if (!valid || !meta) return <Navigate to="/" replace />;
+  if (!valid || !meta) return <Navigate to={prefixPath('/')} replace />;
 
   const sectionTitle = pickLocalized(lang, meta.title, meta.titleAr);
   const sectionDesc  = pickLocalized(lang, meta.description, meta.descriptionAr);

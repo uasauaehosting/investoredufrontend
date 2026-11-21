@@ -22,7 +22,7 @@ interface NewsItem {
 }
 
 export default function NewsDetail() {
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, prefixPath } = useLanguage();
   const { id } = useParams();
   const [item,    setItem]    = useState<NewsItem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,7 +45,7 @@ export default function NewsDetail() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8" dir={isRtl ? 'rtl' : 'ltr'}>
-        <Link to="/news" className="inline-flex items-center gap-2 text-[#009900] hover:text-amber-600 transition-colors">
+        <Link to={prefixPath('/news')} className="inline-flex items-center gap-2 text-[#009900] hover:text-amber-600 transition-colors">
           {isRtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
           <span>{t(lang, 'news.backToNews', 'Back to News')}</span>
         </Link>

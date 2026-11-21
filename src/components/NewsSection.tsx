@@ -26,7 +26,7 @@ const categoryColors: Record<string, string> = {
 };
 
 export function NewsCard({ item }: { item: NewsItem }) {
-  const { lang } = useLanguage();
+  const { lang, prefixPath } = useLanguage();
   const title     = pickLocalized(lang, item.title,   item.titleAr);
   const excerpt   = pickLocalized(lang, item.excerpt, item.excerptAr);
   const [imgSrc, setImgSrc] = useState(
@@ -36,7 +36,7 @@ export function NewsCard({ item }: { item: NewsItem }) {
 
   return (
     <article className="relative group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-0.5">
-      <Link to={`/news/${item.id}`} className="absolute inset-0 z-0 rounded-xl" aria-label={title} />
+      <Link to={prefixPath(`/news/${item.id}`)} className="absolute inset-0 z-0 rounded-xl" aria-label={title} />
       <div className="relative z-[1] pointer-events-none">
         <div className="relative h-44 overflow-hidden bg-gray-100">
           <img
@@ -84,7 +84,7 @@ export function NewsCard({ item }: { item: NewsItem }) {
 }
 
 export default function NewsSection() {
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, prefixPath } = useLanguage();
   const [news,    setNews]    = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState<string | null>(null);
@@ -114,7 +114,7 @@ export default function NewsSection() {
             </p>
           </div>
           <Link
-            to="/news"
+            to={prefixPath('/news')}
             className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-[#009900] hover:text-amber-600 transition-colors border border-[#009900]/30 hover:border-amber-500 rounded-full px-4 py-1.5"
           >
             {t(lang, 'news.viewAll', 'View All News')}
@@ -146,7 +146,7 @@ export default function NewsSection() {
 
         <div className="mt-6 sm:hidden text-center">
           <Link
-            to="/news"
+            to={prefixPath('/news')}
             className="inline-block text-sm font-medium text-[#009900] hover:text-amber-600 transition-colors border border-[#009900]/30 rounded-full px-6 py-2"
           >
             {t(lang, 'news.viewAll', 'View All News')}

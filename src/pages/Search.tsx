@@ -157,7 +157,7 @@ function ResultCard({ hit, lang, isRtl }: { hit: SearchHit; lang: 'en' | 'ar'; i
       <div className={`flex items-center gap-3 mt-auto flex-wrap ${isRtl ? 'flex-row-reverse' : ''}`}>
         {/* Internal page link */}
         <Link
-          to={hit.href}
+          to={prefixPath(hit.href)}
           className="inline-flex items-center gap-1.5 text-sm font-medium text-[#009900] hover:text-[#006600] transition-colors"
         >
           {t(lang, 'search.visitPage', 'Visit Page')}
@@ -245,7 +245,7 @@ function SkeletonGrid() {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function SearchPage() {
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, prefixPath } = useLanguage();
   const [searchParams]  = useSearchParams();
   const navigate        = useNavigate();
 
@@ -283,7 +283,7 @@ export default function SearchPage() {
     e.preventDefault();
     const trimmed = inputValue.trim();
     if (!trimmed) return;
-    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+    navigate(prefixPath(`/search?q=${encodeURIComponent(trimmed)}`));
   };
 
   // Group and order results by type

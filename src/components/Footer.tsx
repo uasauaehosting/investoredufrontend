@@ -24,7 +24,7 @@ const FALLBACK_FOOTER = {
 };
 
 export default function Footer() {
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, prefixPath } = useLanguage();
   const { data: footer } = useLocalizedSiteContent(
     'footer',
     FALLBACK_FOOTER,
@@ -115,7 +115,7 @@ export default function Footer() {
                 return (
                   <li key={link.label}>
                     <a
-                      href={link.href}
+                      href={prefixPath(link.href)}
                       className="text-black text-sm hover:opacity-70 transition-opacity flex items-center gap-1.5"
                     >
                       <span className="w-1 h-1 bg-black/50 rounded-full" />{label}
@@ -221,13 +221,13 @@ export default function Footer() {
               : `© ${new Date().getFullYear()} Union of Arab Securities Authorities. All rights reserved.`}
           </p>
           <div className="flex items-center gap-4">
-            <a href="/privacy-policy" className="hover:opacity-70 transition-opacity">
+            <a href={prefixPath('/privacy-policy')} className="hover:opacity-70 transition-opacity">
               {t(lang, 'footer.privacy', 'Privacy Policy')}
             </a>
-            <a href="/terms-of-use" className="hover:opacity-70 transition-opacity">
+            <a href={prefixPath('/terms-of-use')} className="hover:opacity-70 transition-opacity">
               {t(lang, 'footer.terms', 'Terms of Use')}
             </a>
-            <a href="/sitemap" className="hover:opacity-70 transition-opacity">
+            <a href={prefixPath('/sitemap')} className="hover:opacity-70 transition-opacity">
               {t(lang, 'footer.sitemap', 'Sitemap')}
             </a>
           </div>

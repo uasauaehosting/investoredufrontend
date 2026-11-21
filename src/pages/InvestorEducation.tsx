@@ -12,7 +12,7 @@ const sectionCards = [
 ];
 
 export default function InvestorEducation() {
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, prefixPath } = useLanguage();
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -59,7 +59,7 @@ export default function InvestorEducation() {
                   {pickLocalized(lang, section.title, section.titleAr)}
                 </h3>
                 <Link
-                  to={section.listPath}
+                  to={prefixPath(section.listPath)}
                   className="inline-flex items-center gap-2 text-sm font-bold text-[#009900] group-hover:text-amber-600 transition-colors"
                   dir={isRtl ? 'rtl' : 'ltr'}
                 >

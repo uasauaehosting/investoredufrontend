@@ -11,7 +11,7 @@ const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800';
 
 export default function EducationItemDetail() {
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, prefixPath } = useLanguage();
   const { section, id } = useParams<{ section: string; id: string }>();
   const meta  = section ? getSectionMeta(section) : null;
   const valid = section && isValidSection(section) && meta;
@@ -32,7 +32,7 @@ export default function EducationItemDetail() {
       .finally(() => setLoading(false));
   }, [id, section, valid]);
 
-  if (!valid || !meta) return <Navigate to="/" replace />;
+  if (!valid || !meta) return <Navigate to={prefixPath('/')} replace />;
 
   const sectionTitle = pickLocalized(lang, meta.title, meta.titleAr);
 
@@ -44,7 +44,7 @@ export default function EducationItemDetail() {
     return (
       <div className="py-24 text-center">
         <p className="text-gray-500 mb-4">{t(lang, 'educationDetail.notFound', 'Content not found.')}</p>
-        <Link to={meta.listPath} className="text-[#009900] hover:text-amber-600 font-medium">
+        <Link to={prefixPath(meta.listPath)} className="text-[#009900] hover:text-amber-600 font-medium">
           {t(lang, 'educationDetail.backTo', 'Back to')} {sectionTitle}
         </Link>
       </div>
@@ -61,7 +61,7 @@ export default function EducationItemDetail() {
       <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <Link
-            to={meta.listPath}
+            to={prefixPath(meta.listPath)}
             className="inline-flex items-center gap-2 text-green-200 hover:text-white text-sm mb-6 transition-colors"
           >
             {isRtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}

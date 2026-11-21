@@ -12,7 +12,7 @@ const FALLBACK_IMAGE =
 
 export default function FrameworkDetail() {
   const { id } = useParams<{ id: string }>();
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, prefixPath } = useLanguage();
   const [item, setItem] = useState<Framework | null>(null);
   const [loading, setLoading] = useState(true);
   const [imgSrc, setImgSrc] = useState(FALLBACK_IMAGE);
@@ -42,7 +42,7 @@ export default function FrameworkDetail() {
     return (
       <div className="py-24 text-center">
         <p className="text-gray-500 mb-4">{t(lang, 'detail.frameworkNotFound', 'Framework not found.')}</p>
-        <Link to={FRAMEWORK_LIST_PATH} className="text-[#009900] hover:text-amber-600 font-medium">
+        <Link to={prefixPath(FRAMEWORK_LIST_PATH)} className="text-[#009900] hover:text-amber-600 font-medium">
           {t(lang, 'detail.backToFramework', 'Back to Framework')}
         </Link>
       </div>
@@ -59,7 +59,7 @@ export default function FrameworkDetail() {
       <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <Link
-            to={FRAMEWORK_LIST_PATH}
+            to={prefixPath(FRAMEWORK_LIST_PATH)}
             className="inline-flex items-center gap-2 text-green-200 hover:text-white text-sm mb-6 transition-colors"
           >
             {isRtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
@@ -79,9 +79,7 @@ export default function FrameworkDetail() {
         <article className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
           <div className="p-8 sm:p-10 lg:p-14 overflow-hidden min-w-0" dir={isRtl ? 'rtl' : 'ltr'}>
 
-            {/* Top row: small image card + description */}
             <div className={`flex flex-col sm:flex-row gap-6 mb-8 pb-8 border-b border-gray-100 ${isRtl ? 'sm:flex-row-reverse' : ''}`}>
-              {/* Small image card */}
               <div className="flex-shrink-0 self-start">
                 <div className="w-48 sm:w-56 rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50">
                   <img
@@ -92,13 +90,11 @@ export default function FrameworkDetail() {
                   />
                 </div>
               </div>
-              {/* Description */}
               <p className="text-gray-600 text-lg leading-relaxed flex-1">
                 {description}
               </p>
             </div>
 
-            {/* Full-width rich content */}
             {content ? (
               <div
                 className="prose prose-gray max-w-none overflow-hidden min-w-0

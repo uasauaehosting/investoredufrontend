@@ -3,22 +3,21 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { api } from '../lib/api';
 import { Framework, frameworkDetailPath } from '../lib/frameworks';
-import { useLanguage } from '../lib/LanguageContext';
-import { pickField } from '../lib/localizedText';
+import { useLanguage } from '../lib/LanguageContext';import { pickField } from '../lib/localizedText';
 import { t } from '../lib/translations';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1454165804603-c3d57bc86b40?auto=format&fit=crop&q=80&w=800';
 
 function FrameworkCard({ item }: { item: Framework }) {
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, prefixPath } = useLanguage();
   const [imgSrc, setImgSrc] = useState(item.imageUrl || FALLBACK_IMAGE);
   const title = pickField(lang, item, 'title');
   const description = pickField(lang, item, 'description');
 
   return (
     <Link
-      to={frameworkDetailPath(item.id)}
+      to={prefixPath(frameworkDetailPath(item.id))}
       className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col"
     >
       <div className="aspect-[16/10] overflow-hidden bg-gray-100">
@@ -46,7 +45,7 @@ function FrameworkCard({ item }: { item: Framework }) {
 }
 
 export default function FrameworkPage() {
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, prefixPath } = useLanguage();
   const [frameworks, setFrameworks] = useState<Framework[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -62,7 +61,7 @@ export default function FrameworkPage() {
     <div className="bg-gray-50 min-h-screen pb-20">
       <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <Link to="/education/reading-materials" className="inline-flex items-center gap-2 text-green-200 hover:text-white text-sm mb-6 transition-colors">
+          <Link to={prefixPath('/education/reading-materials')} className="inline-flex items-center gap-2 text-green-200 hover:text-white text-sm mb-6 transition-colors">
             {isRtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
             {t(lang, 'framework.backToReading', 'Back to Reading Materials')}
           </Link>

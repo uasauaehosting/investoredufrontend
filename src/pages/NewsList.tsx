@@ -6,7 +6,7 @@ import { useLanguage } from '../lib/LanguageContext';
 import { t } from '../lib/translations';
 
 export default function NewsList() {
-  const { lang } = useLanguage();
+  const { lang, prefixPath } = useLanguage();
   const [news,    setNews]    = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState<string | null>(null);
@@ -22,10 +22,10 @@ export default function NewsList() {
       <PageHeader
         title={t(lang, 'news.allNewsTitle', 'All News')}
         items={[
-          { label: t(lang, 'bc.home', 'Home'), href: '/' },
+          { label: t(lang, 'bc.home', 'Home'), href: prefixPath('/') },
           { label: t(lang, 'news.allNewsTitle', 'News') },
         ]}
-        backLink={{ to: '/', label: t(lang, 'news.backToHome', 'Back to Home') }}
+        backLink={{ to: prefixPath('/'), label: t(lang, 'news.backToHome', 'Back to Home') }}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">

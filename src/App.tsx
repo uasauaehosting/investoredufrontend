@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
 import Header from './components/Header';
 import HeroSlider from './components/HeroSlider';
@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import AdminLogin from './admin/AdminLogin';
 import AdminDashboard from './admin/AdminDashboard';
 import { useAuth } from './lib/useAuth';
+import { LanguageSyncer } from './lib/LanguageContext';
 
 // Pages — lazy loaded so each route is a separate chunk
 const NewsList                   = lazy(() => import('./pages/NewsList'));
@@ -69,61 +70,85 @@ function AdminRouter() {
   return session ? <AdminDashboard /> : <AdminLogin />;
 }
 
+/**
+ * LangRedirect — mounted at the bare root "/".
+ * Sends the user to /en or /ar based on their saved preference.
+ */
+function LangRedirect() {
+  let saved: string | null = null;
+  try { saved = localStorage.getItem('uasa-lang'); } catch { /* ignore */ }
+  const lang = saved === 'ar' ? 'ar' : 'en';
+  return <Navigate to={`/${lang}`} replace />;
+}
+
+/**
+ * LangGuard — rendered for every /:lang/* route.
+ * If the :lang param is neither "en" nor "ar" we redirect to /en.
+ */
+function LangGuard({ children }: { children: React.ReactNode }) {
+  const { lang } = useParams<{ lang: string }>();
+  if (lang !== 'en' && lang !== 'ar') {
+    return <Navigate to="/en" replace />;
+  }
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
     <Router>
+      {/* LanguageSyncer must be inside Router so it can call useLocation/useNavigate */}
+      <LanguageSyncer />
       <ScrollToTop />
       <Routes>
-        {/* Admin Routes */}
+        {/* Admin Routes — no lang prefix */}
         <Route path="/admin/*" element={<AdminRouter />} />
 
-        {/* Public Routes */}
+        {/* Root redirect: / → /en or /ar */}
+        <Route path="/" element={<LangRedirect />} />
+
+        {/* Language-prefixed public routes */}
         <Route
-          path="/*"
+          path="/:lang/*"
           element={
-            <div className="min-h-screen flex flex-col">
-              <Header />
-              <main className="flex-1">
-                <Suspense fallback={<PageLoader />}>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/news" element={<NewsList />} />
-                    <Route path="/news/:id" element={<NewsDetail />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/education" element={<Navigate to="/" replace />} />
-                    <Route path="/education/reading-materials/principles" element={<Principles />} />
-                    <Route path="/education/reading-materials/principles/:id" element={<PrincipleDetail />} />
-                    <Route path="/education/reading-materials/framework" element={<Framework />} />
-                    <Route path="/education/reading-materials/framework/:id" element={<FrameworkDetail />} />
-                    <Route
-                      path="/education/reading-materials/products"
-                      element={<InvestmentProductsLiterature />}
-                    />
-                    <Route
-                      path="/education/reading-materials/products/:id"
-                      element={<InvestmentProductDetail />}
-                    />
-                    <Route path="/education/members-activities/portals" element={<Portals />} />
-                    <Route path="/education/members-activities/publications" element={<Publications />} />
-                    <Route path="/education/members-activities/programs" element={<Programs />} />
-                    <Route path="/education/alerts" element={<AlertsBulletins />} />
-                    <Route path="/education/:section" element={<EducationSectionList />} />
-                    <Route path="/education/:section/:id" element={<EducationItemDetail />} />
-                    <Route path="/inclusion" element={<Navigate to="/" replace />} />
-                    <Route path="/inclusion/projects" element={<MembersStrategiesProjects />} />
-                    <Route path="/inclusion/policies" element={<GlobalPolicyAreas />} />
-                    <Route path="/inclusion/index/the-index" element={<TheIndex />} />
-                    <Route path="/inclusion/index/benchmarking" element={<MembersBenchmarking />} />
-                    <Route path="/inclusion/index/resources" element={<AdditionalResources />} />
-                    <Route path="/glossary" element={<Glossary />} />
-                    <Route path="/feedback" element={<Feedback />} />
-                    <Route path="/search" element={<SearchPage />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </Suspense>
-              </main>
-              <Footer />
-            </div>
+            <LangGuard>
+              <div className="min-h-screen flex flex-col">
+                <Header />
+                <main className="flex-1">
+                  <Suspense fallback={<PageLoader />}>
+                    <Routes>
+                      <Route path="/"                                                   element={<Home />} />
+                      <Route path="/news"                                               element={<NewsList />} />
+                      <Route path="/news/:id"                                           element={<NewsDetail />} />
+                      <Route path="/about"                                              element={<About />} />
+                      <Route path="/education"                                          element={<Navigate to="../" replace />} />
+                      <Route path="/education/reading-materials/principles"            element={<Principles />} />
+                      <Route path="/education/reading-materials/principles/:id"        element={<PrincipleDetail />} />
+                      <Route path="/education/reading-materials/framework"             element={<Framework />} />
+                      <Route path="/education/reading-materials/framework/:id"         element={<FrameworkDetail />} />
+                      <Route path="/education/reading-materials/products"              element={<InvestmentProductsLiterature />} />
+                      <Route path="/education/reading-materials/products/:id"          element={<InvestmentProductDetail />} />
+                      <Route path="/education/members-activities/portals"              element={<Portals />} />
+                      <Route path="/education/members-activities/publications"         element={<Publications />} />
+                      <Route path="/education/members-activities/programs"             element={<Programs />} />
+                      <Route path="/education/alerts"                                  element={<AlertsBulletins />} />
+                      <Route path="/education/:section"                                element={<EducationSectionList />} />
+                      <Route path="/education/:section/:id"                            element={<EducationItemDetail />} />
+                      <Route path="/inclusion"                                          element={<Navigate to="../" replace />} />
+                      <Route path="/inclusion/projects"                                element={<MembersStrategiesProjects />} />
+                      <Route path="/inclusion/policies"                                element={<GlobalPolicyAreas />} />
+                      <Route path="/inclusion/index/the-index"                         element={<TheIndex />} />
+                      <Route path="/inclusion/index/benchmarking"                      element={<MembersBenchmarking />} />
+                      <Route path="/inclusion/index/resources"                         element={<AdditionalResources />} />
+                      <Route path="/glossary"                                           element={<Glossary />} />
+                      <Route path="/feedback"                                           element={<Feedback />} />
+                      <Route path="/search"                                             element={<SearchPage />} />
+                      <Route path="*"                                                   element={<Navigate to="../" replace />} />
+                    </Routes>
+                  </Suspense>
+                </main>
+                <Footer />
+              </div>
+            </LangGuard>
           }
         />
       </Routes>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { api } from '../lib/api';
-import { Principle, principleDetailPath } from '../lib/principles';
+import { Principle, principleDetailPath, PRINCIPLES_LIST_PATH } from '../lib/principles';
 import { useLanguage } from '../lib/LanguageContext';
 import { pickField } from '../lib/localizedText';
 import { t } from '../lib/translations';
@@ -11,7 +11,7 @@ const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1454165804603-c3d57bc86b40?auto=format&fit=crop&q=80&w=800';
 
 function PrincipleCard({ item }: { item: Principle }) {
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, prefixPath } = useLanguage();
   const [imgSrc, setImgSrc] = useState(item.imageUrl || FALLBACK_IMAGE);
 
   const title       = pickField(lang, item, 'title');
@@ -19,7 +19,7 @@ function PrincipleCard({ item }: { item: Principle }) {
 
   return (
     <Link
-      to={principleDetailPath(item.id)}
+      to={prefixPath(principleDetailPath(item.id))}
       className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col"
     >
       <div className="aspect-[16/10] overflow-hidden bg-gray-100">
@@ -47,7 +47,7 @@ function PrincipleCard({ item }: { item: Principle }) {
 }
 
 export default function Principles() {
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, prefixPath } = useLanguage();
   const [principles, setPrinciples] = useState<Principle[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -64,7 +64,7 @@ export default function Principles() {
       <div className="bg-gradient-to-br from-[#009900] to-[#00b300] text-white py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <Link
-            to="/education/reading-materials"
+            to={prefixPath('/education/reading-materials')}
             className="inline-flex items-center gap-2 text-green-200 hover:text-white text-sm mb-6 transition-colors"
           >
             {isRtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
