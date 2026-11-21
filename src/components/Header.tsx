@@ -34,7 +34,7 @@ function buildNavItems(lang: Lang): NavItem[] {
         {
           labelKey: 'nav.readingMaterials',
           labelEn: 'Reading Materials',
-          href: '/education/reading-materials',
+          href: '/education/reading-materialss',
           children: [
             { labelKey: 'nav.principles',         labelEn: 'Principles',           href: '/education/reading-materials/principles' },
             { labelKey: 'nav.framework',           labelEn: 'Framework',            href: '/education/reading-materials/framework' },
@@ -44,7 +44,7 @@ function buildNavItems(lang: Lang): NavItem[] {
         {
           labelKey: 'nav.membersActivities',
           labelEn: "Members' Activities",
-          href: '/education/members-activities',
+          href: '/education/members-activitiess',
           children: [
             { labelKey: 'nav.publications', labelEn: 'Publications', href: '/education/members-activities/publications' },
             { labelKey: 'nav.programs',     labelEn: 'Programs',     href: '/education/members-activities/programs' },
