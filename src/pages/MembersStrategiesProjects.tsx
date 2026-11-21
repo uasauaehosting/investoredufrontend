@@ -30,6 +30,7 @@ interface StrategyProject {
   date?: string;
   start_date?: string;
   fileUrl?: string;
+  isActiveAr?: boolean;
 }
 
 function FilterCheckbox({

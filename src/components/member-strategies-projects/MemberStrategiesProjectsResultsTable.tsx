@@ -66,7 +66,18 @@ export default function MemberStrategiesProjectsResultsTable({ groups }: { group
   return (
     // RTL wrapper: flips text direction when Arabic is active
     <div className="space-y-10" dir={isRtl ? 'rtl' : 'ltr'}>
-      {groups.map((group) => (
+      {groups.map((group) => {
+        // Pre-filter items that are visible for the current language
+        const visibleItems = group.items.filter((project) => {
+          if (lang === 'ar' && project.isActiveAr === false) return false;
+          if (lang === 'ar' && missingArPolicy === 'hide' && !project.titleAr?.trim()) return false;
+          return true;
+        });
+
+        // Don't render the group table at all if no rows are visible
+        if (visibleItems.length === 0) return null;
+
+        return (
         <div key={group.member} className="overflow-x-auto">
           <table className="w-full min-w-[640px] border-collapse border border-[#ccc] text-sm">
             <tbody>
@@ -81,15 +92,7 @@ export default function MemberStrategiesProjectsResultsTable({ groups }: { group
                 <th className={thClass}>                  {t(lang, 'table.description', 'Description')}</th>
                 <th className={thClass}>                  {t(lang, 'table.urlFile',     'URL / File')}</th>
               </tr>
-              {group.items.map((project, index) => {
-                // Apply missing-AR policy: skip the row entirely if no Arabic title
-                if (
-                  lang === 'ar' &&
-                  missingArPolicy === 'hide' &&
-                  !project.titleAr?.trim()
-                ) {
-                  return null;
-                }
+              {visibleItems.map((project, index) => {
 
                 const title       = pickLocalized(lang, project.title,       project.titleAr);
                 const description = pickLocalized(lang, project.description, project.descriptionAr);
@@ -112,7 +115,8 @@ export default function MemberStrategiesProjectsResultsTable({ groups }: { group
             </tbody>
           </table>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

@@ -10,6 +10,8 @@ export interface StrategyProjectItem {
   type?: string;
   categoryName?: string | null;
   fileUrl?: string;
+  /** When false, Arabic content should not be shown for this item. */
+  isActiveAr?: boolean;
 }
 
 export interface MemberStrategyProjectGroup {
