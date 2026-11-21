@@ -34,7 +34,8 @@ function buildNavItems(lang: Lang): NavItem[] {
         {
           labelKey: 'nav.readingMaterials',
           labelEn: 'Reading Materials',
-          href: '/education/reading-materialss',
+          // href: '/education/reading-materialss',
+          href: '#',
           children: [
             { labelKey: 'nav.principles',         labelEn: 'Principles',           href: '/education/reading-materials/principles' },
             { labelKey: 'nav.framework',           labelEn: 'Framework',            href: '/education/reading-materials/framework' },
@@ -44,7 +45,8 @@ function buildNavItems(lang: Lang): NavItem[] {
         {
           labelKey: 'nav.membersActivities',
           labelEn: "Members' Activities",
-          href: '/education/members-activitiess',
+          // href: '/education/members-activitiess',
+          href: '#',
           children: [
             { labelKey: 'nav.publications', labelEn: 'Publications', href: '/education/members-activities/publications' },
             { labelKey: 'nav.programs',     labelEn: 'Programs',     href: '/education/members-activities/programs' },
@@ -68,7 +70,8 @@ function buildNavItems(lang: Lang): NavItem[] {
         {
           labelKey: 'nav.financialInclusionIndex',
           labelEn: 'Financial Inclusion Index',
-          href: '/inclusion/index',
+          // href: '/inclusion/index',
+          href: '#',
           children: [
             { labelKey: 'nav.theIndex',            labelEn: 'The Index',              href: '/inclusion/index/the-index' },
             { labelKey: 'nav.membersBenchmarking', labelEn: "Members' Benchmarking",  href: '/inclusion/index/benchmarking' },
