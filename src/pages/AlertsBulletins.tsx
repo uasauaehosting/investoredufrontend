@@ -6,7 +6,7 @@ import {
   AlertsBulletinsEmptyRow,
 } from '../components/alerts-bulletins/AlertsBulletinsResultsTable';
 import { api } from '../lib/api';
-import { ALERT_BULLETIN_AUTHORITIES, ALERT_BULLETIN_YEARS } from '../lib/alertBulletinFilters';
+import { ALERT_BULLETIN_AUTHORITIES, ALERT_BULLETIN_AUTHORITIES_AR, ALERT_BULLETIN_YEARS } from '../lib/alertBulletinFilters';
 import { useLanguage } from '../lib/LanguageContext';
 import { t } from '../lib/translations';
 
@@ -116,7 +116,9 @@ export default function AlertsBulletins() {
                         {t(lang, 'alerts.allAuthorities', 'All Authorities')}
                       </option>
                       {ALERT_BULLETIN_AUTHORITIES.map((authority) => (
-                        <option key={authority} value={authority}>{authority}</option>
+                        <option key={authority} value={authority}>
+                          {lang === 'ar' ? (ALERT_BULLETIN_AUTHORITIES_AR[authority] ?? authority) : authority}
+                        </option>
                       ))}
                     </select>
                   </th>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api } from '../lib/api';
 import {
   BENCHMARKING_AUTHORITIES,
+  BENCHMARKING_AUTHORITIES_AR,
   BENCHMARKING_YEARS,
   BenchmarkingAuthority,
   BenchmarkingYear,
@@ -126,8 +127,8 @@ export default function MembersBenchmarking() {
                     >
                       {BENCHMARKING_AUTHORITIES.map((authority) => (
                         <option key={authority} value={authority}>
-                          {authority === 'All Authorities'
-                            ? t(lang, 'benchmarking.allAuthorities', 'All Authorities')
+                          {lang === 'ar'
+                            ? (BENCHMARKING_AUTHORITIES_AR[authority] ?? authority)
                             : authority}
                         </option>
                       ))}

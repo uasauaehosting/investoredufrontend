@@ -5,7 +5,9 @@ import { api } from '../lib/api';
 import { groupGlobalPolicyAreas } from '../lib/globalPolicyGrouping';
 import {
   POLICY_CATEGORIES,
+  POLICY_CATEGORIES_AR,
   POLICY_INSTITUTIONS,
+  POLICY_INSTITUTIONS_AR,
   PolicyCategory,
   PolicyInstitution,
 } from '../lib/globalPolicyFilters';
@@ -116,7 +118,9 @@ export default function GlobalPolicyAreas() {
                     {t(lang, 'globalPolicy.institutionAll', 'All')}
                   </option>
                   {POLICY_INSTITUTIONS.map((institution) => (
-                    <option key={institution} value={institution}>{institution}</option>
+                    <option key={institution} value={institution}>
+                      {lang === 'ar' ? (POLICY_INSTITUTIONS_AR[institution] ?? institution) : institution}
+                    </option>
                   ))}
                 </select>
                 <p className="mt-2 text-sm text-green-700">
@@ -141,7 +145,9 @@ export default function GlobalPolicyAreas() {
                     {t(lang, 'globalPolicy.categoryAll', 'All')}
                   </option>
                   {POLICY_CATEGORIES.map((category) => (
-                    <option key={category} value={category}>{category}</option>
+                    <option key={category} value={category}>
+                      {lang === 'ar' ? (POLICY_CATEGORIES_AR[category] ?? category) : category}
+                    </option>
                   ))}
                 </select>
                 <p className="mt-2 text-sm text-green-700">

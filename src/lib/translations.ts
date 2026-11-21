@@ -415,4 +415,9 @@ Object.assign(ar, {
   'search.visitPage':          'زيارة الصفحة',
   'search.externalLink':       'رابط خارجي',
   'search.downloadFile':       'تنزيل الملف',
+
+  // ── News categories ────────────────────────────────────────────────────────
+  'newsCategory.Publication': 'إصدار',
+  'newsCategory.News':        'خبر',
+  'newsCategory.Event':       'فعالية',
 });

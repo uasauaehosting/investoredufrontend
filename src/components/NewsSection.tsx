@@ -47,7 +47,7 @@ export function NewsCard({ item }: { item: NewsItem }) {
           />
           <div className="absolute top-3 start-3">
             <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${categoryColors[item.category] ?? 'bg-gray-100 text-gray-600'}`}>
-              {item.category}
+              {t(lang, `newsCategory.${item.category}`, item.category)}
             </span>
           </div>
         </div>

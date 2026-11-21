@@ -4,7 +4,9 @@ import PublicationsResultsTable from '../components/publications/PublicationsRes
 import { api } from '../lib/api';
 import {
   PUBLICATION_AUTHORITIES,
+  PUBLICATION_AUTHORITIES_AR,
   PUBLICATION_CATEGORIES,
+  PUBLICATION_CATEGORIES_AR,
   PublicationAuthority,
   PublicationCategory,
 } from '../lib/publicationFilters';
@@ -119,7 +121,9 @@ function PublicationsInner() {
                     {t(lang, 'publications.authorityAll', 'All')}
                   </option>
                   {PUBLICATION_AUTHORITIES.map((authority) => (
-                    <option key={authority} value={authority}>{authority}</option>
+                    <option key={authority} value={authority}>
+                      {lang === 'ar' ? (PUBLICATION_AUTHORITIES_AR[authority] ?? authority) : authority}
+                    </option>
                   ))}
                 </select>
                 <p className="mt-2 text-sm text-green-700">
@@ -144,7 +148,9 @@ function PublicationsInner() {
                     {t(lang, 'publications.categoryAll', 'All')}
                   </option>
                   {PUBLICATION_CATEGORIES.map((category) => (
-                    <option key={category} value={category}>{category}</option>
+                    <option key={category} value={category}>
+                      {lang === 'ar' ? (PUBLICATION_CATEGORIES_AR[category] ?? category) : category}
+                    </option>
                   ))}
                 </select>
                 <p className="mt-2 text-sm text-green-700">

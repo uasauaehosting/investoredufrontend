@@ -71,7 +71,7 @@ export default function NewsDetail() {
           <div className="flex flex-wrap gap-4 mb-6">
             <span className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 bg-green-50 text-green-700 rounded-full">
               <Tag size={12} />
-              {item.category}
+              {t(lang, `newsCategory.${item.category}`, item.category)}
             </span>
             <span className="flex items-center gap-1.5 text-xs text-gray-400">
               <Calendar size={12} />

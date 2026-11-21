@@ -2,7 +2,7 @@ import { FormEvent, useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import ProgramsResultsTable from '../components/programs/ProgramsResultsTable';
 import { api } from '../lib/api';
-import { PROGRAM_FILTER_GROUPS, PROGRAM_MEMBERS, getLabelsFromSelect } from '../lib/programFilters';
+import { PROGRAM_FILTER_GROUPS, PROGRAM_MEMBERS, PROGRAM_MEMBERS_AR, getLabelsFromSelect } from '../lib/programFilters';
 import { useLanguage } from '../lib/LanguageContext';
 import { SectionLangProvider, useSectionLang } from '../lib/SectionLangContext';
 import { t } from '../lib/translations';
@@ -152,7 +152,9 @@ function ProgramsInner() {
                     {t(lang, 'programs.selectMember', 'Select Member')}
                   </option>
                   {PROGRAM_MEMBERS.map((member) => (
-                    <option key={member} value={member}>{member}</option>
+                    <option key={member} value={member}>
+                      {lang === 'ar' ? (PROGRAM_MEMBERS_AR[member] ?? member) : member}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -161,19 +163,21 @@ function ProgramsInner() {
               {PROGRAM_FILTER_GROUPS.map((group) => (
                 <div key={group.name}>
                   <label htmlFor={group.name} className="block text-sm font-bold text-[#009900] mb-2">
-                    {group.title}
+                    {lang === 'ar' ? group.titleAr : group.title}
                   </label>
                   <select
                     id={group.name}
                     name={group.name}
                     multiple
                     size={4}
-                    title={group.title}
+                    title={lang === 'ar' ? group.titleAr : group.title}
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
                     style={{ height: group.options.length > 4 ? '120px' : '100px' }}
                   >
                     {group.options.map((option) => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
+                      <option key={option.value} value={option.value}>
+                        {lang === 'ar' ? (option.labelAr ?? option.label) : option.label}
+                      </option>
                     ))}
                   </select>
                 </div>
