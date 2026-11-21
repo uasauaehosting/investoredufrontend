@@ -162,9 +162,14 @@ function ProgramsInner() {
               {/* Dynamic filter groups */}
               {PROGRAM_FILTER_GROUPS.map((group) => (
                 <div key={group.name}>
-                  <label htmlFor={group.name} className="block text-sm font-bold text-[#009900] mb-2">
-                    {lang === 'ar' ? group.titleAr : group.title}
-                  </label>
+                  <div className="flex items-baseline justify-between mb-2">
+                    <label htmlFor={group.name} className="text-sm font-bold text-[#009900]">
+                      {lang === 'ar' ? group.titleAr : group.title}
+                    </label>
+                    <span className="text-xs text-gray-400 italic">
+                      {t(lang, 'programs.ctrlHint', 'Hold Ctrl to select multiple')}
+                    </span>
+                  </div>
                   <select
                     id={group.name}
                     name={group.name}

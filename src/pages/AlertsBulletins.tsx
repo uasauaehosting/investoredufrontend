@@ -77,50 +77,64 @@ export default function AlertsBulletins() {
           </h2>
           <hr className="border-gray-300 mb-6" />
 
-          {/* Year filter */}
-          <select
-            id="alerts-year"
-            name="year"
-            multiple
-            size={4}
-            onChange={handleYearChange}
-            className="w-full max-w-xs rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20 mb-8"
-          >
-            <option value="All Years">{t(lang, 'alerts.allYears', 'All Years')}</option>
-            {ALERT_BULLETIN_YEARS.map((year) => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
+          {/* Filters row: Year + Authority side by side */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8" dir={isRtl ? 'rtl' : 'ltr'}>
+            {/* Year filter */}
+            <div>
+              <label htmlFor="alerts-year" className="block text-sm font-semibold text-gray-700 mb-2">
+                {t(lang, 'alerts.allYears', 'All Years')}
+              </label>
+              <select
+                id="alerts-year"
+                name="year"
+                multiple
+                size={4}
+                onChange={handleYearChange}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
+              >
+                <option value="All Years">{t(lang, 'alerts.allYears', 'All Years')}</option>
+                {ALERT_BULLETIN_YEARS.map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Authority filter */}
+            <div>
+              <label htmlFor="alerts-authority" className="block text-sm font-semibold text-gray-700 mb-2">
+                {t(lang, 'alerts.authorityCol', 'Authority')}
+              </label>
+              <select
+                id="alerts-authority"
+                name="authority"
+                value={selectedAuthority}
+                onChange={handleAuthorityChange}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
+              >
+                <option value="All Authorities">
+                  {t(lang, 'alerts.allAuthorities', 'All Authorities')}
+                </option>
+                {ALERT_BULLETIN_AUTHORITIES.map((authority) => (
+                  <option key={authority} value={authority}>
+                    {lang === 'ar' ? (ALERT_BULLETIN_AUTHORITIES_AR[authority] ?? authority) : authority}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] border-collapse border border-[#ccc] text-sm new-tab">
               <thead>
                 <tr>
                   <th
-                    colSpan={2}
+                    colSpan={4}
                     align="left"
                     scope="col"
                     className="border border-[#ccc] bg-white px-4 py-3 text-start text-sm font-bold text-gray-900"
                     dir={isRtl ? 'rtl' : 'ltr'}
                   >
                     {t(lang, 'alerts.authorityCol', 'Authority')}
-                  </th>
-                  <th colSpan={2} scope="col" className="border border-[#ccc] bg-white px-4 py-3 text-sm">
-                    <select
-                      name="authority"
-                      value={selectedAuthority}
-                      onChange={handleAuthorityChange}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-[#009900] focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
-                    >
-                      <option value="All Authorities">
-                        {t(lang, 'alerts.allAuthorities', 'All Authorities')}
-                      </option>
-                      {ALERT_BULLETIN_AUTHORITIES.map((authority) => (
-                        <option key={authority} value={authority}>
-                          {lang === 'ar' ? (ALERT_BULLETIN_AUTHORITIES_AR[authority] ?? authority) : authority}
-                        </option>
-                      ))}
-                    </select>
                   </th>
                 </tr>
               </thead>

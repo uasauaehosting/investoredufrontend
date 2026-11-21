@@ -203,6 +203,7 @@ Object.assign(ar, {
   'programs.foundPlural':          'برامج',
   'programs.error':                'تعذّر تحميل البرامج. الرجاء المحاولة مرة أخرى.',
   'programs.for':                  'للعضو',
+  'programs.ctrlHint':             'اضغط Ctrl للاختيار المتعدد',
 
   // ── Alerts & Bulletins ─────────────────────────────────────────────────────
   'alerts.sectionTitle':           'التنبيهات والنشرات',

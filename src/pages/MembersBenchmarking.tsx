@@ -78,71 +78,73 @@ export default function MembersBenchmarking() {
             </p>
           </div>
 
-          {/* Year filter */}
-          <div className="w-full mb-8">
-            <label htmlFor="benchmarking-years" className="block text-sm font-semibold text-[#009900] mb-2" dir={isRtl ? 'rtl' : 'ltr'}>
-              {t(lang, 'benchmarking.yearLabel', 'Year')}
-            </label>
-            <select
-              id="benchmarking-years"
-              multiple
-              size={4}
-              value={selectedYears}
-              onChange={(e) => {
-                const options = Array.from(e.target.selectedOptions).map(
-                  (option) => option.value as BenchmarkingYear,
-                );
-                if (options.length === 0 || options.includes('All Years')) {
-                  setSelectedYears(['All Years']);
-                  return;
-                }
-                setSelectedYears(options);
-              }}
-              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
-            >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year === 'All Years' ? t(lang, 'benchmarking.allYears', 'All Years') : year}
-                </option>
-              ))}
-            </select>
-            <p className="text-xs text-gray-500 mt-2 text-center">
-              {t(lang, 'benchmarking.ctrlHint', 'Hold Ctrl (Windows) or Cmd (Mac) to select multiple years')}
-            </p>
+          {/* Filters row: Year + Authority side by side */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8" dir={isRtl ? 'rtl' : 'ltr'}>
+            {/* Year filter */}
+            <div>
+              <label htmlFor="benchmarking-years" className="block text-sm font-semibold text-[#009900] mb-2">
+                {t(lang, 'benchmarking.yearLabel', 'Year')}
+              </label>
+              <select
+                id="benchmarking-years"
+                multiple
+                size={4}
+                value={selectedYears}
+                onChange={(e) => {
+                  const options = Array.from(e.target.selectedOptions).map(
+                    (option) => option.value as BenchmarkingYear,
+                  );
+                  if (options.length === 0 || options.includes('All Years')) {
+                    setSelectedYears(['All Years']);
+                    return;
+                  }
+                  setSelectedYears(options);
+                }}
+                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year === 'All Years' ? t(lang, 'benchmarking.allYears', 'All Years') : year}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-2">
+                {t(lang, 'benchmarking.ctrlHint', 'Hold Ctrl (Windows) or Cmd (Mac) to select multiple years')}
+              </p>
+            </div>
+
+            {/* Authority filter */}
+            <div>
+              <label htmlFor="benchmarking-authority" className="block text-sm font-semibold text-[#009900] mb-2">
+                {t(lang, 'benchmarking.authorityCol', 'Authority')}
+              </label>
+              <select
+                id="benchmarking-authority"
+                value={selectedAuthority}
+                onChange={(e) => setSelectedAuthority(e.target.value as BenchmarkingAuthority)}
+                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#009900]/20"
+              >
+                {BENCHMARKING_AUTHORITIES.map((authority) => (
+                  <option key={authority} value={authority}>
+                    {lang === 'ar'
+                      ? (BENCHMARKING_AUTHORITIES_AR[authority] ?? authority)
+                      : authority}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Table */}
           <div className="overflow-x-auto rounded-2xl border border-gray-100">
             <table className="w-full min-w-[700px] text-sm">
               <thead>
-                <tr className="bg-[#009900] text-white">
-                  <th colSpan={2} className="px-4 py-3 text-start font-semibold align-middle" dir={isRtl ? 'rtl' : 'ltr'}>
-                    {t(lang, 'benchmarking.authorityCol', 'Authority')}
-                  </th>
-                  <th colSpan={2} className="px-4 py-3 text-start font-semibold align-middle">
-                    <select
-                      value={selectedAuthority}
-                      onChange={(e) => setSelectedAuthority(e.target.value as BenchmarkingAuthority)}
-                      className="w-full max-w-md rounded-lg border border-white/20 bg-white text-[#009900] px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-400/50"
-                    >
-                      {BENCHMARKING_AUTHORITIES.map((authority) => (
-                        <option key={authority} value={authority}>
-                          {lang === 'ar'
-                            ? (BENCHMARKING_AUTHORITIES_AR[authority] ?? authority)
-                            : authority}
-                        </option>
-                      ))}
-                    </select>
-                  </th>
+                <tr className="bg-green-50 text-[#009900]">
+                  <th className="px-4 py-3 text-start font-semibold">{t(lang, 'benchmarking.authorityCol', 'Authority')}</th>
+                  <th className="px-4 py-3 text-start font-semibold">{t(lang, 'benchmarking.yearCol',      'Year')}</th>
+                  <th className="px-4 py-3 text-start font-semibold">{t(lang, 'benchmarking.titleCol',     'Title')}</th>
+                  <th className="px-4 py-3 text-start font-semibold">{t(lang, 'benchmarking.detailsCol',   'Details')}</th>
                 </tr>
-                {filteredRecords.length > 0 && (
-                  <tr className="bg-green-50 text-[#009900]">
-                    <th className="px-4 py-3 text-start font-semibold">{t(lang, 'benchmarking.authorityCol', 'Authority')}</th>
-                    <th className="px-4 py-3 text-start font-semibold">{t(lang, 'benchmarking.yearCol',      'Year')}</th>
-                    <th className="px-4 py-3 text-start font-semibold">{t(lang, 'benchmarking.titleCol',     'Title')}</th>
-                    <th className="px-4 py-3 text-start font-semibold">{t(lang, 'benchmarking.detailsCol',   'Details')}</th>
-                  </tr>
-                )}
               </thead>
               <tbody>
                 {loading ? (
