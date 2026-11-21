@@ -6,8 +6,7 @@ import {
   useCallback,
   type ReactNode,
 } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-
+import { useLocation } from 'react-router-dom';
 export type Lang = 'en' | 'ar';
 
 interface LanguageContextValue {
@@ -128,7 +127,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 export function LanguageSyncer() {
   const { lang, setLang } = useLanguage();
   const location = useLocation();
-  const navigate = useNavigate();
 
   // Sync URL → context whenever the pathname changes.
   useEffect(() => {
@@ -136,25 +134,11 @@ export function LanguageSyncer() {
     if (urlLang && urlLang !== lang) {
       setLang(urlLang);
     }
-  // We only want to react to pathname changes, not to `lang` changes
-  // (that direction is handled by the Header's switchLang call).
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
-  // Patch switchLang on the context so Header.toggleLang can navigate.
-  // We abuse the fact that LanguageContext.Provider value object is mutable
-  // through a ref trick — instead, we expose switchLang via a module-level ref
-  // that LanguageProvider reads.  The simplest correct approach is to store the
-  // navigate function in a module-level mutable cell after mount.
-  useEffect(() => {
-    _navigateCell.fn = navigate;
-  }, [navigate]);
-
   return null;
 }
-
-/** Module-level cell so LanguageProvider can call navigate without being inside Router. */
-const _navigateCell: { fn: ReturnType<typeof useNavigate> | null } = { fn: null };
 
 // ─── Hook ───────────────────────────────────────────────────────────────────
 
@@ -164,19 +148,21 @@ export function useLanguage(): LanguageContextValue {
     throw new Error('useLanguage must be used within LanguageProvider');
   }
 
-  // Augment switchLang to use the live navigate function when available.
+  // Augment switchLang to do a hard navigation (full page reload) so that
+  // RTL/LTR layout, fonts, and all CSS direction-dependent styles apply cleanly
+  // without any stale state from the previous language.
   const switchLang = useCallback(
     (currentPathname: string) => {
       const currentLang = extractLangFromPath(currentPathname) ?? ctx.lang;
       const newLang: Lang = currentLang === 'en' ? 'ar' : 'en';
-      ctx.setLang(newLang);
+      // Persist the new lang before the reload so LanguageProvider picks it up.
+      try { localStorage.setItem('uasa-lang', newLang); } catch { /* ignore */ }
       const newPath = addLangPrefix(newLang, stripLangFromPath(currentPathname));
-      if (_navigateCell.fn) {
-        _navigateCell.fn(newPath, { replace: true });
-      }
+      // Hard reload — ensures document dir, fonts, and all CSS resets cleanly.
+      window.location.href = newPath;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ctx.lang, ctx.setLang],
+    [ctx.lang],
   );
 
   return { ...ctx, switchLang };
